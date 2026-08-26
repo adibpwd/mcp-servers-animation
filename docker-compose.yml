@@ -1,0 +1,40 @@
+services:
+  # Frontend - Vite dev server
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env.docker
+    command: npm run dev -- --host 0.0.0.0
+    networks:
+      - mcp-network
+    depends_on:
+      - export-server
+
+  # Export Server
+  export-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.export
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./public:/app/public
+      - ./dist:/app/dist
+    environment:
+      - NODE_ENV=production
+    command: npm run export-server
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge

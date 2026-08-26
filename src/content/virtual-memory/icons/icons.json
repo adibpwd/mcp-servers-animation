@@ -1,0 +1,55 @@
+{
+  "name": "virtual-memory",
+  "description": "7 icons for Virtual Memory animation",
+  "icons": [
+    {
+      "id": "browser",
+      "name": "Browser",
+      "label": "Web Browser",
+      "description": "Web browser with globe or window"
+    },
+    {
+      "id": "game",
+      "name": "Game",
+      "label": "Game Controller",
+      "description": "Gaming controller or gamepad"
+    },
+    {
+      "id": "editor",
+      "name": "Editor",
+      "label": "Code Editor",
+      "description": "Code editor or IDE window"
+    },
+    {
+      "id": "music",
+      "name": "Music",
+      "label": "Music App",
+      "description": "Music speaker or note symbol"
+    },
+    {
+      "id": "camera",
+      "name": "Camera",
+      "label": "Video Camera",
+      "description": "Video camera icon"
+    },
+    {
+      "id": "storage",
+      "name": "Storage",
+      "label": "Storage Box",
+      "description": "Package or storage box"
+    },
+    {
+      "id": "lightning",
+      "name": "Lightning",
+      "label": "Alert/Lightning",
+      "description": "Lightning bolt for alerts"
+    }
+  ],
+  "generation": {
+    "rows": 2,
+    "cols": 4,
+    "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on transparent background (PNG). Icons are numbered top-left to bottom-right:\n\n1. Web browser (globe/window icon)\n2. Game controller (gamepad icon)\n3. Code editor/IDE (window with code brackets)\n4. Music app (speaker/musical note)\n5. Video camera (camera icon)\n6. Storage box (package/box icon)\n7. Lightning bolt (alert symbol)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist\n- Black/gray colors only (grayscale/monochrome)\n- Each icon same size and clearly distinct\n- High contrast for visibility\n- Transparent background (PNG)\n- Grid layout: 2 rows × 4 columns\n- Recommended total size: 4096x2048 pixels (512x512 per icon)\n- Each icon should be recognizable and simple",
+    "api_endpoint": "http://localhost:3000/api/icons/generate",
+    "output_path": "src/content/virtual-memory/icons"
+  }
+}

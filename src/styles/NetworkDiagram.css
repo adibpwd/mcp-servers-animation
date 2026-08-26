@@ -1,0 +1,41 @@
+.network-svg {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--dark-bg);
+}
+
+.link-line {
+  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+}
+
+.node-base {
+  transition: filter 0.3s ease;
+}
+
+.node-halo {
+  animation: halo-pulse 2s ease-in-out infinite;
+}
+
+.animated-counter {
+  position: absolute;
+  top: 40px;
+  right: 60px;
+  font-family: 'Courier New', monospace;
+  font-size: 72px;
+  font-weight: bold;
+  color: var(--primary-cyan);
+  text-shadow: 0 0 20px var(--primary-cyan);
+  z-index: 10;
+}
+
+.title-overlay {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  font-family: monospace;
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 3px;
+  z-index: 10;
+}

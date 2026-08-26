@@ -1,0 +1,36 @@
+@keyframes halo-pulse {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.08);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.counter-glow {
+  animation: counterGlow 2s ease-in-out infinite;
+}
+
+@keyframes counterGlow {
+  0%,
+  100% {
+    text-shadow: 0 0 20px var(--primary-cyan);
+  }
+  50% {
+    text-shadow: 0 0 40px var(--primary-cyan), 0 0 80px var(--primary-cyan);
+  }
+}

@@ -1,0 +1,34 @@
+export const ANIMATION_CONFIG = {
+  // Timing
+  FPS: 30,
+  TOTAL_DURATION: 15,
+  LINE_ANIMATION_DURATION: 1.2,
+  COUNTER_UPDATE_INTERVAL: 0.1,
+  GLOW_PULSE_DURATION: 0.6,
+  STAGGER_DELAY: 0.15,
+
+  // Colors
+  COLORS: {
+    PRIMARY_CYAN: '#00D9FF',
+    SECONDARY_PINK: '#FF006E',
+    GOLD: '#FFD60A',
+    DARK_BG: '#0a0e27',
+    NODE_STROKE: '#1e293b'
+  },
+
+  // D3 Force Configuration
+  FORCE_CONFIG: {
+    STRENGTH: -300,
+    LINK_DISTANCE: 150,
+    COLLISION_RADIUS: 60,
+    CENTER_STRENGTH: 0.1
+  },
+
+  // SVG Configuration
+  SVG_CONFIG: {
+    WIDTH: 1920,
+    HEIGHT: 1080,
+    GLOW_BLUR: 4,
+    GLOW_FILTER: 'url(#glow)'
+  }
+}

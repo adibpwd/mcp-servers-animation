@@ -1,0 +1,155 @@
+{
+  "items": [
+    {
+      "id": "mcp-servers",
+      "title": "MCP Servers",
+      "subtitle": "How AI agents plug into your tools",
+      "category": "AI Infrastructure",
+      "tags": [
+        "MCP",
+        "Protocol",
+        "Tools",
+        "AI"
+      ],
+      "status": "posted",
+      "priority": 1,
+      "color": "#4ADE80"
+    },
+    {
+      "id": "file-permission",
+      "title": "Linux File Permission",
+      "subtitle": "Understanding rwxrwxrwx and chmod explained",
+      "category": "Linux Basics",
+      "tags": [
+        "Permission",
+        "chmod",
+        "Security",
+        "Beginner"
+      ],
+      "status": "posted",
+      "priority": 2,
+      "color": "#FBBF24"
+    },
+    {
+      "id": "virtual-memory",
+      "title": "Virtual Memory Management",
+      "subtitle": "RAM vs Disk swap, page tables, TLB, and paging explained",
+      "category": "Linux Deep Dive",
+      "tags": [
+        "Memory",
+        "Virtual",
+        "Paging",
+        "Advanced"
+      ],
+      "status": "ready",
+      "priority": 3,
+      "color": "#EC4899"
+    },
+    {
+      "id": "desktop-environment",
+      "title": "Desktop Environment",
+      "subtitle": "GNOME vs KDE vs XFCE vs i3 — which one for you?",
+      "category": "Linux Basics",
+      "tags": [
+        "Desktop",
+        "GUI",
+        "Comparison",
+        "Beginner"
+      ],
+      "status": "draft",
+      "priority": 4,
+      "color": "#60A5FA"
+    },
+    {
+      "id": "linux-vs-windows",
+      "title": "Linux vs Windows vs macOS",
+      "subtitle": "Philosophy, architecture, and which one to pick",
+      "category": "Operating Systems",
+      "tags": [
+        "OS",
+        "Comparison",
+        "Beginner",
+        "Cross-platform"
+      ],
+      "status": "draft",
+      "priority": 5,
+      "color": "#F472B6"
+    },
+    {
+      "id": "shell-pipeline",
+      "title": "Shell Pipeline (|)",
+      "subtitle": "How pipes connect commands — STDIN/STDOUT flow",
+      "category": "Linux Fundamentals",
+      "tags": [
+        "Shell",
+        "Pipe",
+        "STDIN",
+        "STDOUT"
+      ],
+      "status": "draft",
+      "priority": 6,
+      "color": "#34D399"
+    },
+    {
+      "id": "what-is-kernel",
+      "title": "What is Linux Kernel?",
+      "subtitle": "ELI5: The core that manages everything",
+      "category": "Linux Fundamentals",
+      "tags": [
+        "Kernel",
+        "Core",
+        "System",
+        "Beginner"
+      ],
+      "status": "draft",
+      "priority": 7,
+      "color": "#A78BFA"
+    },
+    {
+      "id": "process-vs-thread",
+      "title": "Process vs Thread",
+      "subtitle": "Memory isolation, context switching, and when to use each",
+      "category": "Operating Systems",
+      "tags": [
+        "Process",
+        "Thread",
+        "Memory",
+        "Concurrency"
+      ],
+      "status": "draft",
+      "priority": 8,
+      "color": "#FB923C"
+    },
+    {
+      "id": "linux-kernel-architecture",
+      "title": "Linux Kernel Architecture",
+      "subtitle": "User Space → Syscall → Kernel → Hardware layers explained",
+      "category": "Linux Deep Dive",
+      "tags": [
+        "Kernel",
+        "Architecture",
+        "System",
+        "Intermediate"
+      ],
+      "status": "draft",
+      "priority": 9,
+      "color": "#06B6D4"
+    },
+    {
+      "id": "linux-vs-unix",
+      "title": "Linux vs Unix",
+      "subtitle": "From AT&T Bell Labs to modern ecosystems",
+      "category": "Operating Systems",
+      "tags": [
+        "Linux",
+        "Unix",
+        "BSD",
+        "macOS",
+        "Windows"
+      ],
+      "status": "ready",
+      "priority": 10,
+      "color": "#06B6D4"
+    }
+  ]
+}

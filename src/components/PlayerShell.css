@@ -1,0 +1,462 @@
+.player-shell {
+  width: 100vw;
+  height: 100vh;
+  background: #090b15;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.player-topbar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 24px;
+  border-bottom: 1px solid #111c2a;
+  flex-shrink: 0;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0d1522;
+  border: 1px solid #1e3048;
+  color: #94A3B8;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover:not(:disabled) {
+  border-color: #38BDF8;
+  color: #38BDF8;
+  background: #0f1c2e;
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn.paused {
+  border-color: #FBBF24;
+  color: #FBBF24;
+  background: #231908;
+}
+
+.control-btn.paused:hover {
+  background: #33240a;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+.control-btn.export-btn {
+  border-color: #34D399;
+  color: #34D399;
+}
+
+.control-btn.export-btn:hover:not(:disabled) {
+  border-color: #10B981;
+  color: #10B981;
+  background: #0a1f1a;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+}
+
+.control-btn.export-btn.exporting {
+  animation: pulse-export 1.5s infinite;
+}
+
+.control-btn.download-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-color: #475569;
+  color: #64748b;
+}
+
+.control-btn.download-btn.ready {
+  border-color: #3B82F6;
+  color: #3B82F6;
+  text-decoration: none;
+}
+
+.control-btn.download-btn.ready:hover {
+  border-color: #2563EB;
+  color: #2563EB;
+  background: #0f1929;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+}
+
+.duration-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #0d1522;
+  border: 1px solid #1e3048;
+  color: #94A3B8;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.duration-control select {
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #E2E8F0;
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.duration-control select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes pulse-export {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Audio Unlock Button Styles */
+.control-btn.audio-btn.locked {
+  border-color: #F59E0B;
+  color: #F59E0B;
+  background: #221508;
+}
+
+.control-btn.audio-btn.locked:hover:not(:disabled) {
+  border-color: #FBBF24;
+  color: #FBBF24;
+  background: #332208;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+}
+
+.control-btn.audio-btn.unlocked {
+  border-color: #10B981;
+  color: #10B981;
+  background: #052e20;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.control-btn.audio-btn.unlocked .control-icon {
+  animation: pulse-audio 2s infinite;
+}
+
+@keyframes pulse-audio {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.control-icon {
+  font-size: 12px;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid #1e3048;
+  color: #4a6080;
+  font-family: monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.back-btn:hover {
+  border-color: #4ADE80;
+  color: #4ADE80;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.player-category {
+  font-family: monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #2a4060;
+  text-transform: uppercase;
+}
+
+.player-title {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #c0ccd8;
+}
+
+.player-canvas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.player-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: #3a5070;
+  font-family: monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.loading-dot {
+  width: 10px;
+  height: 10px;
+  background: #4ADE80;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.3; transform: scale(0.8); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Export Progress Overlay
+   ───────────────────────────────────────────────────────────── */
+
+.export-progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(9, 11, 21, 0.95);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 60px;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.export-progress-container {
+  width: 90%;
+  max-width: 600px;
+  background: linear-gradient(135deg, #0d1522 0%, #111c2a 100%);
+  border: 1px solid #1e3a4c;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.export-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.export-title {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #e0e7ff;
+  letter-spacing: 0.5px;
+}
+
+.export-close-btn {
+  background: transparent;
+  border: 1px solid #374151;
+  color: #9ca3af;
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.export-close-btn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.progress-bar-container {
+  margin-bottom: 24px;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 32px;
+  background: #0f172a;
+  border: 1px solid #1e3a4c;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #34D399 0%, #10B981 100%);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  font-family: monospace;
+}
+
+.progress-percent {
+  font-size: 20px;
+  font-weight: 900;
+  color: #34D399;
+  letter-spacing: 1px;
+}
+
+.progress-phase {
+  font-size: 13px;
+  color: #94A3B8;
+  letter-spacing: 0.5px;
+}
+
+.export-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.error-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.error-message {
+  font-family: monospace;
+  font-size: 13px;
+  color: #fca5a5;
+  letter-spacing: 0.5px;
+}
+
+.export-success {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.success-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.success-message {
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #34D399;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.success-details {
+  font-family: monospace;
+  font-size: 12px;
+  color: #6EE7B7;
+  letter-spacing: 0.5px;
+}
+
+.export-logs {
+  background: #0f172a;
+  border: 1px solid #1e3a4c;
+  border-radius: 8px;
+  padding: 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.logs-label {
+  font-family: monospace;
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.logs-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.log-line {
+  font-family: monospace;
+  font-size: 11px;
+  color: #94A3B8;
+  letter-spacing: 0.5px;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+@keyframes pulse-export {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Scrollbar styling for logs
+   ───────────────────────────────────────────────────────────── */
+
+.export-logs::-webkit-scrollbar {
+  width: 6px;
+}
+
+.export-logs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.export-logs::-webkit-scrollbar-thumb {
+  background: #1e3a4c;
+  border-radius: 3px;
+}
+
+.export-logs::-webkit-scrollbar-thumb:hover {
+  background: #2d5a7b;
+}

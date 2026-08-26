@@ -1,0 +1,118 @@
+.content-list {
+  min-height: 100vh;
+  background: #090b15;
+  padding: 0 0 60px;
+  overflow-y: auto;
+}
+
+.list-header {
+  padding: 48px 48px 32px;
+  border-bottom: 1px solid #111c2a;
+}
+
+.list-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.brand-dot {
+  color: #4ADE80;
+  font-size: 14px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.brand-name {
+  font-family: monospace;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #4a6080;
+  text-transform: uppercase;
+}
+
+.history-link {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid #1e3048;
+  color: #4a6080;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-link:hover {
+  border-color: #38BDF8;
+  color: #38BDF8;
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.manage-link {
+  background: transparent;
+  border: 1px solid #1e3048;
+  color: #4a6080;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.manage-link:hover {
+  border-color: #34D399;
+  color: #34D399;
+  background: rgba(52, 211, 153, 0.05);
+}
+
+.list-tagline {
+  font-family: sans-serif;
+  font-size: 15px;
+  color: #2a3a50;
+  margin-top: 4px;
+}
+
+.list-section {
+  padding: 40px 48px 0;
+}
+
+.section-title {
+  font-family: monospace;
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #3a5070;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-dot { font-size: 10px; }
+.ready-dot   { color: #4ADE80; }
+.soon-dot    { color: #334455; }
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.list-footer {
+  text-align: center;
+  margin-top: 60px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #1e2d40;
+  letter-spacing: 1px;
+}

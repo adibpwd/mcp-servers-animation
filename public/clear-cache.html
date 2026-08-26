@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Audio Cache</title>
+</head>
+<body>
+    <h1>Audio Cache Cleared</h1>
+    <p>Please:</p>
+    <ol>
+        <li>Hard refresh this page: Ctrl+Shift+R (or Cmd+Shift+R on Mac)</li>
+        <li>Open DevTools (F12)</li>
+        <li>Go to Application tab → Clear storage → Clear site data</li>
+        <li>Then navigate back to: <a href="/virtual-memory">/virtual-memory</a></li>
+    </ol>
+    <script>
+        // Force clear cache for audio files
+        if ('caches' in window) {
+            caches.keys().then(names => {
+                names.forEach(name => caches.delete(name));
+                console.log('Cache cleared');
+            });
+        }
+    </script>
+</body>
+</html>

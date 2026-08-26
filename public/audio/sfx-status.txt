@@ -1,0 +1,53 @@
+SFX DOWNLOAD STATUS
+===================
+
+UI (5/6):
+✓ pop.wav
+✓ bounce.wav
+✓ chime.wav
+✓ beep.wav
+✓ plink.wav
+✗ sparkle.wav (optional)
+
+TRANSITIONS (4/6):
+✓ slide-in.wav
+✓ swoosh.wav
+✓ teleport.wav
+✓ glitch.wav
+✗ zoom.wav (optional)
+✗ drift.wav (optional)
+
+IMPACTS (4/5):
+✓ impact.wav
+✓ lock.wav
+✓ unlock.wav
+✓ swap.wav
+✗ disk-spin.wav (NEEDED)
+
+WARNINGS (4/6):
+✓ alert-pulse.wav
+✓ critical-alert.wav
+✓ error-beep.wav
+✓ page-fault.wav
+✗ error-hum.wav (NEEDED)
+✗ latency-tick.wav (NEEDED)
+
+SUCCESS (4/6):
+✓ victory.wav
+✓ confirm.wav
+✓ complete.wav
+✓ charge.wav
+✗ ssd-access.wav (NEEDED)
+✗ swap-in-complete.wav (NEEDED)
+
+SUMMARY:
+Downloaded: 21 files
+Missing (essential): 5 files
+Missing (optional): 3 files
+
+ESSENTIAL MISSING:
+- impacts/disk-spin.wav
+- warnings/error-hum.wav
+- warnings/latency-tick.wav
+- success/ssd-access.wav
+- success/swap-in-complete.wav

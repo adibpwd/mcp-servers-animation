@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Virtual Memory Icon Generator",
+  "version": "0.1.0",
+  "description": "Generate icons for Virtual Memory animation from ChatGPT",
+  "permissions": ["activeTab", "scripting", "storage", "debugger"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "VM Icon Generator"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"]
+    }
+  ]
+}

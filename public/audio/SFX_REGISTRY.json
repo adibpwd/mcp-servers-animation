@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "description": "Playful SFX Registry for Virtual Memory Animation",
+  "totalFiles": 26,
+  "categories": {
+    "ui": {
+      "description": "Playful UI interaction sounds",
+      "path": "/audio/ui/",
+      "sounds": {
+        "pop": "pop.wav",
+        "bounce": "bounce.wav",
+        "chime": "chime.wav",
+        "beep": "beep.wav",
+        "plink": "plink.wav"
+      }
+    },
+    "transitions": {
+      "description": "Movement and transition sounds",
+      "path": "/audio/transitions/",
+      "sounds": {
+        "slide-in": "slide-in.wav",
+        "swoosh": "swoosh.wav",
+        "teleport": "teleport.wav",
+        "glitch": "glitch.wav"
+      }
+    },
+    "impacts": {
+      "description": "Impact and physical interaction sounds",
+      "path": "/audio/impacts/",
+      "sounds": {
+        "impact": "impact.wav",
+        "lock": "lock.wav",
+        "unlock": "unlock.wav",
+        "swap": "swap.wav",
+        "disk-spin": "disk-spin.wav"
+      }
+    },
+    "warnings": {
+      "description": "Alert and warning sounds",
+      "path": "/audio/warnings/",
+      "sounds": {
+        "alert-pulse": "alert-pulse.wav",
+        "critical-alert": "critical-alert.wav",
+        "error-beep": "error-beep.wav",
+        "page-fault": "page-fault.wav",
+        "error-hum": "error-hum.wav",
+        "latency-tick": "latency-tick.wav"
+      }
+    },
+    "success": {
+      "description": "Positive feedback and success sounds",
+      "path": "/audio/success/",
+      "sounds": {
+        "victory": "victory.wav",
+        "confirm": "confirm.wav",
+        "complete": "complete.wav",
+        "charge": "charge.wav",
+        "ssd-access": "ssd-access.wav",
+        "swap-in-complete": "swap-in-complete.wav"
+      }
+    },
+    "sfx": {
+      "description": "Legacy/existing sound effects",
+      "path": "/audio/sfx/",
+      "sounds": {
+        "click": "click.wav",
+        "error": "error.wav",
+        "materialize": "materialize.wav",
+        "scan": "scan.wav",
+        "success": "success.wav",
+        "typing": "typing.wav",
+        "warning": "warning.wav",
+        "whoosh": "whoosh.wav"
+      }
+    }
+  },
+  "usage": {
+    "ACT1": ["pop", "bounce", "chime", "alert-pulse", "critical-alert", "error-beep"],
+    "ACT2": ["slide-in", "typing", "scan", "plink", "chime", "charge", "beep", "alert-pulse"],
+    "ACT3": ["critical-alert", "error-hum", "scan", "alert-pulse", "error-beep", "glitch", "swap", "teleport", "impact", "plink", "disk-spin", "unlock", "lock", "chime", "charge", "confirm"],
+    "ACT4": ["whoosh", "page-fault", "swap", "disk-spin", "ssd-access", "chime", "confirm", "latency-tick", "swap-in-complete", "victory", "success"]
+  }
+}
