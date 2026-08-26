@@ -28,7 +28,14 @@ export default function LinuxVsUnixAnimation({
 
   useEffect(() => {
     const svg = svgRef.current
-    if (!svg) return
+    const dotsLayer = dotsLayerRef.current
+    if (!svg || !dotsLayer) return
+
+    // Debug: Check all data arrays
+    console.log('[useEffect] UNIX_FAMILY:', UNIX_FAMILY)
+    console.log('[useEffect] LINUX_FAMILY:', LINUX_FAMILY)
+    console.log('[useEffect] UNIX_USE_CASES:', UNIX_USE_CASES)
+    console.log('[useEffect] LINUX_DOMINANCE:', LINUX_DOMINANCE)
 
     const master = gsap.timeline({
       repeat: -1,
@@ -215,7 +222,7 @@ export default function LinuxVsUnixAnimation({
     // Glow dots flow along cable
     for (let i = 0; i < 3; i++) {
       const dot = createGlowDot(
-        dotsLayerRef.current,
+        dotsLayer,
         WINDOWS_CORNER.x, WINDOWS_CORNER.y,
         LINUX_CLUSTER_CENTER.x + LINUX_POSITIONS.ubuntu.x,
         LINUX_CLUSTER_CENTER.y + LINUX_POSITIONS.ubuntu.y,
@@ -256,7 +263,7 @@ export default function LinuxVsUnixAnimation({
       // Glow dots flow through card
       for (let d = 0; d < 2; d++) {
         const dot = createGlowDot(
-          dotsLayerRef.current,
+          dotsLayer,
           100, yPos,
           700, yPos,
           '#06B6D4',
@@ -356,7 +363,8 @@ export default function LinuxVsUnixAnimation({
     }, 36.0)
 
     // Shared tools appear one by one
-    ['ls', 'grep', 'pipe', 'chmod'].forEach((tool, i) => {
+    const tools = ['ls', 'grep', 'pipe', 'chmod']
+    tools.forEach((tool, i) => {
       master.to(`#tool-${tool}`, {
         attr: { opacity: 1 }, duration: 0.3,
       }, 36.2 + i * 0.15)
