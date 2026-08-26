@@ -23,6 +23,7 @@ export default function LinuxVsUnixAnimation({
 }) {
   const svgRef = useRef(null)
   const dotsLayerRef = useRef(null)
+  const masterRef = useRef(null)
   const [phaseIdx, setPhaseIdx] = useState(0)
   const cableDotsRef = useRef([])
 
@@ -31,17 +32,14 @@ export default function LinuxVsUnixAnimation({
     const dotsLayer = dotsLayerRef.current
     if (!svg || !dotsLayer) return
 
-    // Debug: Check all data arrays
-    console.log('[useEffect] UNIX_FAMILY:', UNIX_FAMILY)
-    console.log('[useEffect] LINUX_FAMILY:', LINUX_FAMILY)
-    console.log('[useEffect] UNIX_USE_CASES:', UNIX_USE_CASES)
-    console.log('[useEffect] LINUX_DOMINANCE:', LINUX_DOMINANCE)
-
     const master = gsap.timeline({
       repeat: -1,
       repeatDelay: 1.5,
       onRepeat: () => setPhaseIdx(0),
+      paused: true, // Start paused, will be controlled by useEffect
     })
+    
+    masterRef.current = master
 
     // ═══════════════════════════════════════════════════════
     // PHASE 1: THE UNIX FAMILY DRAMA (0-12s)
@@ -388,6 +386,17 @@ export default function LinuxVsUnixAnimation({
       destroyDots(cableDotsRef.current)
     }
   }, [])
+
+  // Control timeline playback based on paused/speed props
+  useEffect(() => {
+    if (!masterRef.current) return
+    masterRef.current.timeScale(speed)
+    if (paused) {
+      masterRef.current.pause()
+    } else {
+      masterRef.current.resume()
+    }
+  }, [speed, paused])
 
   // ═══════════════════════════════════════════════════════
   // RENDER
