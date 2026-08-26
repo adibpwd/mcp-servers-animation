@@ -25,6 +25,8 @@ export default function LinuxVsUnixAnimation({
   const dotsLayerRef = useRef(null)
   const masterRef = useRef(null)
   const [phaseIdx, setPhaseIdx] = useState(0)
+  const [showIntro, setShowIntro] = useState(true)
+  const [morphP, setMorphP] = useState(0)
   const cableDotsRef = useRef([])
 
   useEffect(() => {
@@ -41,181 +43,200 @@ export default function LinuxVsUnixAnimation({
     
     masterRef.current = master
 
+    const INTRO_DURATION = 1.4
+    const at = (time) => time + INTRO_DURATION // Helper to offset all timings
+
+    let t = 0 // Timeline position tracker
+
     // ═══════════════════════════════════════════════════════
-    // PHASE 1: THE UNIX FAMILY DRAMA (0-12s)
+    // INTRO MORPH (0-1.4s)
+    // ═══════════════════════════════════════════════════════
+
+    const mo = { p: 0 }
+    master.add(() => { setShowIntro(true); setMorphP(0) }, 0)
+    master.to(mo, {
+      p: 1,
+      duration: 0.8,
+      ease: 'power3.inOut',
+      onUpdate: () => setMorphP(mo.p)
+    }, 0.3)
+    master.add(() => setShowIntro(false), 1.1)
+
+    // ═══════════════════════════════════════════════════════
+    // PHASE 1: THE UNIX FAMILY DRAMA (0-12s from original, offset by intro)
     // ═══════════════════════════════════════════════════════
 
     // --- Beat 1: The Family Portrait (0-3s) ---
 
-    master.add(() => setPhaseIdx(0), 0)
+    master.add(() => setPhaseIdx(0), at(0))
 
     // 1. POSIX Hub appears
     master.to('#posix-hub-inner', {
       scale: 1, duration: 0.6, ease: 'back.out(1.7)',
-    }, 0)
+    }, at(0))
     master.to('#posix-hub', {
       attr: { opacity: 1 }, duration: 0.6,
-    }, 0)
+    }, at(0))
 
     // 2. Unix family appears
     UNIX_FAMILY?.forEach((os, i) => {
       master.to(`#node-${os.id}`, {
         attr: { opacity: 1 }, duration: 0.3,
-      }, 0.3 + i * 0.15)
+      }, at(0.3 + i * 0.15))
       master.to(`#node-${os.id}-inner`, {
         scale: 1, duration: 0.4, ease: 'back.out(1.7)',
-      }, 0.3 + i * 0.15)
+      }, at(0.3 + i * 0.15))
     })
 
     // 3. Linux family appears
     LINUX_FAMILY?.forEach((os, i) => {
       master.to(`#node-${os.id}`, {
         attr: { opacity: 1 }, duration: 0.3,
-      }, 0.8 + i * 0.15)
+      }, at(0.8 + i * 0.15))
       master.to(`#node-${os.id}-inner`, {
         scale: 1, duration: 0.4, ease: 'back.out(1.7)',
-      }, 0.8 + i * 0.15)
+      }, at(0.8 + i * 0.15))
     })
 
     // 4. Connector lines appear
     UNIX_FAMILY?.forEach((os, i) => {
       master.to(`#conn-unix-${os.id}`, {
         attr: { opacity: 0.6 }, duration: 0.3,
-      }, 1.5 + i * 0.08)
+      }, at(1.5) + i * 0.08)
     })
     LINUX_FAMILY?.forEach((os, i) => {
       master.to(`#conn-linux-${os.id}`, {
         attr: { opacity: 0.6 }, duration: 0.3,
-      }, 1.8 + i * 0.08)
+      }, at(1.8) + i * 0.08)
     })
 
     // 5. Windows appears
     master.to('#node-windows', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, 2.0)
+    }, at(2.0))
     master.to('#node-windows-inner', {
       scale: 1, duration: 0.5, ease: 'back.out(1.7)',
-    }, 2.0)
+    }, at(2.0))
 
     // Windows connector: stretch then snap
     master.to('#conn-windows-posix', {
       attr: { x2: 480, y2: 480, opacity: 0.8 }, duration: 0.3,
-    }, 2.3)
+    }, at(2.3))
     master.to('#conn-windows-posix', {
       attr: { opacity: 0 }, duration: 0.1,
-    }, 2.6)
+    }, at(2.6))
 
     // Question mark
     master.to('#windows-question', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, 2.5)
+    }, at(2.5))
 
     // --- Beat 2: The Expulsion (3-6s) ---
 
     // Flash effect at break point
     master.to('#expel-flash', {
       attr: { opacity: 1 }, duration: 0.05,
-    }, 3.0)
+    }, at(3.0))
     master.to('#expel-flash', {
       attr: { opacity: 0 }, duration: 0.3,
-    }, 3.05)
+    }, at(3.05))
 
     // Windows wobble
     master.to('#node-windows-inner', {
       rotation: 15, duration: 0.08,
       yoyo: true, repeat: 5, ease: 'power1.inOut',
-    }, 3.5)
+    }, at(3.5))
 
     // Windows question disappears
     master.to('#windows-question', {
       attr: { opacity: 0 }, duration: 0.2,
-    }, 3.5)
+    }, at(3.5))
 
     // Windows gets pushed to corner
     master.to('#node-windows', {
       x: WINDOWS_CORNER.x - 410,
       y: WINDOWS_CORNER.y - 550,
       duration: 0.8, ease: 'back.out(1.4)',
-    }, 4.0)
+    }, at(4.0))
     master.to('#node-windows-inner', {
       rotation: -15, duration: 0.8, ease: 'back.out(1.4)',
-    }, 4.0)
+    }, at(4.0))
 
     // "NOT UNIX" label appears
     master.to('#not-unix-label', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, 5.0)
+    }, at(5.0))
 
     // All connectors redraw
     master.to('.connector-unix, .connector-linux', {
       attr: { opacity: 0.8 }, duration: 0.3,
-    }, 4.5)
+    }, at(4.5))
 
     // --- Beat 3: The Loneliness (6-9s) ---
 
     // NT Kernel label appears
     master.to('#nt-kernel-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, 6.5)
+    }, at(6.5))
 
     // Windows sad — drops slightly
     master.to('#node-windows', {
       y: `+=${15}`, duration: 0.5, ease: 'power2.out',
-    }, 6.3)
+    }, at(6.3))
 
     // Thought bubble appears
     master.to('#thought-bubble', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, 7.5)
+    }, at(7.5))
     master.to('#thought-bubble-inner', {
       scale: 1, duration: 0.5, ease: 'back.out(1.7)',
-    }, 7.5)
+    }, at(7.5))
 
     // Bubble wiggle
     master.to('#thought-bubble', {
       x: 5, duration: 0.2, yoyo: true, repeat: 3, ease: 'power1.inOut',
-    }, 8.2)
+    }, at(8.2))
 
     // --- Beat 4: The WSL Bridge (9-12s) ---
 
     // Thought bubble pops
     master.to('#thought-bubble-inner', {
       scale: 1.3, duration: 0.2, ease: 'power2.in',
-    }, 9.0)
+    }, at(9.0))
     master.to('#thought-bubble', {
       attr: { opacity: 0 }, duration: 0.3,
-    }, 9.1)
+    }, at(9.1))
 
     // WSL label appears
     master.to('#wsl-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, 9.3)
+    }, at(9.3))
 
     // Cable draws from Windows up to Linux
     master.to('#wsl-cable', {
       strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut',
-    }, 9.5)
+    }, at(9.5))
     master.to('#wsl-cable-glow', {
       strokeDashoffset: 0, attr: { opacity: 0.6 }, duration: 1.2, ease: 'power2.inOut',
-    }, 9.5)
+    }, at(9.5))
 
     // Connection flash
     master.to('#connect-flash', {
       attr: { opacity: 1 }, duration: 0.05,
-    }, 10.8)
+    }, at(10.8))
     master.to('#connect-flash', {
       attr: { opacity: 0 }, duration: 0.4,
-    }, 10.85)
+    }, at(10.85))
 
     // Windows happy — bounce up
     master.to('#node-windows', {
       y: '-=20', duration: 0.3, ease: 'power2.out',
-    }, 11.0)
+    }, at(11.0))
 
     // Ubuntu moves closer to cable
     master.to('#node-ubuntu', {
       x: '+=30', duration: 0.4, ease: 'power2.out',
-    }, 11.0)
+    }, at(11.0))
 
     // Glow dots flow along cable
     for (let i = 0; i < 3; i++) {
@@ -233,7 +254,7 @@ export default function LinuxVsUnixAnimation({
     // Caption
     master.to('#phase1-caption', {
       attr: { opacity: 1 }, duration: 0.5,
-    }, 11.5)
+    }, at(11.5))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 1 HOLD + FADE OUT (12-13s)
@@ -241,7 +262,7 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase1-group', {
       attr: { opacity: 0 }, duration: 0.5,
-    }, 12.0)
+    }, at(12.0))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 2: WHERE UNIX LIVES (13-23s)
@@ -256,7 +277,7 @@ export default function LinuxVsUnixAnimation({
         attr: { opacity: 1 },
         x: 0,
         duration: 0.5, ease: 'power2.out',
-      }, 13 + i * 0.4)
+      }, at(13) + i * 0.4)
 
       // Glow dots flow through card
       for (let d = 0; d < 2; d++) {
@@ -274,7 +295,7 @@ export default function LinuxVsUnixAnimation({
     // Phase 2 caption
     master.to('#phase2-caption', {
       attr: { opacity: 1 }, duration: 0.5,
-    }, 22.0)
+    }, at(22.0))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 2 FADE OUT + PHASE 3 SETUP (23-24s)
@@ -282,7 +303,7 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase2-group', {
       attr: { opacity: 0 }, duration: 0.5,
-    }, 22.5)
+    }, at(22.5))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 3: LINUX DOMINANCE (24-34s)
@@ -323,7 +344,7 @@ export default function LinuxVsUnixAnimation({
     // Phase 3 caption
     master.to('#phase3-caption', {
       attr: { opacity: 1 }, duration: 0.5,
-    }, 33.0)
+    }, at(33.0))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 3 FADE OUT + PHASE 4 SETUP (34-35s)
@@ -331,7 +352,7 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase3-group', {
       attr: { opacity: 0 }, duration: 0.5,
-    }, 33.5)
+    }, at(33.5))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 4: POSIX BROTHERS (35-40s)
@@ -342,36 +363,36 @@ export default function LinuxVsUnixAnimation({
     // Venn diagram circles appear
     master.to('#venn-linux', {
       r: 80, duration: 0.8, ease: 'back.out(1.7)',
-    }, 35)
+    }, at(35))
     master.to('#venn-unix', {
       r: 80, duration: 0.8, ease: 'back.out(1.7)',
-    }, 35.2)
+    }, at(35.2))
 
     // Labels fade in
     master.to('#venn-linux-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, 35.5)
+    }, at(35.5))
     master.to('#venn-unix-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, 35.7)
+    }, at(35.7))
 
     // POSIX label in overlap
     master.to('#venn-posix-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, 36.0)
+    }, at(36.0))
 
     // Shared tools appear one by one
     const tools = ['ls', 'grep', 'pipe', 'chmod']
     tools.forEach((tool, i) => {
       master.to(`#tool-${tool}`, {
         attr: { opacity: 1 }, duration: 0.3,
-      }, 36.2 + i * 0.15)
+      }, at(36.2) + i * 0.15)
     })
 
     // Phase 4 caption
     master.to('#phase4-caption', {
       attr: { opacity: 1 }, duration: 0.5,
-    }, 37.5)
+    }, at(37.5))
 
     // ═══════════════════════════════════════════════════════
     // OUTRO FADE OUT (40s)
@@ -379,7 +400,7 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase4-group', {
       attr: { opacity: 0 }, duration: 0.5,
-    }, 39.5)
+    }, at(39.5))
 
     return () => {
       master.kill()
@@ -427,12 +448,75 @@ export default function LinuxVsUnixAnimation({
           <stop offset="0%" stopColor="#22D3EE" stopOpacity="0.8" />
           <stop offset="100%" stopColor="#22D3EE" stopOpacity="0" />
         </radialGradient>
+        <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#06B6D4" />
+          <stop offset="50%" stopColor="#3B82F6" />
+          <stop offset="100%" stopColor="#8B5CF6" />
+        </linearGradient>
       </defs>
+
+      {/* ═══════════════════════════════════════════════════════
+          HEADER WITH INTRO MORPH
+          ═══════════════════════════════════════════════════════ */}
+      
+      {(() => {
+        const mp = morphP
+        const lerp = (a, b, t) => a + (b - a) * t
+        
+        const taglineX = lerp(44, VW/2, mp)
+        const tyY = lerp(580, 30, mp)
+        const tyFs = lerp(22, 16, mp)
+        const txX = 44
+        const txY = lerp(660, 80, mp)
+        const txFs = lerp(80, 50, mp)
+        const subX = 44
+        const subY = lerp(740, 115, mp)
+        const subFs = lerp(26, 18, mp)
+        
+        return (
+          <g>
+            <text 
+              x={taglineX} 
+              y={tyY} 
+              textAnchor={mp < 0.5 ? "start" : "middle"}
+              fill="#64748B" 
+              fontSize={tyFs} 
+              fontFamily="monospace" 
+              letterSpacing={3}
+            >
+              LINUX CORE · <tspan fill="#06B6D4" fontWeight={700}>ADIB-DEV.COM</tspan>
+            </text>
+            <text x={txX} y={txY} textAnchor="start" fill="url(#headerGrad)"
+              fontSize={txFs} fontFamily="'Arial Black', Impact, sans-serif" fontWeight={900} letterSpacing={1}>
+              LINUX vs UNIX
+            </text>
+            <text x={subX} y={subY} textAnchor="start" fill="#94A3B8" fontSize={subFs} fontFamily="sans-serif" fontWeight={500}>
+              Sama-sama <tspan fill="#06B6D4" fontFamily="monospace" fontWeight={700}>POSIX</tspan>, tapi <tspan fill="#3B82F6" fontFamily="monospace" fontWeight={700}>beda kernel</tspan> — siapa yang menang?
+            </text>
+          </g>
+        )
+      })()}
+
+      {/* ═══════════════════════════════════════════════════════
+          PHASE BADGE
+          ═══════════════════════════════════════════════════════ */}
+      
+      {!showIntro && (
+        <g transform={`translate(${VW/2}, 180)`}>
+          <rect x={-120} y={-20} width={240} height={40} rx={20}
+            fill={PHASES[phaseIdx].badgeColor} opacity={0.15} />
+          <text x={0} y={5} textAnchor="middle" fill={PHASES[phaseIdx].badgeColor}
+            fontSize={14} fontFamily="monospace" fontWeight={700} letterSpacing={2}>
+            {PHASES[phaseIdx].badge}
+          </text>
+        </g>
+      )}
 
       {/* ═══════════════════════════════════════════════════════
           PHASE 1: UNIX FAMILY DRAMA
           ═══════════════════════════════════════════════════════ */}
 
+      {!showIntro && (
       <g id="phase1-group">
 
         {/* Cluster labels */}
@@ -642,11 +726,13 @@ export default function LinuxVsUnixAnimation({
         </g>
 
       </g>
+      )}
 
       {/* ═══════════════════════════════════════════════════════
           PHASE 2: WHERE UNIX LIVES
           ═══════════════════════════════════════════════════════ */}
 
+      {!showIntro && (
       <g id="phase2-group" opacity={0}>
 
         {/* Use Case Cards */}
@@ -682,11 +768,13 @@ export default function LinuxVsUnixAnimation({
         </g>
 
       </g>
+      )}
 
       {/* ═══════════════════════════════════════════════════════
           PHASE 3: LINUX DOMINANCE
           ═══════════════════════════════════════════════════════ */}
 
+      {!showIntro && (
       <g id="phase3-group" opacity={0}>
 
         {/* Bar Charts */}
@@ -725,11 +813,13 @@ export default function LinuxVsUnixAnimation({
         </g>
 
       </g>
+      )}
 
       {/* ═══════════════════════════════════════════════════════
           PHASE 4: POSIX BROTHERS
           ═══════════════════════════════════════════════════════ */}
 
+      {!showIntro && (
       <g id="phase4-group" opacity={0}>
 
         {/* Venn Diagram */}
@@ -768,6 +858,7 @@ export default function LinuxVsUnixAnimation({
         </g>
 
       </g>
+      )}
 
       {/* Glow Dots Layer */}
       <g ref={dotsLayerRef} filter="url(#dotGlow)" />
