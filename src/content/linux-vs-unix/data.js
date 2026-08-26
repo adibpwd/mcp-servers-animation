@@ -113,3 +113,110 @@ export const LINUX_DOMINANCE = [
   { category: 'Mobile (Android)', linux: 72,   unix: 28 },
   { category: 'Desktop',          linux: 4,    unix: 15 },
 ]
+
+// ═══════════════════════════════════════════════════════════
+// ANIMATION TIMING CONSTANTS
+// ═══════════════════════════════════════════════════════════
+
+export const TIMING = {
+  PHASE1_NODE_SPAWN_STAGGER: 0.6,
+  PHASE1_NODE_SPAWN_DURATION: 0.5,
+  PHASE1_CONNECTOR_DRAW_DURATION: 0.4,
+  PHASE2_CARD_STAGGER: 2.5,
+  PHASE2_CARD_DURATION: 0.6,
+  PHASE3_BAR_STAGGER: 2.0,
+  PHASE3_BAR_DURATION: 1.2,
+}
+
+// ═══════════════════════════════════════════════════════════
+// SPAWN PATHS (for playful node entrance animations)
+// ═══════════════════════════════════════════════════════════
+
+export const SPAWN_PATHS = {
+  // Unix nodes spawn from left/top
+  hpux:    { startX: -200, startY: 300 },
+  aix:     { startX: -150, startY: 150 },
+  solaris: { startX: -200, startY: 500 },
+  freebsd: { startX: 100, startY: -100 },
+  macos:   { startX: -100, startY: 100 },
+  
+  // Linux nodes spawn from right
+  android: { startX: 900, startY: 200 },
+  ubuntu:  { startX: 900, startY: 400 },
+  fedora:  { startX: 900, startY: 500 },
+  arch:    { startX: 900, startY: 600 },
+  debian:  { startX: 900, startY: 700 },
+}
+
+// ═══════════════════════════════════════════════════════════
+// CAPTION TEXTS (storytelling)
+// ═══════════════════════════════════════════════════════════
+
+export const CAPTIONS = {
+  PHASE1: {
+    BELL_LABS: "1970, Unix lahir di Bell Labs...",
+    HPUX: "1984: HP-UX untuk server enterprise",
+    AIX: "1986: IBM AIX untuk mainframe",
+    SOLARIS: "1992: Solaris untuk mission-critical",
+    FREEBSD: "1993: FreeBSD untuk networking",
+    MACOS: "2001: macOS - Unix jadi elegan!",
+    POSIX_CONNECTED: "Semua terhubung ke POSIX standard...",
+    LINUX_INTRO: "1991, Linus Torvalds: 'I'm doing a free OS...'",
+    ANDROID: "Android! 72% smartphone dunia!",
+    UBUNTU: "Ubuntu!",
+    LINUX_FAMILY: "Fedora! Arch! Debian!",
+    WINDOWS_WANTS: "Windows: 'Aku juga mau POSIX!'",
+    WINDOWS_REJECTED: "Ditolak! NT Kernel bukan Unix...",
+    WINDOWS_EXPELLED: "Windows diasingkan...",
+    WSL_ARRIVES: "2016, Windows bikin WSL...",
+    WSL_SUCCESS: "Sekarang bisa jalankan Linux di Windows!"
+  },
+  PHASE2: {
+    INTRO: "Unix sekarang di mana?",
+    MAINFRAME: "Bank & Asuransi masih pakai AIX di mainframe!",
+    ENTERPRISE: "Database Oracle & mission-critical apps!",
+    NETWORK: "Router & firewall dunia pakai Unix-based OS!",
+    PERSONAL: "Developer workstation & NAS server!",
+    OUTRO: "Unix masih everywhere - just invisible!"
+  },
+  PHASE3: {
+    INTRO: "Tapi Linux... DOMINASI!",
+    SERVERS: "96.3% web server pakai Linux!",
+    CLOUD: "AWS, Google Cloud, Azure... semua Linux!",
+    SUPERCOMPUTERS: "100% TOP500 supercomputer = Linux!",
+    MOBILE: "Android (Linux) = 72% smartphone!",
+    DESKTOP: "Desktop? Cuma 4%... tapi siapa peduli? 😅",
+    OUTRO: "Linux ate the world!"
+  },
+  PHASE4: {
+    INTRO: "Tapi... mereka tetap saudara!",
+    VENN: "Sama-sama POSIX compliant",
+    TOOLS: "Shared tools: ls, grep, pipes, chmod...",
+    OUTRO: "Different roots, same POSIX DNA"
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SOUND EFFECT NAMES (reference to audio files)
+// ═══════════════════════════════════════════════════════════
+
+export const SFX = {
+  NODE_SPAWN: 'pop',
+  NODE_LAND: 'bounce',
+  ALL_NODES_COMPLETE: 'chime',
+  CONNECTOR_DRAW: 'tick',
+  CONNECTOR_COMPLETE: 'whoosh',
+  LINUX_DRAMATIC_ENTER: 'swoosh',
+  ANDROID_IMPACT: 'impact',
+  WINDOWS_REJECTED: 'error-beep',
+  WINDOWS_EXPELLED: 'glitch',
+  WSL_CABLE: 'swoosh-2',
+  WSL_SUCCESS: 'shimmer',
+  CARD_ENTER: 'slide-in',
+  CARD_COMPLETE: 'ding',
+  BAR_GROW: 'charge',
+  BAR_COMPLETE: 'confirm',
+  BAR_100_VICTORY: 'victory',
+  DESKTOP_SAD: 'plink',
+  PHASE_COMPLETE: 'complete'
+}
