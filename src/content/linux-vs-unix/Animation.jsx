@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { createGlowDot, destroyDots } from '../../shared/GlowDot'
 import sfxLoader from './sfx-loader'
 import {
   VW, VH, PHASES,
@@ -26,9 +25,7 @@ export default function LinuxVsUnixAnimation({
   audioUnlocked = false,
 }) {
   const svgRef = useRef(null)
-  const dotsLayerRef = useRef(null)
   const masterRef = useRef(null)
-  const cableDotsRef = useRef([])
   
   // Phase tracking
   const [phaseIdx, setPhaseIdx] = useState(0)
@@ -82,8 +79,7 @@ export default function LinuxVsUnixAnimation({
 
   useEffect(() => {
     const svg = svgRef.current
-    const dotsLayer = dotsLayerRef.current
-    if (!svg || !dotsLayer) return
+    if (!svg) return
 
     const master = gsap.timeline({
       repeat: -1,
@@ -410,18 +406,7 @@ export default function LinuxVsUnixAnimation({
       attr: { opacity: 1 }, duration: 0.5,
     }, wslTime + 4.5)
     
-    // Glow dots flow along WSL cable
-    for (let i = 0; i < 5; i++) {
-      const ubuntuPos = getAbsPos(LINUX_CLUSTER_CENTER, LINUX_POSITIONS.ubuntu)
-      const dot = createGlowDot(
-        dotsLayer,
-        WINDOWS_CORNER.x, WINDOWS_CORNER.y,
-        ubuntuPos.x, ubuntuPos.y,
-        '#22D3EE',
-        wslTime + 2.7 + i * 0.3, 1.5, 0
-      )
-      cableDotsRef.current.push(dot)
-    }
+    // Removed: Glow dots flow along WSL cable (too many particles floating around)
 
     // ═══════════════════════════════════════════════════════
     // PHASE 1 FADE OUT (around 17-18s)
@@ -446,17 +431,7 @@ export default function LinuxVsUnixAnimation({
         duration: 0.5, ease: 'power2.out',
       }, at(13) + i * 0.4)
 
-      // Glow dots flow through card
-      for (let d = 0; d < 2; d++) {
-        const dot = createGlowDot(
-          dotsLayer,
-          100, yPos,
-          700, yPos,
-          '#06B6D4',
-          13.5 + i * 0.4 + d * 0.8, 1.2, 0
-        )
-        cableDotsRef.current.push(dot)
-      }
+      // Removed: Glow dots flow through card (too many particles)
     })
 
     // Phase 2 caption
@@ -571,7 +546,6 @@ export default function LinuxVsUnixAnimation({
 
     return () => {
       master.kill()
-      destroyDots(cableDotsRef.current)
     }
   }, [])
 
@@ -1087,8 +1061,6 @@ export default function LinuxVsUnixAnimation({
       </g>
       )}
 
-      {/* Glow Dots Layer */}
-      <g ref={dotsLayerRef} filter="url(#dotGlow)" />
     </svg>
   )
 }
