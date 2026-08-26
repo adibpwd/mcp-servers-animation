@@ -680,10 +680,60 @@ export default function LinuxVsUnixAnimation({
       )}
 
       {/* ═══════════════════════════════════════════════════════
-          PHASE 1: UNIX FAMILY DRAMA
+          FIXED CAPTION (SUBTITLE)
+          ═══════════════════════════════════════════════════════ */}
+      
+      {!showIntro && caption && (
+        <g transform="translate(410, 1250)">
+          <rect 
+            x={-400} y={-25} width={800} height={50} 
+            rx={8}
+            fill="#000000" 
+            opacity={0.7} 
+          />
+          <text 
+            x={0} y={5} 
+            textAnchor="middle" 
+            fill={captionColor}
+            fontSize={16} 
+            fontFamily="sans-serif"
+            fontWeight={500}
+          >
+            {caption}
+          </text>
+        </g>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
+          THOUGHT BUBBLE
+          ═══════════════════════════════════════════════════════ */}
+      
+      {thoughtBubble.visible && (
+        <g transform={`translate(${thoughtBubble.x}, ${thoughtBubble.y - 80})`}>
+          <g id="thought-bubble-inner-content">
+            {/* Bubble */}
+            <ellipse cx={0} cy={0} rx={60} ry={40} 
+              fill="#1E293B" stroke="#64748B" strokeWidth={2} opacity={0.95} />
+            
+            {/* Tail circles */}
+            <circle cx={-20} cy={30} r={8} fill="#1E293B" opacity={0.9} />
+            <circle cx={-10} cy={42} r={5} fill="#1E293B" opacity={0.85} />
+            
+            {/* Text */}
+            <text x={0} y={8} textAnchor="middle" fill="#94A3B8"
+              fontSize={16} fontFamily="sans-serif">
+              {thoughtBubble.text}
+            </text>
+          </g>
+        </g>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
+          PHASE 1: UNIX FAMILY DRAMA (with canvas shake)
           ═══════════════════════════════════════════════════════ */}
 
       {!showIntro && (
+      <g transform={`translate(${canvasShake * (Math.random()-0.5) * 4}, ${canvasShake * (Math.random()-0.5) * 4})`}>
       <g id="phase1-group">
 
         {/* Cluster labels */}
@@ -724,8 +774,17 @@ export default function LinuxVsUnixAnimation({
           />
         </g>
 
-        {/* POSIX Hub */}
+        {/* POSIX Hub with pulse */}
         <g id="posix-hub" opacity={0} transform={`translate(${POSIX_HUB.x}, ${POSIX_HUB.y})`}>
+          {/* Outer pulse glow */}
+          <circle 
+            cx={0} cy={0} 
+            r={50 + hubPulse * 20} 
+            fill="#06B6D4" 
+            opacity={hubPulse * 0.3} 
+            filter="url(#dotGlow)"
+          />
+          
           <g id="posix-hub-inner" style={{ transformOrigin: '0px 0px', scale: 0 }}>
             <circle cx={0} cy={0} r={55} fill="#06B6D4" opacity={0.15} />
             <circle cx={0} cy={0} r={40} fill="#06B6D4" opacity={0.25} />
@@ -892,6 +951,7 @@ export default function LinuxVsUnixAnimation({
           >Different roots, but connected</text>
         </g>
 
+      </g>
       </g>
       )}
 
