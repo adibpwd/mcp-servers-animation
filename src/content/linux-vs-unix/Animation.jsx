@@ -117,198 +117,314 @@ export default function LinuxVsUnixAnimation({
     // PHASE 1: THE UNIX FAMILY DRAMA (0-12s from original, offset by intro)
     // ═══════════════════════════════════════════════════════
 
-    // --- Beat 1: The Family Portrait (0-3s) ---
+    // --- Beat 1: Bell Labs Origins (0-2s) ---
 
-    master.add(() => setPhaseIdx(0), at(0))
+    master.add(() => {
+      setPhaseIdx(0)
+      setCaption(CAPTIONS.PHASE1.BELL_LABS)
+    }, at(0))
 
-    // 1. POSIX Hub appears
+    // 1. POSIX Hub appears with pulse
+    const hubPulseObj = { v: 0 }
+    master.to(hubPulseObj, {
+      v: 1, duration: 0.8, ease: 'power2.out',
+      onUpdate: () => setHubPulse(hubPulseObj.v)
+    }, at(0))
+    
     master.to('#posix-hub-inner', {
       scale: 1, duration: 0.6, ease: 'back.out(1.7)',
+      onStart: () => sfxLoader.transition(SFX.CONNECTOR_COMPLETE, { volume, speed })
     }, at(0))
     master.to('#posix-hub', {
       attr: { opacity: 1 }, duration: 0.6,
     }, at(0))
+    
+    master.to(hubPulseObj, {
+      v: 0.6, duration: 0.8, ease: 'power2.in',
+      onUpdate: () => setHubPulse(hubPulseObj.v)
+    }, at(0.8))
 
-    // 2. Unix family appears
-    UNIX_FAMILY?.forEach((os, i) => {
-      master.to(`#node-${os.id}`, {
+    // 2. Unix family appears with playful spawning
+    const unixSpawnOrder = ['hpux', 'aix', 'solaris', 'freebsd', 'macos']
+    unixSpawnOrder.forEach((osId, i) => {
+      const spawnTime = at(2) + i * TIMING.PHASE1_NODE_SPAWN_STAGGER
+      const os = UNIX_FAMILY.find(o => o.id === osId)
+      
+      // Caption update
+      master.add(() => {
+        const captionKey = osId.toUpperCase()
+        setCaption(CAPTIONS.PHASE1[captionKey] || `${os.name} muncul!`)
+      }, spawnTime)
+      
+      // Node appears with sound
+      master.to(`#node-${osId}`, {
         attr: { opacity: 1 }, duration: 0.3,
-      }, at(0.3 + i * 0.15))
-      master.to(`#node-${os.id}-inner`, {
+        onStart: () => sfxLoader.ui(SFX.NODE_SPAWN, { volume, speed })
+      }, spawnTime)
+      
+      master.to(`#node-${osId}-inner`, {
         scale: 1, duration: 0.4, ease: 'back.out(1.7)',
-      }, at(0.3 + i * 0.15))
+        onComplete: () => sfxLoader.ui(SFX.NODE_LAND, { volume: volume * 0.7, speed })
+      }, spawnTime)
+    })
+    
+    // All Unix nodes complete
+    const unixCompleteTime = at(2) + unixSpawnOrder.length * TIMING.PHASE1_NODE_SPAWN_STAGGER + 0.5
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.POSIX_CONNECTED)
+      sfxLoader.ui(SFX.ALL_NODES_COMPLETE, { volume, speed })
+    }, unixCompleteTime)
+
+    // 3. Linux family arrives dramatically
+    const linuxStartTime = at(5.5)
+    
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.LINUX_INTRO)
+    }, linuxStartTime)
+    
+    // Android dramatic entrance with shake
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.ANDROID)
+      
+      // Canvas shake
+      const shakeObj = { v: 0 }
+      master.to(shakeObj, {
+        v: 5, duration: 0.1,
+        onUpdate: () => setCanvasShake(shakeObj.v)
+      }, linuxStartTime + 0.5)
+      master.to(shakeObj, {
+        v: 0, duration: 0.3, ease: 'power2.out',
+        onUpdate: () => setCanvasShake(shakeObj.v)
+      }, linuxStartTime + 0.6)
+      
+      // SFX
+      sfxLoader.impact(SFX.ANDROID_IMPACT, { volume: volume * 0.8, speed })
+      sfxLoader.transition(SFX.LINUX_DRAMATIC_ENTER, { volume, speed, delay: 0.05 })
+    }, linuxStartTime + 0.5)
+    
+    master.to('#node-android', {
+      attr: { opacity: 1 }, duration: 0.3,
+    }, linuxStartTime + 0.5)
+    master.to('#node-android-inner', {
+      scale: 1, duration: 0.5, ease: 'back.out(1.7)',
+    }, linuxStartTime + 0.5)
+    
+    // Other Linux nodes
+    const otherLinux = ['ubuntu', 'fedora', 'arch', 'debian']
+    otherLinux.forEach((osId, i) => {
+      const spawnTime = linuxStartTime + 1.2 + i * 0.4
+      
+      master.to(`#node-${osId}`, {
+        attr: { opacity: 1 }, duration: 0.3,
+        onStart: () => sfxLoader.ui(SFX.NODE_SPAWN, { volume: volume * 0.7, speed })
+      }, spawnTime)
+      master.to(`#node-${osId}-inner`, {
+        scale: 1, duration: 0.4, ease: 'back.out(1.7)',
+        onComplete: () => sfxLoader.ui(SFX.NODE_LAND, { volume: volume * 0.5, speed })
+      }, spawnTime)
     })
 
-    // 3. Linux family appears
-    LINUX_FAMILY?.forEach((os, i) => {
-      master.to(`#node-${os.id}`, {
-        attr: { opacity: 1 }, duration: 0.3,
-      }, at(0.8 + i * 0.15))
-      master.to(`#node-${os.id}-inner`, {
-        scale: 1, duration: 0.4, ease: 'back.out(1.7)',
-      }, at(0.8 + i * 0.15))
-    })
-
-    // 4. Connector lines appear
+    // 4. Connector lines appear with sound
+    const connectorTime = at(8)
     UNIX_FAMILY?.forEach((os, i) => {
       master.to(`#conn-unix-${os.id}`, {
         attr: { opacity: 0.6 }, duration: 0.3,
-      }, at(1.5) + i * 0.08)
+        onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.4, speed })
+      }, connectorTime + i * 0.08)
     })
     LINUX_FAMILY?.forEach((os, i) => {
       master.to(`#conn-linux-${os.id}`, {
         attr: { opacity: 0.6 }, duration: 0.3,
-      }, at(1.8) + i * 0.08)
+        onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.4, speed })
+      }, connectorTime + 0.3 + i * 0.08)
     })
+    
+    master.add(() => {
+      sfxLoader.transition(SFX.CONNECTOR_COMPLETE, { volume, speed })
+    }, connectorTime + 0.8)
 
-    // 5. Windows appears
+    // 5. Windows appears with drama
+    const windowsTime = at(9)
+    
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.WINDOWS_WANTS)
+      setThoughtBubble({
+        visible: true,
+        text: 'POSIX? 🤔',
+        x: 410,
+        y: 480
+      })
+    }, windowsTime)
+    
     master.to('#node-windows', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, at(2.0))
+    }, windowsTime)
     master.to('#node-windows-inner', {
       scale: 1, duration: 0.5, ease: 'back.out(1.7)',
-    }, at(2.0))
+    }, windowsTime)
 
     // Windows connector: stretch then snap
     master.to('#conn-windows-posix', {
       attr: { x2: 480, y2: 480, opacity: 0.8 }, duration: 0.3,
-    }, at(2.3))
+    }, windowsTime + 0.8)
     master.to('#conn-windows-posix', {
       attr: { opacity: 0 }, duration: 0.1,
-    }, at(2.6))
+      onStart: () => sfxLoader.warning(SFX.WINDOWS_REJECTED, { volume: volume * 0.8, speed })
+    }, windowsTime + 1.3)
 
     // Question mark
     master.to('#windows-question', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, at(2.5))
+    }, windowsTime + 0.5)
 
     // --- Beat 2: The Expulsion (3-6s) ---
+    
+    const rejectTime = at(10.5)
+    
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.WINDOWS_REJECTED)
+      setThoughtBubble(prev => ({ ...prev, text: 'POSIX? ❌' }))
+    }, rejectTime)
 
     // Flash effect at break point
     master.to('#expel-flash', {
       attr: { opacity: 1 }, duration: 0.05,
-    }, at(3.0))
+      onStart: () => sfxLoader.transition(SFX.WINDOWS_EXPELLED, { volume: volume * 0.6, speed })
+    }, rejectTime)
     master.to('#expel-flash', {
       attr: { opacity: 0 }, duration: 0.3,
-    }, at(3.05))
+    }, rejectTime + 0.05)
 
     // Windows wobble
     master.to('#node-windows-inner', {
       rotation: 15, duration: 0.08,
       yoyo: true, repeat: 5, ease: 'power1.inOut',
-    }, at(3.5))
+    }, rejectTime + 0.1)
 
     // Windows question disappears
     master.to('#windows-question', {
       attr: { opacity: 0 }, duration: 0.2,
-    }, at(3.5))
+    }, rejectTime + 0.1)
+    
+    // Expulsion
+    const expelTime = rejectTime + 0.7
+    
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.WINDOWS_EXPELLED)
+      setThoughtBubble({ visible: false, text: '', x: 0, y: 0 })
+    }, expelTime)
 
     // Windows gets pushed to corner
     master.to('#node-windows', {
       x: WINDOWS_CORNER.x - 410,
       y: WINDOWS_CORNER.y - 550,
       duration: 0.8, ease: 'back.out(1.4)',
-    }, at(4.0))
+      onStart: () => sfxLoader.transition(SFX.CONNECTOR_COMPLETE, { volume, speed })
+    }, expelTime)
     master.to('#node-windows-inner', {
       rotation: -15, duration: 0.8, ease: 'back.out(1.4)',
-    }, at(4.0))
+    }, expelTime)
 
     // "NOT UNIX" label appears
     master.to('#not-unix-label', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, at(5.0))
+    }, expelTime + 0.8)
 
     // All connectors redraw
     master.to('.connector-unix, .connector-linux', {
       attr: { opacity: 0.8 }, duration: 0.3,
-    }, at(4.5))
+    }, expelTime + 0.5)
 
-    // --- Beat 3: The Loneliness (6-9s) ---
+    // --- Beat 3: The WSL Redemption (12-15s) ---
+    
+    const wslTime = at(12.5)
 
     // NT Kernel label appears
     master.to('#nt-kernel-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, at(6.5))
+    }, wslTime)
 
-    // Windows sad — drops slightly
-    master.to('#node-windows', {
-      y: `+=${15}`, duration: 0.5, ease: 'power2.out',
-    }, at(6.3))
-
-    // Thought bubble appears
+    // Thought bubble appears then disappears
     master.to('#thought-bubble', {
       attr: { opacity: 1 }, duration: 0.3,
-    }, at(7.5))
+    }, wslTime + 0.5)
     master.to('#thought-bubble-inner', {
       scale: 1, duration: 0.5, ease: 'back.out(1.7)',
-    }, at(7.5))
+    }, wslTime + 0.5)
 
-    // Bubble wiggle
-    master.to('#thought-bubble', {
-      x: 5, duration: 0.2, yoyo: true, repeat: 3, ease: 'power1.inOut',
-    }, at(8.2))
-
-    // --- Beat 4: The WSL Bridge (9-12s) ---
-
-    // Thought bubble pops
+    // Bubble pops
     master.to('#thought-bubble-inner', {
       scale: 1.3, duration: 0.2, ease: 'power2.in',
-    }, at(9.0))
+    }, wslTime + 1.5)
     master.to('#thought-bubble', {
       attr: { opacity: 0 }, duration: 0.3,
-    }, at(9.1))
+    }, wslTime + 1.6)
+    
+    // WSL arrives
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.WSL_ARRIVES)
+    }, wslTime + 2)
 
     // WSL label appears
     master.to('#wsl-label', {
       attr: { opacity: 1 }, duration: 0.4,
-    }, at(9.3))
+      onStart: () => sfxLoader.transition(SFX.WSL_CABLE, { volume, speed })
+    }, wslTime + 2.2)
 
     // Cable draws from Windows up to Linux
     master.to('#wsl-cable', {
       strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut',
-    }, at(9.5))
+    }, wslTime + 2.5)
     master.to('#wsl-cable-glow', {
       strokeDashoffset: 0, attr: { opacity: 0.6 }, duration: 1.2, ease: 'power2.inOut',
-    }, at(9.5))
+    }, wslTime + 2.5)
 
     // Connection flash
     master.to('#connect-flash', {
       attr: { opacity: 1 }, duration: 0.05,
-    }, at(10.8))
+      onStart: () => sfxLoader.success(SFX.WSL_SUCCESS, { volume, speed })
+    }, wslTime + 3.7)
     master.to('#connect-flash', {
       attr: { opacity: 0 }, duration: 0.4,
-    }, at(10.85))
+    }, wslTime + 3.75)
+    
+    master.add(() => {
+      setCaption(CAPTIONS.PHASE1.WSL_SUCCESS)
+    }, wslTime + 3.7)
 
     // Windows happy — bounce up
     master.to('#node-windows', {
       y: '-=20', duration: 0.3, ease: 'power2.out',
-    }, at(11.0))
+    }, wslTime + 3.7)
+    master.to('#node-windows', {
+      y: '+=20', duration: 0.3, ease: 'bounce.out',
+    }, wslTime + 4.0)
+    
+    // Windows scale back to normal (redemption)
+    master.to('#node-windows-inner', {
+      rotation: 0, scale: 1.0, duration: 0.5, ease: 'back.out(1.4)',
+    }, wslTime + 3.7)
 
-    // Ubuntu moves closer to cable
-    master.to('#node-ubuntu', {
-      x: '+=30', duration: 0.4, ease: 'power2.out',
-    }, at(11.0))
-
-    // Glow dots flow along cable
-    for (let i = 0; i < 3; i++) {
+    // Phase 1 caption
+    master.to('#phase1-caption', {
+      attr: { opacity: 1 }, duration: 0.5,
+    }, wslTime + 4.5)
+    
+    // Glow dots flow along WSL cable
+    for (let i = 0; i < 5; i++) {
+      const ubuntuPos = getAbsPos(LINUX_CLUSTER_CENTER, LINUX_POSITIONS.ubuntu)
       const dot = createGlowDot(
         dotsLayer,
         WINDOWS_CORNER.x, WINDOWS_CORNER.y,
-        LINUX_CLUSTER_CENTER.x + LINUX_POSITIONS.ubuntu.x,
-        LINUX_CLUSTER_CENTER.y + LINUX_POSITIONS.ubuntu.y,
+        ubuntuPos.x, ubuntuPos.y,
         '#22D3EE',
-        11.2 + i * 0.4, 1.5, 0
+        wslTime + 2.7 + i * 0.3, 1.5, 0
       )
       cableDotsRef.current.push(dot)
     }
 
-    // Caption
-    master.to('#phase1-caption', {
-      attr: { opacity: 1 }, duration: 0.5,
-    }, at(11.5))
-
     // ═══════════════════════════════════════════════════════
-    // PHASE 1 HOLD + FADE OUT (12-13s)
+    // PHASE 1 FADE OUT (around 17-18s)
     // ═══════════════════════════════════════════════════════
 
     master.to('#phase1-group', {
