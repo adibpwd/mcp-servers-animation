@@ -53,12 +53,17 @@ class SFXLoader {
   load(category, name) {
     const key = `${category}/${name}`
     if (!this.cache[key]) {
-      this.cache[key] = new Audio(`/audio/${category}/${name}.wav`)
-      
-      // In export mode, route audio through AudioContext
+      const el = new Audio(`/audio/${category}/${name}.wav`)
+      // Bounded pool: lets fast-retrigger sounds (typing) overlap without
+      // stepping on each other's playback, but caps how many <audio>
+      // elements ever get created for this sound (avoids resource-limit
+      // issues in some browsers when a single Audio is reused too fast,
+      // or unbounded growth if we cloned a fresh node on every play call).
+      this.cache[key] = { pool: [el], nextIndex: 0 }
+
       if (this.exportMode && this.audioContext && this.mediaStreamDestination) {
         try {
-          const source = this.audioContext.createMediaElementSource(this.cache[key])
+          const source = this.audioContext.createMediaElementSource(el)
           source.connect(this.mediaStreamDestination)
           source.connect(this.audioContext.destination) // Also play for monitoring
         } catch (err) {
@@ -89,8 +94,29 @@ class SFXLoader {
 
     const playSound = () => {
       try {
-        const audio = this.load(category, name)
-        audio.volume = (volume / 100) * this.defaultVolume
+        const entry = this.load(category, name)
+        const POOL_SIZE = 4
+
+        // Grow the pool lazily (max POOL_SIZE elements), only cloning
+        // when we actually need more overlap headroom.
+        if (entry.pool.length < POOL_SIZE) {
+          const clone = entry.pool[0].cloneNode(true)
+          if (this.exportMode && this.audioContext && this.mediaStreamDestination) {
+            try {
+              const source = this.audioContext.createMediaElementSource(clone)
+              source.connect(this.mediaStreamDestination)
+              source.connect(this.audioContext.destination)
+            } catch (err) {
+              // ignore
+            }
+          }
+          entry.pool.push(clone)
+        }
+
+        const audio = entry.pool[entry.nextIndex % entry.pool.length]
+        entry.nextIndex++
+
+        audio.volume = Math.max(0, Math.min(1, (volume / 100) * this.defaultVolume))
         audio.playbackRate = speed
         audio.currentTime = 0
         audio.play().catch(() => {})
