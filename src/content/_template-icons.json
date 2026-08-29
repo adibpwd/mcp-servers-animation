@@ -1,0 +1,69 @@
+{
+  "_comment": "INSTRUCTIONS FOR USING THIS TEMPLATE (SINGLE-BATCH OR MULTI-BATCH)",
+  "_instructions": [
+    "1. Copy this file to: src/content/YOUR-TOPIC/icons/icons.json",
+    "2. Replace 'YOUR-TOPIC-ID' with your actual topic ID (must match folder name)",
+    "3. SIZING RULES:",
+    "   - Max per single grid: 4x4 (16 slots = 15 icons + 1 empty).",
+    "   - Recommended single grid: 2x4 (8 slots = 7 icons + 1 empty) for best 512px sharpness.",
+    "   - If > 15 icons: USE 'batches' array! (Batch 1: 4x4 or 2x4, Batch 2: 2x2 or 2x4).",
+    "   - Avoid 1x4 or 4x1 grids because DALL-E distorts extreme aspect ratios."
+  ],
+  
+  "name": "YOUR-TOPIC-ID",
+  "description": "Brief description of what these icons represent for your animation",
+  
+  "_single_batch_example": {
+    "icons": [
+      {
+        "id": "icon-id-1",
+        "name": "Display Name 1",
+        "label": "Short Label",
+        "description": "Clear description for ChatGPT (e.g., 'Web browser with globe icon')"
+      },
+      {
+        "id": "icon-id-2",
+        "name": "Display Name 2",
+        "label": "Short Label",
+        "description": "Clear description for ChatGPT (e.g., 'Database cylinder')"
+      }
+    ],
+    "generation": {
+      "rows": 2,
+      "cols": 2,
+      "prompt": "Generate a 2x2 grid of 4 minimalist grayscale monochrome icons on transparent background (PNG). Icons are numbered top-left to bottom-right:\n\n1. Display Name 1 (Web browser with globe icon)\n2. Display Name 2 (Database cylinder)\n3. Display Name 3 (Terminal prompt)\n4. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist\n- Black/gray colors only (grayscale/monochrome)\n- Each icon same size and clearly distinct\n- High contrast for visibility\n- Transparent background (PNG)\n- Grid layout: 2 rows × 2 columns\n- Each icon should be recognizable and simple",
+      "api_endpoint": "http://localhost:3300/api/icons/generate",
+      "output_path": "src/content/YOUR-TOPIC-ID/icons"
+    }
+  },
+
+  "_multi_batch_example": {
+    "batches": [
+      {
+        "batch_id": "batch-1",
+        "name": "Core Systems (Batch 1/2)",
+        "rows": 2,
+        "cols": 4,
+        "icons": [
+          { "id": "icon-1", "name": "Icon 1", "description": "Desc 1" },
+          { "id": "icon-2", "name": "Icon 2", "description": "Desc 2" }
+        ],
+        "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons... 1. Icon 1... 8. [EMPTY]..."
+      },
+      {
+        "batch_id": "batch-2",
+        "name": "Tools & Apps (Batch 2/2)",
+        "rows": 2,
+        "cols": 2,
+        "icons": [
+          { "id": "icon-8", "name": "Icon 8", "description": "Desc 8" }
+        ],
+        "prompt": "Generate a 2x2 grid of 4 minimalist grayscale monochrome icons... 1. Icon 8... 4. [EMPTY]..."
+      }
+    ],
+    "generation": {
+      "api_endpoint": "http://localhost:3300/api/icons/generate",
+      "output_path": "src/content/YOUR-TOPIC-ID/icons"
+    }
+  }
+}

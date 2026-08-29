@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Virtual Memory Icon Generator",
-  "version": "0.1.0",
-  "description": "Generate icons for Virtual Memory animation from ChatGPT",
+  "name": "Content Icon Generator",
+  "version": "0.2.0",
+  "description": "Generate icons for animation content topics from ChatGPT",
   "permissions": ["activeTab", "scripting", "storage", "debugger"],
   "host_permissions": [
     "https://chatgpt.com/*",
     "https://chat.openai.com/*",
-    "http://localhost:3000/*"
+    "http://localhost:3300/*"
   ],
   "action": {
     "default_popup": "popup.html",

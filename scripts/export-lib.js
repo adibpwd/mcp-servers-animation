@@ -248,7 +248,7 @@ try {
  * @param {string} topicId - Topic ID (e.g., 'file-permission')
  * @param {object} options - { baseUrl, framesDir, onProgress, onLog }
  */
-async function captureFrames(topicId, { baseUrl = 'http://localhost:5173', framesDir, onProgress, onLog }) {
+async function captureFrames(topicId, { baseUrl = 'http://localhost:8081', framesDir, onProgress, onLog }) {
   
   // Try to load puppeteer (full version with bundled Chrome first, then puppeteer-core)
   let puppeteer, usingBundledChrome = false
@@ -425,86 +425,92 @@ async function captureFrames(topicId, { baseUrl = 'http://localhost:5173', frame
   onLog(`Hiding UI elements for clean export...`)
   await hideUiElements()
 
-  // Start audio recording
-  onLog(`Starting audio recording...`)
+  // URUTAN KRITIS — jangan diubah (lihat komentar di export-parallel.mjs):
+  // 1. clearCache + initExportMode dulu → AudioContext + route bersih
+  // 2. click Play → audioUnlocked React state = true
+  // 3. pause + reset t=0
+  // 4. recorder.start() + tl.play(0) ATOMIK dalam 1 evaluate
+
+  onLog(`Init export mode audio...`)
+  await page.evaluate(() => {
+    const loader = window.sfxLoader || window.sfxLoaderInstance
+    if (loader) {
+      loader.clearCache()
+      loader.initExportMode()
+    }
+  })
+  await new Promise((r) => setTimeout(r, 300))
+
+  onLog(`Unlocking audio (silent, animation tidak dijalankan)...`)
+  await page.evaluate(async () => {
+    if (window.__forceUnlockAudio) {
+      await window.__forceUnlockAudio()
+    } else {
+      // fallback lama kalau fungsi belum ter-expose (build lama)
+      const btn = document.querySelector('.player-topbar .control-btn')
+      if (btn) btn.click()
+    }
+  })
+  await new Promise((r) => setTimeout(r, 200))
+
+  await page.evaluate(() => {
+    const tl = window.__animationTimeline
+    if (tl) { tl.pause(); tl.totalTime(0, false) }
+  })
+  await new Promise((r) => setTimeout(r, 100))
+
+  // ─────────────────────────────────────────────────────────────
+  // PASS 1/2: Record audio in real-time (timeline plays ONCE,
+  // NO screenshots competing for CPU → wall-clock accurate)
+  // recorder.start() + tl.play(0) dalam 1 evaluate = atomik
+  // ─────────────────────────────────────────────────────────────
+  let audioPath = null
+  let audioLeadIn = 0
+
   const audioRecordingStarted = await page.evaluate(() => {
     if (!window.__audioStream) {
       console.log('[Export] No audio stream available, skipping audio capture')
       return false
     }
-
     try {
-      // Resume AudioContext if suspended
-      if (window.sfxLoader && window.sfxLoader.audioContext) {
-        if (window.sfxLoader.audioContext.state === 'suspended') {
-          window.sfxLoader.audioContext.resume()
-          console.log('[Export] AudioContext resumed')
-        }
-      }
-      
-      // Check stream tracks
+      if (window.sfxLoader?.audioContext?.state === 'suspended')
+        window.sfxLoader.audioContext.resume()
       const tracks = window.__audioStream.getAudioTracks()
-      console.log('[Export] Audio stream tracks:', tracks.length)
-      tracks.forEach((track, i) => {
-        console.log(`[Export] Track ${i}:`, track.label, 'enabled:', track.enabled, 'muted:', track.muted, 'readyState:', track.readyState)
-      })
-      
-      if (tracks.length === 0) {
-        console.log('[Export] No audio tracks in stream!')
-        return false
-      }
-      
-      const recorder = new MediaRecorder(window.__audioStream, {
-        mimeType: 'audio/webm;codecs=opus'
-      })
-      
+      console.log('[Export] Audio tracks:', tracks.length)
+      if (!tracks.length) return false
+      const recorder = new MediaRecorder(window.__audioStream, { mimeType: 'audio/webm;codecs=opus' })
       const chunks = []
-      recorder.ondataavailable = (e) => {
-        console.log('[Export] Data available, size:', e.data.size)
-        if (e.data.size > 0) chunks.push(e.data)
-      }
-      
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data) }
       recorder.onstop = async () => {
-        console.log('[Export] Recorder stopped, total chunks:', chunks.length)
         const blob = new Blob(chunks, { type: 'audio/webm' })
-        console.log('[Export] Blob size:', blob.size)
-        const arrayBuffer = await blob.arrayBuffer()
-        const uint8Array = new Uint8Array(arrayBuffer)
-        window.__audioData = Array.from(uint8Array)
-        console.log('[Export] Audio recording complete:', uint8Array.length, 'bytes')
+        const ab = await blob.arrayBuffer()
+        window.__audioData = Array.from(new Uint8Array(ab))
+        console.log('[Export] Audio complete:', window.__audioData.length, 'bytes')
       }
-      
       window.__audioRecorder = recorder
       window.__audioChunks = chunks
-      // Start with timeslice (collect data every 1 second)
+
+      // Catat AudioContext.currentTime sebelum & sesudah recorder.start()
+      // untuk menghitung lead-in silence (berapa detik audio ter-rekam
+      // sebelum tl.play(0) benar-benar jalan), lalu di-trim di ffmpeg.
+      const acRef = window.sfxLoader?.audioContext
+      const tBeforeStart = acRef ? acRef.currentTime : 0
       recorder.start(1000)
-      console.log('[Export] Audio recording started with timeslice=1000ms, state:', recorder.state)
-      
+      const tAfterStart = acRef ? acRef.currentTime : 0
+      // ATOMIK: play timeline segera setelah recorder.start()
+      const tl = window.__animationTimeline
+      if (tl) { tl.timeScale(1.0); tl.play(0) }
+      window.__audioLeadIn = tAfterStart - tBeforeStart
+      console.log('[Export] recorder.start() + tl.play(0) atomik, lead-in:', window.__audioLeadIn.toFixed(4), 's')
       return true
     } catch (err) {
-      console.error('[Export] Failed to start audio recording:', err)
+      console.error('[Export] Failed:', err)
       return false
     }
   })
 
-  // ─────────────────────────────────────────────────────────────
-  // PASS 1/2: Record audio in real-time (timeline plays ONCE,
-  // NO screenshots competing for CPU → wall-clock accurate)
-  // ─────────────────────────────────────────────────────────────
-  let audioPath = null
-
   if (audioRecordingStarted) {
-    onLog(`✓ Audio recording started`)
-
-    // Start playback at natural speed (single iteration, from the beginning)
-    await page.evaluate((target) => {
-      const tl = window.__animationTimeline
-      if (tl) {
-        tl.timeScale(1.0)
-        tl.play(0)
-        console.log('[Export] PASS1 playback started, target duration:', target)
-      }
-    }, captureDuration)
+    onLog(`✓ Audio recording started + timeline play (atomik)`)
 
     // Poll until the animation finishes
     const recStart = Date.now()
@@ -575,7 +581,8 @@ async function captureFrames(topicId, { baseUrl = 'http://localhost:5173', frame
     }
 
     if (audioData && audioData.length > 0) {
-      onLog(`✓ Audio captured: ${audioData.length} bytes`)
+      audioLeadIn = await page.evaluate(() => window.__audioLeadIn || 0)
+      onLog(`✓ Audio captured: ${audioData.length} bytes (lead-in: ${(audioLeadIn * 1000).toFixed(1)}ms)`)
       audioPath = path.join(path.dirname(framesDir), `${topicId}-audio.webm`)
       fs.writeFileSync(audioPath, Buffer.from(audioData))
       onLog(`✓ Audio saved to: ${audioPath}`)
@@ -780,14 +787,14 @@ async function captureFrames(topicId, { baseUrl = 'http://localhost:5173', frame
 
   onLog(`Captured ${totalFrames} frames successfully.`)
 
-  return { animationDuration, totalFrames, audioPath }
+  return { animationDuration, totalFrames, audioPath, audioLeadIn }
 }
 
 /**
  * Encode frames to MP4 via ffmpeg
  * @param {object} options - { framesDir, outputPath, duration, sfxEvents, volume, audioPath, onProgress, onLog }
  */
-function encodeVideo({ framesDir, outputPath, duration, sfxEvents = [], volume = 75, audioPath = null, onProgress, onLog }) {
+function encodeVideo({ framesDir, outputPath, duration, sfxEvents = [], volume = 75, audioPath = null, audioLeadIn = 0, onProgress, onLog }) {
   return new Promise((resolve, reject) => {
     // Scale volume for ffmpeg (0-500% → 0-5.0 scale factor)
     const volumeScale = Math.max(0, Math.min(5.0, volume / 100))
@@ -802,8 +809,13 @@ function encodeVideo({ framesDir, outputPath, duration, sfxEvents = [], volume =
 
     // Prefer captured audio over SFX schedule
     if (audioPath && fs.existsSync(audioPath)) {
-      onLog(`Using captured audio: ${audioPath}`)
-      args.push('-i', audioPath)
+      onLog(`Using captured audio: ${audioPath} (lead-in trim: ${(audioLeadIn * 1000).toFixed(1)}ms)`)
+      // Trim lead-in silence sehingga sample 0 audio = frame 0 video
+      if (audioLeadIn > 0.005) {
+        args.push('-ss', audioLeadIn.toFixed(4), '-i', audioPath)
+      } else {
+        args.push('-i', audioPath)
+      }
       args.push(
         '-filter_complex', `[1:a]volume=${volumeScale}[aout]`,
         '-map', '0:v',
@@ -894,7 +906,7 @@ function encodeVideo({ framesDir, outputPath, duration, sfxEvents = [], volume =
  * @param {string} topicId - Topic ID
  * @param {object} options - { baseUrl, outDir, volume, speed, onProgress, onLog }
  */
-export async function exportTopic(topicId, { baseUrl = 'http://localhost:5173', outDir, volume = 75, speed = 1.0, onProgress = () => {}, onLog = () => {} } = {}) {
+export async function exportTopic(topicId, { baseUrl = 'http://localhost:8081', outDir, volume = 75, speed = 1.0, onProgress = () => {}, onLog = () => {} } = {}) {
   volume = Math.max(0, Math.min(500, Number(volume) || 75))
   speed = Math.max(0.5, Math.min(2.0, Number(speed) || 1.0))
   
@@ -922,7 +934,7 @@ export async function exportTopic(topicId, { baseUrl = 'http://localhost:5173', 
     onLog(`[Audio] Copied ${audioFilesCopied} audio files to export directory`)
     
     // Phase 1: Capture audio (pass 1) + frames (pass 2), auto-detect duration
-    const { animationDuration, audioPath } = await captureFrames(topicId, {
+    const { animationDuration, audioPath, audioLeadIn } = await captureFrames(topicId, {
       baseUrl,
       framesDir,
       onProgress,
@@ -939,6 +951,7 @@ export async function exportTopic(topicId, { baseUrl = 'http://localhost:5173', 
       sfxEvents,
       volume,
       audioPath,
+      audioLeadIn,
       onProgress,
       onLog
     })

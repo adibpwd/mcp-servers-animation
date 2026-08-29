@@ -3,6 +3,7 @@ import cors from 'cors'
 import multer from 'multer'
 import sharp from 'sharp'
 import { exportTopic, getVideoStats } from './export-lib.js'
+import { exportParallel, getVideoStats as getVideoStatsParallel } from './export-parallel.mjs'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
@@ -10,7 +11,7 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
 const app = express()
-const PORT = 3000
+const PORT = process.env.PORT || 3300
 
 // Content DB path
 const CONTENT_DB_PATH = path.join(__dirname, 'content-db.json')
@@ -48,13 +49,18 @@ app.use(cors({
     }
     
     // In production, check whitelist
+    // Frontend is exposed both on its container port (5173) and the
+    // docker-compose published port (3373), so allow both.
     const allowedOrigins = [
       'http://localhost:5173',
       'http://127.0.0.1:5173',
-      'http://100.78.186.122:5173'
+      'http://100.78.186.122:5173',
+      'http://localhost:3373',
+      'http://127.0.0.1:3373',
+      'http://100.78.186.122:3373'
     ]
     
-    if (allowedOrigins.indexOf(origin) !== -1 || /^http:\/\/.*:5173$/.test(origin)) {
+    if (allowedOrigins.indexOf(origin) !== -1 || /^http:\/\/.*:(5173|3373)$/.test(origin)) {
       callback(null, true)
     } else {
       callback(new Error('Not allowed by CORS'))
@@ -85,6 +91,113 @@ let exportJob = {
 
 // Export history (in-memory)
 let exportHistory = []
+
+// ── Parallel export job state (per topicId) ───────────────────
+const parallelJobs = new Map()  // Map<topicId, jobState>
+
+function makeParallelJob(topicId, workers, volume, speed) {
+  return {
+    status: 'running', topicId, workers,
+    progress: 0, phase: 'Starting...', message: '',
+    logs: [], error: null, exportedAt: null,
+    startedAt: new Date().toISOString(),
+    workerStates: []
+  }
+}
+
+async function startParallelExport(topicId, workers, volume, speed) {
+  const startTime = Date.now()
+  const job = makeParallelJob(topicId, workers, volume, speed)
+  parallelJobs.set(topicId, job)
+
+  console.log(`[Parallel] ▶ ${topicId} | workers=${workers} vol=${volume}% speed=${speed}x`)
+  try {
+    await exportParallel(topicId, {
+      baseUrl: 'http://frontend:5173',
+      outDir: ROOT,
+      workers,
+      volume,
+      speed,
+      onProgress: (status) => {
+        job.progress = status.progress
+        job.phase    = status.phase
+        job.message  = status.message
+        if (status.workers) job.workerStates = status.workers
+      },
+      onLog: (msg) => {
+        job.logs.push(msg)
+        console.log(`[Parallel ${topicId}] ${msg}`)
+      }
+    })
+
+    const vs = getVideoStatsParallel(topicId, ROOT)
+    job.status     = 'done'
+    job.progress   = 100
+    job.exportedAt = vs.exportedAt
+
+    exportHistory.unshift({
+      topicId, status: 'done', progress: 100, error: null,
+      exportedAt: vs.exportedAt, videoSize: vs.size,
+      duration: Math.round((Date.now() - startTime) / 1000),
+      mode: 'parallel', workers
+    })
+    console.log(`[Parallel] ✅ Done ${topicId} in ${Math.round((Date.now()-startTime)/1000)}s`)
+  } catch (err) {
+    job.status = 'error'
+    job.error  = err.message
+    console.error(`[Parallel] ❌ Error ${topicId}:`, err.message)
+    exportHistory.unshift({
+      topicId, status: 'error', progress: job.progress,
+      error: err.message, exportedAt: null, videoSize: null,
+      duration: Math.round((Date.now() - startTime) / 1000),
+      mode: 'parallel', workers
+    })
+  }
+}
+
+// POST /api/export-parallel/:topicId
+app.post('/api/exportp/:topicId', (req, res) => {
+  const { topicId } = req.params
+  const workers = Math.max(1, Math.min(16, Number(req.body?.workers) || 4))
+  const volume  = Math.max(0, Math.min(500, Number(req.body?.volume) || 75))
+  const speed   = Math.max(0.5, Math.min(2.0, Number(req.body?.speed) || 1.0))
+
+  const existing = parallelJobs.get(topicId)
+  if (existing?.status === 'running') {
+    return res.status(409).json({ ok: false, error: `Parallel export sudah berjalan untuk: ${topicId}` })
+  }
+
+  startParallelExport(topicId, workers, volume, speed)
+  res.status(202).json({ ok: true, status: 'started', topicId, workers, volume, speed, mode: 'parallel' })
+})
+
+// GET /api/export-parallel/status?topicId=xxx
+app.get('/api/exportp/status', (req, res) => {
+  const { topicId } = req.query
+  if (!topicId) {
+    const all = []
+    for (const job of parallelJobs.values()) {
+      const vs = getVideoStatsParallel(job.topicId, ROOT)
+      all.push({ ...job, logs: job.logs.slice(-10), videoReady: vs?.exists || false,
+                 videoUrl: vs?.videoUrl || null, videoSize: vs?.size || null })
+    }
+    return res.json({ jobs: all })
+  }
+
+  const job = parallelJobs.get(topicId)
+  const vs  = getVideoStatsParallel(topicId, ROOT)
+  if (!job) {
+    return res.json({ status: 'idle', topicId, videoReady: vs?.exists || false,
+                      videoUrl: vs?.videoUrl || null, videoSize: vs?.size || null })
+  }
+  res.json({
+    status: job.status, topicId: job.topicId, workers: job.workers,
+    progress: job.progress, phase: job.phase, message: job.message,
+    logs: job.logs.slice(-20), error: job.error, startedAt: job.startedAt,
+    workerStates: job.workerStates,
+    videoReady: vs?.exists || false, videoUrl: vs?.videoUrl || null, videoSize: vs?.size || null
+  })
+})
 
 // POST /api/export/:topicId - Start export
 app.post('/api/export/:topicId', (req, res) => {
@@ -245,7 +358,7 @@ async function startExport(topicId, volume = 75, speed = 1.0) {
 
   try {
     await exportTopic(topicId, {
-      baseUrl: 'http://100.78.186.122:5173',
+      baseUrl: 'http://frontend:5173',
       outDir: ROOT,
       volume,
       speed,

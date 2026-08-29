@@ -23,11 +23,11 @@ export const SIZE_MAP = {
 // ═══════════════════════════════════════════════════════════
 
 export const UNIX_FAMILY = [
-  { id: 'macos',   name: 'macOS',   year: 2001, company: 'Apple',   size: 'XL', color: '#A3A3A3', icon: '' },
-  { id: 'solaris', name: 'Solaris', year: 1992, company: 'Oracle', size: 'S',  color: '#EF4444', icon: '' },
-  { id: 'aix',     name: 'AIX',     year: 1986, company: 'IBM',    size: 'S',  color: '#3B82F6', icon: '' },
-  { id: 'hpux',    name: 'HP-UX',   year: 1984, company: 'HP',     size: 'S',  color: '#8B5CF6', icon: '' },
-  { id: 'freebsd', name: 'FreeBSD', year: 1993, company: null,     size: 'XS', color: '#AB2B28', icon: '' },
+  { id: 'macos',   name: 'macOS',   year: 2001, company: 'Apple',   size: 'XL', color: '#A3A3A3', icon: 'macos' },
+  { id: 'solaris', name: 'Solaris', year: 1992, company: 'Oracle', size: 'S',  color: '#EF4444', icon: 'solaris' },
+  { id: 'aix',     name: 'AIX',     year: 1986, company: 'IBM',    size: 'S',  color: '#3B82F6', icon: 'aix' },
+  { id: 'hpux',    name: 'HP-UX',   year: 1984, company: 'HP',     size: 'S',  color: '#8B5CF6', icon: 'hpux' },
+  { id: 'freebsd', name: 'FreeBSD', year: 1993, company: null,     size: 'XS', color: '#AB2B28', icon: 'freebsd' },
 ]
 
 // ═══════════════════════════════════════════════════════════
@@ -35,11 +35,11 @@ export const UNIX_FAMILY = [
 // ═══════════════════════════════════════════════════════════
 
 export const LINUX_FAMILY = [
-  { id: 'android', name: 'Android', year: 2008, company: 'Google',    size: 'XL', color: '#3DDC84', icon: '' },
-  { id: 'ubuntu',  name: 'Ubuntu',  year: 2004, company: 'Canonical', size: 'L',  color: '#E95420', icon: '' },
-  { id: 'fedora',  name: 'Fedora',  year: 2003, company: 'Red Hat',  size: 'S',  color: '#3C6EB4', icon: '' },
-  { id: 'arch',    name: 'Arch',    year: 2002, company: null,       size: 'S',  color: '#1793D1', icon: '' },
-  { id: 'debian',  name: 'Debian',  year: 1993, company: null,       size: 'S',  color: '#A80030', icon: '' },
+  { id: 'android', name: 'Android', year: 2008, company: 'Google',    size: 'XL', color: '#3DDC84', icon: 'android' },
+  { id: 'ubuntu',  name: 'Ubuntu',  year: 2004, company: 'Canonical', size: 'L',  color: '#E95420', icon: 'ubuntu' },
+  { id: 'fedora',  name: 'Fedora',  year: 2003, company: 'Red Hat',  size: 'S',  color: '#3C6EB4', icon: 'fedora' },
+  { id: 'arch',    name: 'Arch',    year: 2002, company: null,       size: 'S',  color: '#1793D1', icon: 'arch' },
+  { id: 'debian',  name: 'Debian',  year: 1993, company: null,       size: 'S',  color: '#A80030', icon: 'debian' },
 ]
 
 // ═══════════════════════════════════════════════════════════
@@ -47,7 +47,7 @@ export const LINUX_FAMILY = [
 // ═══════════════════════════════════════════════════════════
 
 export const WINDOWS = {
-  id: 'windows', name: 'Windows', year: 1985, company: 'Microsoft', size: 'M', color: '#3B82F6', icon: '',
+  id: 'windows', name: 'Windows', year: 1985, company: 'Microsoft', size: 'M', color: '#3B82F6', icon: 'windows',
   kernel: 'NT Kernel', wslNote: 'Windows Subsystem for Linux',
 }
 

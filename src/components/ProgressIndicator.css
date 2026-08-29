@@ -1,10 +1,10 @@
-/* Floating Progress Indicator - Bottom Right */
+/* Floating Progress Indicator - Bottom Right (Bullet Progress Chart style) */
 .progress-indicator {
   position: fixed;
   bottom: 16px;
   right: 16px;
   z-index: 900;
-  width: 320px;
+  width: 340px;
   background: #0B1120;
   border: 1px solid #334155;
   border-radius: 12px;
@@ -19,7 +19,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .progress-indicator-title {
@@ -49,6 +49,20 @@
   letter-spacing: 0.3px;
 }
 
+.progress-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-overall-pct {
+  font-size: 16px;
+  font-weight: 900;
+  color: #34D399;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
 .progress-close-btn {
   background: transparent;
   border: none;
@@ -65,78 +79,194 @@
   color: #E2E8F0;
 }
 
-/* Progress Bar */
-.progress-bar-wrapper {
-  margin-bottom: 12px;
-}
-
-.progress-bar-track {
-  width: 100%;
-  height: 24px;
-  background: #0F172A;
-  border: 1px solid #1E3A4C;
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-}
-
-.progress-bar-indicator {
-  height: 100%;
-  background: linear-gradient(90deg, #34D399 0%, #10B981 100%);
-  transition: width 0.3s ease;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
-}
-
-.progress-bar-text {
+/* ─────────────────────────────────────────────────────────────
+   BULLET PROGRESS CHART
+   Semua step tampil sekaligus dari awal (default 0%), track abu2
+   diam, fill hijau nyala nyambar dari kiri → kanan, makin penuh
+   makin terang/glow. Worker chips juga langsung semua tampil
+   sesuai jumlah worker yang dipilih.
+   ───────────────────────────────────────────────────────────── */
+.bullet-steps {
   display: flex;
-  justify-content: center;
-  margin-top: 6px;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.progress-percentage {
-  font-size: 16px;
-  font-weight: 900;
-  color: #34D399;
-  font-family: monospace;
-  letter-spacing: 1px;
-}
-
-/* Phase Info */
-.progress-phase-info {
-  display: flex;
-  justify-content: space-between;
+.bullet-step {
+  display: grid;
+  grid-template-columns: 96px 1fr 38px;
   align-items: center;
-  margin-bottom: 8px;
+  gap: 8px;
+  opacity: 0.55;
+  transition: opacity 0.25s ease;
 }
 
-.progress-phase {
-  font-size: 12px;
-  color: #94A3B8;
-  font-family: monospace;
-  letter-spacing: 0.3px;
+.bullet-step--active,
+.bullet-step--done {
+  opacity: 1;
 }
 
-.progress-file-size {
+.bullet-step-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
   font-size: 11px;
-  color: #64748B;
   font-family: monospace;
-  background: #1E293B;
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Message */
+.bullet-step--active .bullet-step-label { color: #E2E8F0; font-weight: 700; }
+.bullet-step--done .bullet-step-label   { color: #6EE7B7; }
+
+.bullet-step-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.bullet-step--pending .bullet-step-icon { color: #475569; }
+.bullet-step--active .bullet-step-icon  {
+  color: #34D399;
+  animation: bullet-spin 1s linear infinite;
+}
+.bullet-step--done .bullet-step-icon    { color: #34D399; }
+
+@keyframes bullet-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.bullet-step-track {
+  position: relative;
+  height: 10px;
+  background: #0F172A;
+  border: 1px solid #1E293B;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bullet-step--active .bullet-step-track { border-color: #10B981; }
+.bullet-step--done .bullet-step-track   { border-color: #10B98166; }
+
+.bullet-step-fill {
+  height: 100%;
+  border-radius: 5px;
+  /* makin lebar (makin selesai) → warnanya makin hijau terang */
+  background: linear-gradient(90deg, #0E7C5C 0%, #10B981 55%, #4ADE80 100%);
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 0 rgba(74, 222, 128, 0);
+}
+
+.bullet-step--active .bullet-step-fill {
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.55);
+  animation: bullet-pulse 1.4s ease-in-out infinite;
+}
+
+.bullet-step--done .bullet-step-fill {
+  background: linear-gradient(90deg, #10B981 0%, #4ADE80 100%);
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+@keyframes bullet-pulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.25); }
+}
+
+.bullet-step-pct {
+  font-size: 10px;
+  font-family: monospace;
+  color: #64748B;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bullet-step--active .bullet-step-pct { color: #34D399; font-weight: 700; }
+.bullet-step--done .bullet-step-pct   { color: #6EE7B7; }
+
+/* ── Worker chips: semua worker langsung tampil dari awal (0%) ── */
+.bullet-workers-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 8px 8px 96px;
+  margin-top: -2px;
+}
+
+.bullet-worker-chip {
+  position: relative;
+  width: 22px;
+  height: 34px;
+  background: #0F172A;
+  border: 1px solid #1E293B;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  transition: border-color 0.25s ease;
+}
+
+.bullet-worker-chip--active { border-color: #10B981; }
+.bullet-worker-chip--done   { border-color: #4ADE80; }
+
+.bullet-worker-chip-fill {
+  width: 100%;
+  background: linear-gradient(0deg, #0E7C5C 0%, #10B981 55%, #4ADE80 100%);
+  transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bullet-worker-chip--active .bullet-worker-chip-fill {
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+}
+
+.bullet-worker-chip--done .bullet-worker-chip-fill {
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.45);
+}
+
+.bullet-worker-chip-label {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8px;
+  font-family: monospace;
+  font-weight: 700;
+  color: #E2E8F0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.bullet-worker-chip--pending .bullet-worker-chip-label { color: #64748B; text-shadow: none; }
+
+/* Message & file size */
 .progress-message {
   font-size: 11px;
   color: #64748B;
   font-family: monospace;
-  margin-bottom: 8px;
+  margin-top: 4px;
   padding: 6px;
   background: #0F172A;
   border-radius: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.progress-file-size {
+  font-size: 11px;
+  color: #6EE7B7;
+  font-family: monospace;
+  margin-top: 6px;
+  padding: 4px 8px;
+  background: #0F172A;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 /* Error Container */
@@ -204,21 +334,7 @@
   margin-bottom: 0;
 }
 
-/* Scrollbar Styling */
-.progress-logs-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.progress-logs-content::-webkit-scrollbar-track {
-  background: #0B1120;
-  border-radius: 3px;
-}
-
-.progress-logs-content::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
-}
-
-.progress-logs-content::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+.progress-logs-content::-webkit-scrollbar { width: 6px; }
+.progress-logs-content::-webkit-scrollbar-track { background: #0B1120; border-radius: 3px; }
+.progress-logs-content::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+.progress-logs-content::-webkit-scrollbar-thumb:hover { background: #475569; }

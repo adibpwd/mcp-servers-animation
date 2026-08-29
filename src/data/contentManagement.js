@@ -1,7 +1,14 @@
 // src/data/contentManagement.js
 // Data model & API helpers for Content Management Dashboard
 
-const API_BASE = 'http://100.78.186.122:3000'
+const getApiBase = () => {
+  if (typeof window !== 'undefined') {
+    return `http://${window.location.hostname}:3300`
+  }
+  return 'http://localhost:3300'
+}
+
+const API_BASE = getApiBase()
 
 // Status enum
 export const STATUS = {

@@ -1,0 +1,112 @@
+{
+  "name": "linux-vs-unix",
+  "description": "Complete icon set for Linux vs Unix Animation — history/concept icons + real brand/distro logos (Unix family, Linux family, Windows). Style: minimalist grayscale/monochrome line-art, TRANSPARENT background (not solid gray) so icons blend into the app's dark canvas.",
+  "style_guide": {
+    "background": "transparent",
+    "palette": "grayscale monochrome (black/white/gray only) — keep all icons visually consistent, including brand logos which should be redrawn in the same flat monochrome line-art style rather than full-color",
+    "notes": "Brand/distro logos should follow each brand's real silhouette/shape as closely as possible (e.g. Ubuntu's circle-of-friends, Debian's swirl, Arch's mountain-A, Fedora's infinity mark, Android's robot head, Windows' four-pane flag, Apple's bitten apple, FreeBSD's Beastie daemon) — just rendered in monochrome instead of the original brand colors, to match the rest of the icon set. The 'Linus' icon stays a stylized generic programmer avatar (glasses + laptop), not a photorealistic likeness of a real person."
+  },
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "History & Roots (1/4)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "pdp7", "name": "PDP-7", "label": "PDP-7 Mainframe", "description": "Vintage 1969 minicomputer rack with magnetic tape reels" },
+        { "id": "bell-labs", "name": "Bell Labs", "label": "Bell Labs", "description": "Telephone bell or research lab emblem" },
+        { "id": "c-language", "name": "C Language", "label": "C Code", "description": "Code brackets with letter C inside" },
+        { "id": "posix", "name": "POSIX", "label": "POSIX Standard", "description": "Standard blueprint document with checkmark" },
+        { "id": "linus", "name": "Linus Torvalds", "label": "Linus / Creator", "description": "Stylized generic programmer avatar: glasses + laptop silhouette (not a real-person likeness)" },
+        { "id": "gnu-fsf", "name": "GNU GPL", "label": "Free Software", "description": "Wildebeest / Gnu head icon" },
+        { "id": "terminal-hacker", "name": "Hacker Terminal", "label": "CLI Terminal", "description": "Command line interface window with prompt symbol" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG). Icons numbered top-left to bottom-right:\n\n1. Vintage PDP-7 minicomputer with tape reels\n2. Bell Labs emblem / telephone bell symbol\n3. C programming language bracket code symbol\n4. POSIX standard technical blueprint document with checkmark\n5. Stylized generic programmer avatar with glasses and laptop (NOT a real person's face — abstract/iconographic silhouette only)\n6. GNU wildebeest horn emblem for free software\n7. Terminal command line prompt window (CLI)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist line-art\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background (no solid fill behind icons)\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns"
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "Ecosystem Concepts (2/4)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "tux", "name": "Tux Penguin", "label": "Linux Kernel Mascot", "description": "Friendly minimalist penguin mascot (Linux kernel, generic — not tied to one distro)" },
+        { "id": "bsd-daemon", "name": "BSD Daemon", "label": "BSD Mascot (Beastie)", "description": "BSD daemon pitchfork silhouette, generic Unix/BSD concept" },
+        { "id": "distro-tree", "name": "Distro Tree", "label": "Distro Family Tree", "description": "Branching family tree with network nodes" },
+        { "id": "cloud-server", "name": "Cloud Server", "label": "Cloud Infra", "description": "Data center server rack with cloud" },
+        { "id": "supercomputer", "name": "Supercomputer", "label": "Supercomputer", "description": "High performance computing cluster matrix" },
+        { "id": "wsl-bridge", "name": "WSL Bridge", "label": "Windows Subsystem for Linux", "description": "Bridge/cable connector linking two boxes, symbolizing WSL bridging Windows and Linux" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG). Icons numbered top-left to bottom-right:\n\n1. Minimalist Linux Penguin (Tux) mascot, generic kernel symbol\n2. BSD Daemon (Beastie) pitchfork silhouette symbol\n3. Branching family tree with network nodes (distro lineage concept)\n4. Cloud datacenter server rack\n5. Supercomputer cluster matrix with high performance symbol\n6. A bridge or plug/cable connecting two boxes labeled abstractly (symbolizes WSL bridging Windows and Linux)\n7. [EMPTY - leave this slot blank/transparent]\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist line-art\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns"
+    },
+    {
+      "batch_id": "batch-3",
+      "name": "Unix Family — Real Brand Logos (3/4)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "macos", "name": "macOS", "label": "Apple macOS", "description": "Apple's bitten-apple logo, redrawn in monochrome — official Apple silhouette, 100% shape-accurate" },
+        { "id": "solaris", "name": "Solaris", "label": "Oracle Solaris", "description": "Official Solaris sun/orbit mark, redrawn in monochrome — accurate to the real Solaris logo shape" },
+        { "id": "aix", "name": "AIX", "label": "IBM AIX", "description": "IBM AIX logo mark, redrawn in monochrome — accurate to the real AIX/IBM logo shape" },
+        { "id": "hpux", "name": "HP-UX", "label": "HP-UX", "description": "HP invent logo / HP-UX mark, redrawn in monochrome — accurate to the real HP logo shape" },
+        { "id": "freebsd", "name": "FreeBSD", "label": "FreeBSD Beastie", "description": "Official FreeBSD 'Beastie' daemon mascot, redrawn in monochrome — accurate to the real FreeBSD logo shape" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG), each REDRAWING a real, well-known OS/brand logo as accurately as possible in silhouette/shape (only recolored to monochrome — do not invent a different shape). Icons numbered top-left to bottom-right:\n\n1. Apple's bitten-apple logo silhouette (macOS)\n2. Oracle Solaris sun/orbit emblem silhouette\n3. IBM AIX logo mark silhouette\n4. HP invent/HP-UX logo mark silhouette\n5. FreeBSD 'Beastie' daemon mascot silhouette (official FreeBSD mascot pose: red devil-like figure with trident — but rendered monochrome)\n6. [EMPTY - leave this slot blank/transparent]\n7. [EMPTY - leave this slot blank/transparent]\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist line-art, but SHAPE must match the real official logo as closely as possible (this is the priority for this batch)\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns"
+    },
+    {
+      "batch_id": "batch-4",
+      "name": "Linux Family + Windows — Real Brand Logos (4/4)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "android", "name": "Android", "label": "Android (Google)", "description": "Official Android robot head/antenna logo, redrawn in monochrome — 100% shape-accurate" },
+        { "id": "ubuntu", "name": "Ubuntu", "label": "Ubuntu (Canonical)", "description": "Official Ubuntu 'circle of friends' logo, redrawn in monochrome — 100% shape-accurate" },
+        { "id": "fedora", "name": "Fedora", "label": "Fedora (Red Hat)", "description": "Official Fedora infinity mark, redrawn in monochrome — 100% shape-accurate" },
+        { "id": "arch", "name": "Arch Linux", "label": "Arch Linux", "description": "Official Arch Linux mountain/A logo, redrawn in monochrome — 100% shape-accurate" },
+        { "id": "debian", "name": "Debian", "label": "Debian", "description": "Official Debian swirl logo, redrawn in monochrome — 100% shape-accurate" },
+        { "id": "windows", "name": "Windows", "label": "Microsoft Windows", "description": "Official Windows four-pane flag logo, redrawn in monochrome — 100% shape-accurate" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG), each REDRAWING a real, well-known OS/distro logo as accurately as possible in silhouette/shape (only recolored to monochrome — do not invent a different shape). Icons numbered top-left to bottom-right:\n\n1. Android robot head with two antennae, official Android mascot silhouette\n2. Ubuntu 'circle of friends' logo (three curved figures around a ring)\n3. Fedora infinity-loop 'f' mark\n4. Arch Linux mountain-peak 'A' logo\n5. Debian spiral swirl logo\n6. Microsoft Windows four-pane flag/window logo\n7. [EMPTY - leave this slot blank/transparent]\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist line-art, but SHAPE must match the real official logo as closely as possible (this is the priority for this batch)\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns"
+    }
+    ,
+    {
+      "batch_id": "batch-5",
+      "name": "Fixes & Additions — sharper prompts (5/5, v2)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "bell-labs-v2", "name": "AT&T Bell System", "label": "AT&T Bell Labs (1969)", "description": "The real AT&T 'Bell System' logo — bell shape inside a circle, the historic telephone company emblem used circa 1969, NOT a generic bell/ring icon" },
+        { "id": "c-language-v2", "name": "C Language", "label": "C Programming Language", "description": "The widely-recognized blue/dark 'C' programming language logo (the ISO C roundel mark), not a generic bracket symbol" },
+        { "id": "slackware", "name": "Slackware", "label": "Slackware Linux", "description": "Official Slackware Linux logo (the stylized 'S' / mountain-like logo), redrawn in monochrome, real shape" },
+        { "id": "redhat", "name": "Red Hat", "label": "Red Hat Linux", "description": "Official Red Hat fedora-hat logo, redrawn in monochrome, real shape" },
+        { "id": "suse", "name": "SUSE", "label": "SUSE Linux", "description": "Official SUSE chameleon logo, redrawn in monochrome, real shape" },
+        { "id": "gentoo", "name": "Gentoo", "label": "Gentoo Linux", "description": "Official Gentoo 'g' swirl logo, redrawn in monochrome, real shape" },
+        { "id": "centos", "name": "CentOS", "label": "CentOS Linux", "description": "Official CentOS four-quadrant logo, redrawn in monochrome, real shape" },
+        { "id": "mint", "name": "Linux Mint", "label": "Linux Mint", "description": "Official Linux Mint leaf-in-shield logo, redrawn in monochrome, real shape" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG), each REDRAWING a real, well-known brand/logo as accurately as possible in silhouette/shape (only recolored to monochrome — do not invent a different shape, and do not substitute a generic placeholder). Icons numbered top-left to bottom-right:\n\n1. The real AT&T 'Bell System' logo: a bell silhouette inside a circle — the classic AT&T telephone company emblem (NOT a plain bell/ring icon, must resemble the actual Bell System roundel)\n2. The well-known blue 'C' programming language roundel logo (a stylized letter C with a distinctive circular/gradient look), not code brackets\n3. Slackware Linux logo (stylized 'S' emblem)\n4. Red Hat logo (fedora hat silhouette)\n5. SUSE logo (chameleon silhouette)\n6. Gentoo logo ('g' spiral/swirl silhouette)\n7. CentOS logo (four-color quadrant flower mark, monochrome version)\n8. Linux Mint logo (leaf inside a shield/rounded-square outline)\n\nStyle requirements:\n- Flat design, minimalist line-art, but SHAPE must match the real official logo as closely as possible (this is the priority for this batch)\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns"
+    },
+    {
+      "batch_id": "batch-6",
+      "name": "Additional distro logos (6/6)",
+      "rows": 1,
+      "cols": 2,
+      "icons": [
+        { "id": "manjaro", "name": "Manjaro", "label": "Manjaro Linux", "description": "Official Manjaro logo (three vertical bars / green mark), redrawn in monochrome, real shape" },
+        { "id": "popos", "name": "Pop!_OS", "label": "Pop!_OS", "description": "Official Pop!_OS logo mark, redrawn in monochrome, real shape" }
+      ],
+      "prompt": "Generate a 1x2 row of 2 minimalist grayscale monochrome icons on TRANSPARENT background (PNG), each REDRAWING a real, well-known Linux distro logo as accurately as possible in silhouette/shape (only recolored to monochrome). Icons left to right:\n\n1. Manjaro Linux logo (three vertical bars mark)\n2. Pop!_OS logo mark\n\nStyle requirements:\n- Flat design, minimalist line-art, but SHAPE must match the real official logo as closely as possible\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background\n- Each icon same size, clearly distinct, high contrast"
+    }
+  ],
+  "real_person_photos_note": "Ken Thompson, Dennis Ritchie, and Linus Torvalds are real named people — AI image generation should NOT be used to fabricate their likeness (not accurate, and not appropriate to generate via AI). Instead, source real Creative-Commons-licensed photos (e.g. from Wikipedia) and save them manually as: kt-photo.png (Ken Thompson), dr-photo.png (Dennis Ritchie), linus-photo.png (Linus Torvalds). The code already has graceful fallback to the current initials-circle / stylized-avatar look if these files are absent, so dropping them in later 'just works'.",
+  "generation": {
+    "api_endpoint": "http://localhost:3300/api/icons/generate",
+    "output_path": "src/content/linux-vs-unix/icons"
+  },
+  "next_steps": [
+    "1. Run batch-5 and batch-6 prompts through your local icon-generation pipeline (batch-1..4 already generated and wired).",
+    "2. Slice each grid PNG into individual icon files, named by 'id' (e.g. bell-labs-v2.png, redhat.png, manjaro.png).",
+    "3. Save all files into src/content/linux-vs-unix/icons/.",
+    "4. (Optional, manual) Source real CC-licensed photos for Ken Thompson, Dennis Ritchie, Linus Torvalds — save as kt-photo.png, dr-photo.png, linus-photo.png. See 'real_person_photos_note' above.",
+    "5. Tell Claude when done — loader.js / Animation-history.jsx will be updated to wire in the new files (with safe fallbacks for anything still missing)."
+  ]
+}

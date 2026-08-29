@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import sfxLoader from './sfx-loader'
+import { getIcon } from './icons/loader'
 import {
   VW, VH, PHASES,
   UNIX_FAMILY, LINUX_FAMILY, WINDOWS,
@@ -35,6 +36,7 @@ export default function LinuxVsUnixAnimation({
   // Storytelling
   const [caption, setCaption] = useState('')
   const [captionColor, setCaptionColor] = useState('#94A3B8')
+  const [storyIcon, setStoryIcon] = useState(null)
   
   // Phase 1: Node animations (state-driven)
   const [nodeStates, setNodeStates] = useState({})
@@ -84,7 +86,6 @@ export default function LinuxVsUnixAnimation({
     const master = gsap.timeline({
       repeat: -1,
       repeatDelay: 1.5,
-      onRepeat: () => setPhaseIdx(0),
       paused: true, // Start paused, will be controlled by useEffect
     })
     
@@ -105,6 +106,7 @@ export default function LinuxVsUnixAnimation({
       p: 1,
       duration: 0.8,
       ease: 'power3.inOut',
+      onStart: () => sfxLoader.transition(SFX.CONNECTOR_COMPLETE, { volume, speed }),
       onUpdate: () => setMorphP(mo.p)
     }, 0.3)
     master.add(() => setShowIntro(false), 1.1)
@@ -118,6 +120,7 @@ export default function LinuxVsUnixAnimation({
     master.add(() => {
       setPhaseIdx(0)
       setCaption(CAPTIONS.PHASE1.BELL_LABS)
+      setStoryIcon('bell-labs')
     }, at(0))
 
     // 1. POSIX Hub appears with pulse
@@ -168,6 +171,7 @@ export default function LinuxVsUnixAnimation({
     const unixCompleteTime = at(2) + unixSpawnOrder.length * TIMING.PHASE1_NODE_SPAWN_STAGGER + 0.5
     master.add(() => {
       setCaption(CAPTIONS.PHASE1.POSIX_CONNECTED)
+      setStoryIcon('posix')
       sfxLoader.ui(SFX.ALL_NODES_COMPLETE, { volume, speed })
     }, unixCompleteTime)
 
@@ -176,11 +180,13 @@ export default function LinuxVsUnixAnimation({
     
     master.add(() => {
       setCaption(CAPTIONS.PHASE1.LINUX_INTRO)
+      setStoryIcon('linus')
     }, linuxStartTime)
     
     // Android dramatic entrance with shake
     master.add(() => {
       setCaption(CAPTIONS.PHASE1.ANDROID)
+      setStoryIcon(null)
       
       // Canvas shake
       const shakeObj = { v: 0 }
@@ -324,11 +330,13 @@ export default function LinuxVsUnixAnimation({
     // "NOT UNIX" label appears
     master.to('#not-unix-label', {
       attr: { opacity: 1 }, duration: 0.3,
+      onStart: () => sfxLoader.warning(SFX.WINDOWS_REJECTED, { volume: volume * 0.5, speed }),
     }, expelTime + 0.8)
 
     // All connectors redraw
     master.to('.connector-unix, .connector-linux', {
       attr: { opacity: 0.8 }, duration: 0.3,
+      onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.5, speed }),
     }, expelTime + 0.5)
 
     // --- Beat 3: The WSL Redemption (12-15s) ---
@@ -338,6 +346,7 @@ export default function LinuxVsUnixAnimation({
     // NT Kernel label appears
     master.to('#nt-kernel-label', {
       attr: { opacity: 1 }, duration: 0.4,
+      onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.5, speed }),
     }, wslTime)
 
     // Thought bubble appears then disappears
@@ -346,11 +355,13 @@ export default function LinuxVsUnixAnimation({
     }, wslTime + 0.5)
     master.to('#thought-bubble-inner', {
       scale: 1, duration: 0.5, ease: 'back.out(1.7)',
+      onStart: () => sfxLoader.ui(SFX.NODE_SPAWN, { volume: volume * 0.6, speed }),
     }, wslTime + 0.5)
 
     // Bubble pops
     master.to('#thought-bubble-inner', {
       scale: 1.3, duration: 0.2, ease: 'power2.in',
+      onStart: () => sfxLoader.ui(SFX.DESKTOP_SAD, { volume: volume * 0.6, speed }),
     }, wslTime + 1.5)
     master.to('#thought-bubble', {
       attr: { opacity: 0 }, duration: 0.3,
@@ -359,6 +370,7 @@ export default function LinuxVsUnixAnimation({
     // WSL arrives
     master.add(() => {
       setCaption(CAPTIONS.PHASE1.WSL_ARRIVES)
+      setStoryIcon('wsl-bridge')
     }, wslTime + 2)
 
     // WSL label appears
@@ -394,6 +406,7 @@ export default function LinuxVsUnixAnimation({
     }, wslTime + 3.7)
     master.to('#node-windows', {
       y: '+=20', duration: 0.3, ease: 'bounce.out',
+      onStart: () => sfxLoader.ui(SFX.NODE_LAND, { volume: volume * 0.7, speed }),
     }, wslTime + 4.0)
     
     // Windows scale back to normal (redemption)
@@ -414,13 +427,18 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase1-group', {
       attr: { opacity: 0 }, duration: 0.5,
+      onStart: () => sfxLoader.transition('whoosh-low', { volume: volume * 0.5, speed }),
     }, at(12.0))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 2: WHERE UNIX LIVES (13-23s)
     // ═══════════════════════════════════════════════════════
 
-    master.add(() => setPhaseIdx(1), 13)
+    master.add(() => {
+      setPhaseIdx(1)
+      setStoryIcon(null)
+      sfxLoader.transition(SFX.LINUX_DRAMATIC_ENTER, { volume: volume * 0.6, speed })
+    }, 13)
 
     // Use case cards fade in from left
     UNIX_USE_CASES?.forEach((useCase, i) => {
@@ -429,14 +447,22 @@ export default function LinuxVsUnixAnimation({
         attr: { opacity: 1 },
         x: 0,
         duration: 0.5, ease: 'power2.out',
+        onStart: () => sfxLoader.transition(SFX.CARD_ENTER, { volume: volume * 0.65, speed }),
+        onComplete: () => sfxLoader.ui(SFX.NODE_LAND, { volume: volume * 0.4, speed }),
       }, at(13) + i * 0.4)
 
       // Removed: Glow dots flow through card (too many particles)
     })
 
+    // All cards settled
+    master.add(() => {
+      sfxLoader.success(SFX.CARD_COMPLETE, { volume: volume * 0.6, speed })
+    }, at(13) + (UNIX_USE_CASES?.length || 0) * 0.4 + 0.6)
+
     // Phase 2 caption
     master.to('#phase2-caption', {
       attr: { opacity: 1 }, duration: 0.5,
+      onStart: () => sfxLoader.ui(SFX.DESKTOP_SAD, { volume: volume * 0.4, speed }),
     }, at(22.0))
 
     // ═══════════════════════════════════════════════════════
@@ -445,13 +471,17 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase2-group', {
       attr: { opacity: 0 }, duration: 0.5,
+      onStart: () => sfxLoader.transition('whoosh-low', { volume: volume * 0.5, speed }),
     }, at(22.5))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 3: LINUX DOMINANCE (24-34s)
     // ═══════════════════════════════════════════════════════
 
-    master.add(() => setPhaseIdx(2), 24)
+    master.add(() => {
+      setPhaseIdx(2)
+      sfxLoader.transition(SFX.LINUX_DRAMATIC_ENTER, { volume: volume * 0.6, speed })
+    }, 24)
 
     // Bar charts animate in
     LINUX_DOMINANCE?.forEach((stat, i) => {
@@ -461,12 +491,22 @@ export default function LinuxVsUnixAnimation({
       master.to(`#bar-linux-${i}`, {
         attr: { width: (stat.linux / 100) * 400 },
         duration: 0.8, ease: 'power2.out',
+        onStart: () => sfxLoader.success(SFX.BAR_GROW, { volume: volume * 0.5, speed: speed * 1.3 }),
+        onComplete: () => {
+          if (stat.linux >= 100) {
+            sfxLoader.success(SFX.BAR_100_VICTORY, { volume, speed })
+          } else {
+            sfxLoader.success(SFX.BAR_COMPLETE, { volume: volume * 0.6, speed })
+          }
+        },
       }, delay)
 
       // Unix bar grows
       master.to(`#bar-unix-${i}`, {
         attr: { width: (stat.unix / 100) * 400 },
         duration: 0.8, ease: 'power2.out',
+        onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.35, speed: speed * 1.2 }),
+        onComplete: () => sfxLoader.ui(SFX.DESKTOP_SAD, { volume: volume * 0.4, speed }),
       }, delay)
 
       // Percentage counter
@@ -486,6 +526,7 @@ export default function LinuxVsUnixAnimation({
     // Phase 3 caption
     master.to('#phase3-caption', {
       attr: { opacity: 1 }, duration: 0.5,
+      onStart: () => sfxLoader.success(SFX.PHASE_COMPLETE, { volume: volume * 0.5, speed }),
     }, at(33.0))
 
     // ═══════════════════════════════════════════════════════
@@ -494,46 +535,69 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase3-group', {
       attr: { opacity: 0 }, duration: 0.5,
+      onStart: () => sfxLoader.transition('whoosh-low', { volume: volume * 0.5, speed }),
     }, at(33.5))
 
     // ═══════════════════════════════════════════════════════
     // PHASE 4: POSIX BROTHERS (35-40s)
     // ═══════════════════════════════════════════════════════
 
-    master.add(() => setPhaseIdx(3), 35)
+    master.add(() => {
+      setPhaseIdx(3)
+      sfxLoader.transition(SFX.CONNECTOR_COMPLETE, { volume: volume * 0.6, speed })
+    }, 35)
 
     // Venn diagram circles appear
     master.to('#venn-linux', {
       r: 80, duration: 0.8, ease: 'back.out(1.7)',
+      onStart: () => sfxLoader.ui(SFX.NODE_SPAWN, { volume, speed }),
+      onComplete: () => sfxLoader.ui(SFX.NODE_LAND, { volume: volume * 0.6, speed }),
     }, at(35))
     master.to('#venn-unix', {
       r: 80, duration: 0.8, ease: 'back.out(1.7)',
+      onStart: () => sfxLoader.ui(SFX.NODE_SPAWN, { volume: volume * 0.8, speed }),
+      onComplete: () => sfxLoader.ui(SFX.NODE_LAND, { volume: volume * 0.5, speed }),
     }, at(35.2))
 
     // Labels fade in
     master.to('#venn-linux-label', {
       attr: { opacity: 1 }, duration: 0.4,
+      onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.5, speed }),
+    }, at(35.5))
+    master.to('#venn-linux-icon', {
+      attr: { opacity: 1 }, duration: 0.4,
     }, at(35.5))
     master.to('#venn-unix-label', {
+      attr: { opacity: 1 }, duration: 0.4,
+      onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.5, speed }),
+    }, at(35.7))
+    master.to('#venn-unix-icon', {
       attr: { opacity: 1 }, duration: 0.4,
     }, at(35.7))
 
     // POSIX label in overlap
     master.to('#venn-posix-label', {
       attr: { opacity: 1 }, duration: 0.4,
+      onStart: () => sfxLoader.ui(SFX.ALL_NODES_COMPLETE, { volume, speed }),
     }, at(36.0))
 
     // Shared tools appear one by one
     const tools = ['ls', 'grep', 'pipe', 'chmod']
+    master.to('#tool-icon', {
+      attr: { opacity: 1 }, duration: 0.3,
+      onStart: () => sfxLoader.ui(SFX.NODE_SPAWN, { volume: volume * 0.6, speed }),
+    }, at(36.2))
     tools.forEach((tool, i) => {
       master.to(`#tool-${tool}`, {
         attr: { opacity: 1 }, duration: 0.3,
+        onStart: () => sfxLoader.ui(SFX.CONNECTOR_DRAW, { volume: volume * 0.5, speed: speed * 1.1 }),
       }, at(36.2) + i * 0.15)
     })
 
     // Phase 4 caption
     master.to('#phase4-caption', {
       attr: { opacity: 1 }, duration: 0.5,
+      onStart: () => sfxLoader.success(SFX.PHASE_COMPLETE, { volume: volume * 0.7, speed }),
     }, at(37.5))
 
     // ═══════════════════════════════════════════════════════
@@ -542,6 +606,7 @@ export default function LinuxVsUnixAnimation({
 
     master.to('#phase4-group', {
       attr: { opacity: 0 }, duration: 0.5,
+      onStart: () => sfxLoader.success(SFX.PHASE_COMPLETE, { volume: volume * 0.5, speed }),
     }, at(39.5))
 
     return () => {
@@ -665,8 +730,12 @@ export default function LinuxVsUnixAnimation({
             fill="#000000" 
             opacity={0.7} 
           />
+          {storyIcon && getIcon(storyIcon) && (
+            <image href={getIcon(storyIcon)}
+              x={-380} y={-16} width={32} height={32} />
+          )}
           <text 
-            x={0} y={5} 
+            x={storyIcon && getIcon(storyIcon) ? 20 : 0} y={5} 
             textAnchor="middle" 
             fill={captionColor}
             fontSize={16} 
@@ -762,7 +831,9 @@ export default function LinuxVsUnixAnimation({
           <g id="posix-hub-inner" style={{ transformOrigin: '0px 0px', scale: 0 }}>
             <circle cx={0} cy={0} r={55} fill="#06B6D4" opacity={0.15} />
             <circle cx={0} cy={0} r={40} fill="#06B6D4" opacity={0.25} />
-            <circle cx={0} cy={0} r={25} fill="#06B6D4" opacity={0.4} />
+            {getIcon('posix') && (
+              <image href={getIcon('posix')} x={-22} y={-34} width={44} height={44} />
+            )}
             <text x={0} y={5} textAnchor="middle" fill="#22D3EE"
               fontSize={14} fontFamily="'Arial Black', Arial, sans-serif"
               fontWeight="900" letterSpacing="2"
@@ -774,6 +845,8 @@ export default function LinuxVsUnixAnimation({
         {UNIX_FAMILY?.map(os => {
           const pos = getAbsPos(UNIX_CLUSTER_CENTER, UNIX_POSITIONS[os.id])
           const r = SIZE_MAP[os.size] / 2
+          const logo = getIcon(os.icon)
+          const logoSize = r * 1.15
           return (
             <g key={os.id} id={`node-${os.id}`} opacity={0}
               transform={`translate(${pos.x}, ${pos.y})`}>
@@ -781,7 +854,12 @@ export default function LinuxVsUnixAnimation({
                 style={{ transformOrigin: '0px 0px', scale: 0 }}>
                 <circle cx={0} cy={0} r={r + 10} fill={os.color} opacity={0.12} filter="url(#dotGlow)" />
                 <circle cx={0} cy={0} r={r} fill={os.color} opacity={0.9} />
-                <circle cx={0} cy={0} r={r * 0.55} fill="#090b15" opacity={0.4} />
+                {logo ? (
+                  <image href={logo} x={-logoSize / 2} y={-logoSize / 2}
+                    width={logoSize} height={logoSize} />
+                ) : (
+                  <circle cx={0} cy={0} r={r * 0.55} fill="#090b15" opacity={0.4} />
+                )}
                 <text x={0} y={r + 20} textAnchor="middle" fill="#c0ccd8"
                   fontSize={os.size === 'XL' ? 16 : os.size === 'L' ? 14 : 11}
                   fontFamily="'Arial Black', Arial, sans-serif" fontWeight="900"
@@ -798,6 +876,8 @@ export default function LinuxVsUnixAnimation({
         {LINUX_FAMILY?.map(os => {
           const pos = getAbsPos(LINUX_CLUSTER_CENTER, LINUX_POSITIONS[os.id])
           const r = SIZE_MAP[os.size] / 2
+          const logo = getIcon(os.icon)
+          const logoSize = r * 1.15
           return (
             <g key={os.id} id={`node-${os.id}`} opacity={0}
               transform={`translate(${pos.x}, ${pos.y})`}>
@@ -805,7 +885,12 @@ export default function LinuxVsUnixAnimation({
                 style={{ transformOrigin: '0px 0px', scale: 0 }}>
                 <circle cx={0} cy={0} r={r + 10} fill={os.color} opacity={0.12} filter="url(#dotGlow)" />
                 <circle cx={0} cy={0} r={r} fill={os.color} opacity={0.9} />
-                <circle cx={0} cy={0} r={r * 0.55} fill="#090b15" opacity={0.4} />
+                {logo ? (
+                  <image href={logo} x={-logoSize / 2} y={-logoSize / 2}
+                    width={logoSize} height={logoSize} />
+                ) : (
+                  <circle cx={0} cy={0} r={r * 0.55} fill="#090b15" opacity={0.4} />
+                )}
                 <text x={0} y={r + 20} textAnchor="middle" fill="#c0ccd8"
                   fontSize={os.size === 'XL' ? 16 : os.size === 'L' ? 14 : 11}
                   fontFamily="'Arial Black', Arial, sans-serif" fontWeight="900"
@@ -824,7 +909,11 @@ export default function LinuxVsUnixAnimation({
             style={{ transformOrigin: '0px 0px', scale: 0 }}>
             <circle cx={0} cy={0} r={45} fill={WINDOWS.color} opacity={0.12} filter="url(#dotGlow)" />
             <circle cx={0} cy={0} r={35} fill={WINDOWS.color} opacity={0.9} />
-            <circle cx={0} cy={0} r={19} fill="#090b15" opacity={0.4} />
+            {getIcon(WINDOWS.icon) ? (
+              <image href={getIcon(WINDOWS.icon)} x={-20} y={-20} width={40} height={40} />
+            ) : (
+              <circle cx={0} cy={0} r={19} fill="#090b15" opacity={0.4} />
+            )}
             <text x={0} y={55} textAnchor="middle" fill="#c0ccd8"
               fontSize={14} fontFamily="'Arial Black', Arial, sans-serif" fontWeight="900"
             >{WINDOWS.name}</text>
@@ -981,8 +1070,13 @@ export default function LinuxVsUnixAnimation({
         {/* Bar Charts */}
         {LINUX_DOMINANCE?.map((stat, i) => {
           const yPos = 150 + i * 200
+          const catIcon = { Cloud: 'cloud-server', Supercomputers: 'supercomputer', 'Mobile (Android)': 'android' }[stat.category]
+          const catIconSrc = catIcon && getIcon(catIcon)
           return (
             <g key={i}>
+              {catIconSrc && (
+                <image href={catIconSrc} x={155} y={yPos - 8} width={26} height={26} />
+              )}
               <text x={50} y={yPos + 15} fill="#c0ccd8"
                 fontSize={12} fontFamily="monospace" fontWeight="700"
               >{stat.category}</text>
@@ -1038,12 +1132,24 @@ export default function LinuxVsUnixAnimation({
           fill="#64748B" fontSize={14} fontFamily="'Arial Black', Arial, sans-serif"
           fontWeight="900"
         >Unix/BSD</text>
+        {getIcon('tux') && (
+          <image id="venn-linux-icon" opacity={0} href={getIcon('tux')}
+            x={290} y={455} width={40} height={40} />
+        )}
+        {getIcon('bsd-daemon') && (
+          <image id="venn-unix-icon" opacity={0} href={getIcon('bsd-daemon')}
+            x={490} y={455} width={40} height={40} />
+        )}
         <text id="venn-posix-label" opacity={0} x={410} y={510}
           fill="#22D3EE" fontSize={12} fontFamily="monospace"
           fontWeight="700"
         >POSIX</text>
 
         {/* Shared Tools */}
+        {getIcon('terminal-hacker') && (
+          <image id="tool-icon" opacity={0} href={getIcon('terminal-hacker')}
+            x={340} y={525} width={28} height={28} />
+        )}
         {['ls', 'grep', 'pipe', 'chmod'].map((tool, i) => (
           <text key={tool} id={`tool-${tool}`} opacity={0}
             x={380 + i * 30} y={540}

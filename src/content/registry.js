@@ -159,6 +159,21 @@ export const CONTENT_REGISTRY = [
   // },
 
   // ═══════════════════════════════════════════════════════════
+  // ✅ GIT & VERSION CONTROL (coming soon)
+  // ═══════════════════════════════════════════════════════════
+  // TODO: Implement git-version-control animation
+  // {
+  //   id:        'git-version-control',
+  //   title:     'Git & Version Control',
+  //   subtitle:  'Commits, branches, merging, and collaboration',
+  //   category:  'Developer Tools',
+  //   tags:      ['Git', 'Version Control', 'Collaboration', 'Development'],
+  //   color:     '#F1502F',
+  //   status:    'ready',
+  //   component: () => import('./git/Animation'),
+  // },
+
+  // ═══════════════════════════════════════════════════════════
   // ✅ NEW TOPIC
   // ═══════════════════════════════════════════════════════════
 
@@ -170,6 +185,6 @@ export const CONTENT_REGISTRY = [
     tags:      ['Linux', 'Unix', 'BSD', 'macOS', 'Windows'],
     color:     '#06B6D4',
     status:    'ready',
-    component: () => import('./linux-vs-unix/Animation'),
+    component: () => import('./linux-vs-unix/Animation-history'),
   },
 ]

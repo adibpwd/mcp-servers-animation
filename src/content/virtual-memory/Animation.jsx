@@ -433,6 +433,10 @@ export default function VirtualMemoryAnimation({
         offsetY: 0,
         duration: ANIMATION_TIMING.ACT2_SLOT_DURATION,
         ease: 'back.out(1.4)',
+        onStart: () => {
+          // SFX: slide-in sound saat slot mulai muncul (dijamin sekali per slot)
+          sfxLoader.transition(SFX_MAP.SLIDE_IN.name, { volume: volume * 0.75, speed: speed * 1.1 })
+        },
         onUpdate: () => {
           setRamSlots(prev => {
             const updated = [...prev]
@@ -444,11 +448,6 @@ export default function VirtualMemoryAnimation({
             }
             return updated
           })
-          
-          // SFX: slide-in sound saat slot muncul
-          if (slotAnimObj.opacity >= 0.45 && slotAnimObj.opacity <= 0.55) {
-            sfxLoader.transition(SFX_MAP.SLIDE_IN.name, { volume: volume * 0.4, speed: speed * 1.1 })
-          }
         }
       }, appearTime)
     })

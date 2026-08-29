@@ -15,6 +15,49 @@
       font-size: 16px;
       margin: 0 0 12px;
     }
+    .topic-selector {
+      margin-bottom: 12px;
+    }
+    .topic-selector label {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+    .topic-selector select {
+      width: 100%;
+      padding: 8px;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #f8fafc;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .topic-selector select:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .topic-selector select[multiple] {
+      min-height: 100px;
+    }
+    .topic-selector select[multiple] option {
+      padding: 6px 8px;
+      margin: 2px 0;
+      border-radius: 4px;
+    }
+    .topic-selector select[multiple] option:checked {
+      background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+      color: #052e16;
+      font-weight: 600;
+    }
+    .topic-info {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #64748b;
+      min-height: 14px;
+    }
     button {
       width: 100%;
       border: 0;
@@ -57,9 +100,25 @@
   </style>
 </head>
 <body>
-  <h1>VM Icon Generator</h1>
-  <button id="generate">Generate Icons from ChatGPT</button>
-  <div id="status" class="status">Ready. Click "Generate Icons" to start.</div>
+  <h1>Content Icon Generator</h1>
+  
+  <div class="topic-selector">
+    <label>Select Topic:</label>
+    <select id="topicSelect" disabled>
+      <option value="">Loading topics...</option>
+    </select>
+    <div class="topic-info" id="topicInfo"></div>
+  </div>
+
+  <div class="topic-selector" id="batchContainer" style="display: none;">
+    <label>Select Batch(es) - Hold Ctrl/Cmd for multiple:</label>
+    <select id="batchSelect" multiple size="4">
+    </select>
+    <div class="topic-info" id="batchInfo"></div>
+  </div>
+  
+  <button id="generate" disabled>Generate Icons from ChatGPT</button>
+  <div id="status" class="status">Ready. Select a topic to start.</div>
   <div id="preview" class="preview"></div>
   <script src="popup.js"></script>
 </body>

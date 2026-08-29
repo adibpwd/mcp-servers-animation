@@ -3,7 +3,7 @@ import './ExportHistory.css'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
-  return `http://${window.location.hostname}:3000`
+  return `http://${window.location.hostname}:3300`
 }
 
 export function ExportHistory({ onBack }) {

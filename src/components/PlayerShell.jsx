@@ -7,8 +7,8 @@ import { ProgressIndicator } from './ProgressIndicator'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
-  // Always use the same hostname/IP that browser is using to access frontend
-  return `http://${window.location.hostname}:3000`
+  // Always use the same hostname/IP that browser is using to access frontend on port 3300
+  return `http://${window.location.hostname}:3300`
 }
 
 export function PlayerShell({ content, onBack }) {
@@ -23,6 +23,28 @@ export function PlayerShell({ content, onBack }) {
 
   // Lazy load the animation component
   const AnimationComponent = lazy(content.component)
+
+  // Untuk export script (puppeteer): unlock audio TANPA menjalankan animasi.
+  // Jangan pakai togglePlayPause di sini — itu juga memanggil setIsPaused(false)
+  // yang bikin GSAP timeline benar-benar play, dan SFX yang sempat ke-trigger
+  // saat itu TIDAK berhenti walau timeline di-pause lagi setelahnya (Audio/
+  // WebAudio node berjalan independen dari GSAP), sehingga bocor ke rekaman.
+  useEffect(() => {
+    window.__forceUnlockAudio = async () => {
+      if (audioUnlocked) return true
+      try {
+        const silent = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA')
+        await silent.play()
+        setAudioUnlocked(true)
+        console.log('[Audio] ✅ Unlocked silently (animation tetap paused)')
+        return true
+      } catch (err) {
+        console.error('[Audio] ❌ Silent unlock failed:', err)
+        return false
+      }
+    }
+    return () => { delete window.__forceUnlockAudio }
+  }, [audioUnlocked])
 
   const togglePlayPause = async () => {
     // If playing, just pause
@@ -94,18 +116,19 @@ export function PlayerShell({ content, onBack }) {
     }
   }, [exportStatus, content.id])
 
+  const isParallel = settings.exportMode === 'parallel'
+
   const fetchStatus = async () => {
     try {
       const EXPORT_SERVER_URL = getExportServerUrl()
-      const res = await fetch(`${EXPORT_SERVER_URL}/api/export/status?topicId=${content.id}`)
+      // Poll endpoint sesuai mode aktif
+      const endpoint = isParallel
+        ? `${EXPORT_SERVER_URL}/api/exportp/status?topicId=${content.id}`
+        : `${EXPORT_SERVER_URL}/api/export/status?topicId=${content.id}`
+      const res  = await fetch(endpoint)
       const data = await res.json()
       setExportStatus(data)
-
-      // Auto-hide progress on completion (keep visible but allow closing)
-      if (data.status === 'done' || data.status === 'error') {
-        setIsExporting(false)
-        // Don't auto-hide, let user close manually
-      }
+      if (data.status === 'done' || data.status === 'error') setIsExporting(false)
     } catch (err) {
       console.error('Failed to fetch export status:', err)
     }
@@ -116,32 +139,29 @@ export function PlayerShell({ content, onBack }) {
     setShowProgress(true)
     try {
       const EXPORT_SERVER_URL = getExportServerUrl()
-      const res = await fetch(
-        `${EXPORT_SERVER_URL}/api/export/${content.id}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            volume: settings.volume,
-            speed: settings.speed
-          })
-        }
-      )
+      const endpoint = isParallel
+        ? `${EXPORT_SERVER_URL}/api/exportp/${content.id}`
+        : `${EXPORT_SERVER_URL}/api/export/${content.id}`
+      const body = isParallel
+        ? { volume: settings.volume, speed: settings.speed, workers: settings.workers }
+        : { volume: settings.volume, speed: settings.speed }
+      const res  = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      })
       const data = await res.json()
       if (!data.ok && res.status === 409) {
-        alert(`Export sedang berjalan untuk: ${data.status}`)
-        setIsExporting(false)
-        setShowProgress(false)
+        alert(`Export sedang berjalan: ${data.error}`)
+        setIsExporting(false); setShowProgress(false)
       } else if (!data.ok) {
         alert(`Error: ${data.error}`)
-        setIsExporting(false)
-        setShowProgress(false)
+        setIsExporting(false); setShowProgress(false)
       }
     } catch (err) {
       console.error('Failed to start export:', err)
       alert('Gagal memulai export')
-      setIsExporting(false)
-      setShowProgress(false)
+      setIsExporting(false); setShowProgress(false)
     }
   }
 
@@ -189,15 +209,41 @@ export function PlayerShell({ content, onBack }) {
             <span>Settings</span>
           </button>
 
+          {/* Mode toggle: Single vs Parallel */}
+          <div className="export-mode-toggle" title={isParallel ? `Parallel: ${settings.workers} Chrome workers` : 'Single Chrome process'}>
+            <button
+              className={`mode-btn ${!isParallel ? 'active' : ''}`}
+              onClick={() => updateSettings({ exportMode: 'single' })}
+              disabled={isExporting}
+              title="Single process (original)"
+            >1×</button>
+            <button
+              className={`mode-btn ${isParallel ? 'active' : ''}`}
+              onClick={() => updateSettings({ exportMode: 'parallel' })}
+              disabled={isExporting}
+              title="Parallel multi-Chrome workers"
+            >⚡{settings.workers}×</button>
+            {isParallel && (
+              <input
+                type="range" min="2" max="8" step="1"
+                value={settings.workers}
+                onChange={e => updateSettings({ workers: Number(e.target.value) })}
+                disabled={isExporting}
+                className="workers-slider"
+                title={`Workers: ${settings.workers}`}
+              />
+            )}
+          </div>
+
           {/* Export Button */}
           <button
             className={`control-btn export-btn ${isExporting ? 'exporting' : ''}`}
             onClick={startExport}
             disabled={isExporting}
-            title="Export to MP4"
+            title={isParallel ? `Export (Parallel, ${settings.workers} workers)` : 'Export (Single)'}
           >
-            <span className="control-icon">{isExporting ? '⟳' : '⟳'}</span>
-            <span>{isExporting ? 'Exporting...' : 'Export MP4'}</span>
+            <span className="control-icon">⟳</span>
+            <span>{isExporting ? 'Exporting...' : isParallel ? `Export ⚡` : 'Export MP4'}</span>
           </button>
 
           {/* Download Button */}
@@ -252,6 +298,7 @@ export function PlayerShell({ content, onBack }) {
           contentTitle={content.title}
           onClose={handleCloseProgress}
           isExporting={isExporting}
+          mode={isParallel ? 'parallel' : 'single'}
         />
       )}
 

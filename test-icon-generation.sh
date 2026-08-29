@@ -17,7 +17,7 @@ sleep 3
 
 # Check server health
 echo "✓ Testing API endpoint..."
-curl -s http://localhost:3000/api/icons/metadata >/dev/null || {
+curl -s http://localhost:3300/api/icons/metadata >/dev/null || {
   echo "✗ Server API not responding"
   kill $SERVER_PID 2>/dev/null || true
   exit 1
@@ -29,7 +29,7 @@ echo "✓ API endpoint OK"
 echo ""
 echo "=== Test 1: Verify Metadata ==="
 if command -v jq >/dev/null 2>&1; then
-  ICONS_COUNT=$(curl -s http://localhost:3000/api/icons/metadata | jq '.icons | length')
+  ICONS_COUNT=$(curl -s http://localhost:3300/api/icons/metadata | jq '.icons | length')
   echo "Icons in metadata: $ICONS_COUNT"
   [ "$ICONS_COUNT" -eq 7 ] && echo "✓ PASS: 7 icons configured" || echo "✗ FAIL: Expected 7 icons"
 else
