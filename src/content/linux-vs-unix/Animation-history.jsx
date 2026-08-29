@@ -117,13 +117,10 @@ export default function LinuxVsUnixHistoryAnimation({
       tl.add(() => {
         acc += char
         setTyped(prev => ({ ...prev, [lineKey]: acc }))
-        // Pakai ref supaya selalu baca nilai audioUnlocked terbaru (bukan stale closure)
-        if (audioUnlockedRef.current) {
-          sfxLoader.sfx(SFX_MAP.TYPING.name, {
-            volume: volumeRef.current * 1.6, // digedein — sebelumnya 1.0 kerasa cuma "getar", sekarang lebih berasa kayak ngetik beneran
-            speed: speedRef.current * (0.98 + Math.random() * 0.04)
-          })
-        }
+        sfxLoader.sfx(SFX_MAP.TYPING.name, {
+          volume: volumeRef.current * 1.6,
+          speed: speedRef.current * (0.98 + Math.random() * 0.04)
+        })
       }, time)
       time += delay / 1000
     }
