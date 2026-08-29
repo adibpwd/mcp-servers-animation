@@ -29,4 +29,6 @@ Thumbs.db
 
 # Exports
 export/output/
+export/seg_*/
+export/frames/
 chrome/
