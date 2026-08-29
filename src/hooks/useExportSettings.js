@@ -4,8 +4,8 @@ const DEFAULT_SETTINGS = {
   volume: 75,
   speed: 1.0,
   previewSfx: true,
-  exportMode: 'parallel',   // 'single' | 'parallel'
-  workers: 4                // jumlah Chrome workers (hanya berlaku untuk mode parallel)
+  exportMode: 'parallel',      // 'single' | 'parallel'
+  workers: 4,                  // jumlah Chrome workers (hanya berlaku untuk mode parallel)
 }
 
 const STORAGE_KEY = 'exportSettings'

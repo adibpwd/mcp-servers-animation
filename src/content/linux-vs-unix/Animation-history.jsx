@@ -114,13 +114,16 @@ export default function LinuxVsUnixHistoryAnimation({
       const rand = seededRandom01(i * 12.9898 + lineSeed)
       const variance = (rand - 0.5) * (maxDelay - minDelay)
       const delay = Math.max(minDelay, Math.min(maxDelay, avgDelay + variance))
+      // Seeded pitch variation (jangan Math.random — harus deterministik)
+      const pitchSeed = seededRandom01(i * 5.1 + (lineKey === 'title' ? 2.3 : 8.7))
+      const pitch = 0.98 + pitchSeed * 0.04
+
       tl.add(() => {
         acc += char
         setTyped(prev => ({ ...prev, [lineKey]: acc }))
-        sfxLoader.sfx(SFX_MAP.TYPING.name, {
-          volume: volumeRef.current * 1.6,
-          speed: speedRef.current * (0.98 + Math.random() * 0.04)
-        })
+
+        // ── SFX ketik intro: sama seperti Act 1+ (sfxLoader pool) ──
+        sfxLoader.sfx(SFX_MAP.TYPING.name, { volume: volumeRef.current * 1.6, speed: speedRef.current * pitch })
       }, time)
       time += delay / 1000
     }
