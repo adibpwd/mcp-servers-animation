@@ -2,7 +2,14 @@
 // ─────────────────────────────────────────────────────────────
 // Daftar semua content topics
 // Tambah topic baru = tambah object baru ke array ini
+//
+// Topic yang sudah migrasi ke kontrak baru (punya manifest.js,
+// lihat _docs/project/CONTENT_STANDARDIZATION_PLAN.md) membaca
+// metadata via import + spread dari manifest-nya, alih-alih
+// hardcode literal di sini. Topic lama TIDAK wajib ikut pola ini.
 // ─────────────────────────────────────────────────────────────
+
+import linuxVsUnixManifest from './linux-vs-unix/manifest'
 
 export const CONTENT_REGISTRY = [
   // ═══════════════════════════════════════════════════════════
@@ -174,17 +181,12 @@ export const CONTENT_REGISTRY = [
   // },
 
   // ═══════════════════════════════════════════════════════════
-  // ✅ NEW TOPIC
+  // ✅ NEW TOPIC — migrasi ke kontrak baru (manifest.js)
   // ═══════════════════════════════════════════════════════════
 
   {
-    id:        'linux-vs-unix',
-    title:     'Linux vs Unix',
-    subtitle:  'From AT&T Bell Labs to modern ecosystems',
-    category:  'Operating Systems',
-    tags:      ['Linux', 'Unix', 'BSD', 'macOS', 'Windows'],
-    color:     '#06B6D4',
+    ...linuxVsUnixManifest,
     status:    'ready',
-    component: () => import('./linux-vs-unix/Animation-history'),
+    component: () => import('./linux-vs-unix/Animation'),
   },
 ]

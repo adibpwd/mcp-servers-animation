@@ -14,8 +14,8 @@ import {
   UNIX_BIRTH, UNIX_SPLIT_EVENTS, LINUX_BIRTH,
   DISTRO_TREE, DISTRO_COUNT_MILESTONES,
   UNIX_TODAY, LINUX_TODAY, CLOSING_LINE,
-} from './data-history'
-import sfxLoader from './sfx-loader'
+} from './data'
+import sfxLoader from '../../shared/audio/sfxLoader'
 import { getIcon } from './icons/loader'
 
 const lerp = (a, b, t) => a + (b - a) * t
@@ -459,7 +459,7 @@ export default function LinuxVsUnixHistoryAnimation({
               <text x={20} y={-16} textAnchor="middle" fill={COLORS.UNIX} fontSize={17} fontWeight={800}>PDP-7</text>
               <rect x={-60} y={10} width={120} height={26} rx={5} fill="#000" stroke={COLORS.UNIX_DIM} />
               <text textAnchor="middle" y={27} fill={COLORS.LINUX} fontSize={11} fontFamily="monospace">$ unix</text>
-              <text textAnchor="middle" y={48} fill={COLORS.MUTED} fontSize={9} fontFamily="sans-serif">komputer bekas</text>
+              <text textAnchor="middle" y={48} fill={COLORS.MUTED} fontSize={12} fontFamily="sans-serif">komputer bekas</text>
             </g>
 
             <g transform={T('personKT', 170, 140)} opacity={O('personKT')}>
@@ -497,18 +497,18 @@ export default function LinuxVsUnixHistoryAnimation({
             <g transform={T('dot1969', 100, 320)} opacity={O('dot1969')}>
               <circle r={9} fill={COLORS.UNIX} filter="url(#glow)" />
               <text textAnchor="middle" y={-18} fill={COLORS.UNIX} fontSize={13} fontWeight={700}>1969</text>
-              <text textAnchor="middle" y={30} fill={COLORS.MUTED} fontSize={10}>Unix lahir</text>
+              <text textAnchor="middle" y={30} fill={COLORS.MUTED} fontSize={12}>Unix lahir</text>
             </g>
             <g transform={T('dot1971', 366, 320)} opacity={O('dot1971')}>
               <circle r={9} fill={COLORS.UNIX} filter="url(#glow)" />
               <text textAnchor="middle" y={-18} fill={COLORS.UNIX} fontSize={13} fontWeight={700}>1971</text>
-              <text textAnchor="middle" y={30} fill={COLORS.MUTED} fontSize={10}>Manual pertama</text>
+              <text textAnchor="middle" y={30} fill={COLORS.MUTED} fontSize={12}>Manual pertama</text>
             </g>
             <g transform={T('dot1973', 632, 320)} opacity={O('dot1973')}>
               <image href={getIcon('c-language-v2') || getIcon('c-language')} x={-28} y={-76} width={56} height={56} preserveAspectRatio="xMidYMid meet" />
               <circle r={9} fill={COLORS.UNIX} filter="url(#glow)" />
               <text textAnchor="middle" y={-18} fill={COLORS.UNIX} fontSize={13} fontWeight={700}>1973</text>
-              <text textAnchor="middle" y={30} fill={COLORS.MUTED} fontSize={10}>Ditulis pakai C</text>
+              <text textAnchor="middle" y={30} fill={COLORS.MUTED} fontSize={12}>Ditulis pakai C</text>
             </g>
 
             <g opacity={O('insight1')}>
@@ -543,8 +543,8 @@ export default function LinuxVsUnixHistoryAnimation({
                       <image href={getIcon(iconKey)} x={-66} y={-34} width={46} height={46} preserveAspectRatio="xMidYMid meet" />
                     )}
                     <text textAnchor="middle" x={iconKey ? 18 : 0} y={-14} fill={ev.special ? COLORS.GOLD : COLORS.UNIX} fontSize={13} fontWeight={800}>{ev.year}</text>
-                    <text textAnchor="middle" x={iconKey ? 18 : 0} y={5} fill={COLORS.TEXT} fontSize={13} fontWeight={700}>{ev.name}</text>
-                    <text textAnchor="middle" y={24} fill={COLORS.MUTED} fontSize={8}>{ev.org}</text>
+                    <text textAnchor="middle" x={iconKey ? 18 : 0} y={5} fill={COLORS.TEXT} fontSize={14} fontWeight={700}>{ev.name}</text>
+                    <text textAnchor="middle" y={24} fill={COLORS.MUTED} fontSize={10.5}>{ev.org}</text>
                   </g>
                 </g>
               )
@@ -592,14 +592,14 @@ export default function LinuxVsUnixHistoryAnimation({
               <rect x={-105} y={-38} width={210} height={76} rx={14} fill={COLORS.PANEL} stroke={COLORS.GOLD} strokeWidth={2} filter="url(#shadow)" />
               <image href={getIcon('gnu-fsf')} x={-95} y={-28} width={56} height={56} preserveAspectRatio="xMidYMid meet" />
               <text textAnchor="middle" x={24} y={-8} fill={COLORS.GOLD} fontSize={15} fontWeight={800}>GNU (1983)</text>
-              <text textAnchor="middle" x={24} y={15} fill={COLORS.MUTED} fontSize={10}>tools & compiler bebas</text>
+              <text textAnchor="middle" x={24} y={15} fill={COLORS.MUTED} fontSize={12}>tools & compiler bebas</text>
             </g>
             <text x={366} y={368} textAnchor="middle" fill={COLORS.MUTED} fontSize={32} opacity={Math.min(O('gnuSlide'), O('kernelSlide'))}>+</text>
             <g transform={T('kernelSlide', 522, 360)} opacity={O('kernelSlide')}>
               <rect x={-105} y={-38} width={210} height={76} rx={14} fill={COLORS.PANEL} stroke={COLORS.LINUX} strokeWidth={2} filter="url(#shadow)" />
               <image href={getIcon('tux')} x={-95} y={-28} width={56} height={56} preserveAspectRatio="xMidYMid meet" />
               <text textAnchor="middle" x={24} y={-8} fill={COLORS.LINUX} fontSize={15} fontWeight={800}>Linux Kernel (1991)</text>
-              <text textAnchor="middle" x={24} y={15} fill={COLORS.MUTED} fontSize={10}>inti sistem operasi</text>
+              <text textAnchor="middle" x={24} y={15} fill={COLORS.MUTED} fontSize={12}>inti sistem operasi</text>
             </g>
 
             <g opacity={O('mergeBox')}>
@@ -653,8 +653,8 @@ export default function LinuxVsUnixHistoryAnimation({
                   ) : (
                     <circle r={12} fill={node.color} filter="url(#shadow)" />
                   )}
-                  <text textAnchor="middle" y={isRoot ? -32 : -18} fill={node.color} fontSize={11} fontWeight={700}>{node.name}</text>
-                  <text textAnchor="middle" y={isRoot ? 38 : 22} fill={COLORS.MUTED} fontSize={8.5} fontFamily="monospace">{node.year}</text>
+                  <text textAnchor="middle" y={isRoot ? -32 : -18} fill={node.color} fontSize={12} fontWeight={700}>{node.name}</text>
+                  <text textAnchor="middle" y={isRoot ? 38 : 22} fill={COLORS.MUTED} fontSize={10.5} fontFamily="monospace">{node.year}</text>
                 </g>
               )
             })}
@@ -681,12 +681,12 @@ export default function LinuxVsUnixHistoryAnimation({
             <g transform={T('unixHeader', 183, 20)} opacity={O('unixHeader')}>
               <image href={getIcon('macos')} x={-125} y={-30} width={50} height={50} preserveAspectRatio="xMidYMid meet" />
               <text textAnchor="middle" fill={COLORS.UNIX} fontSize={32} fontWeight={900}>UNIX</text>
-              <text textAnchor="middle" y={22} fill={COLORS.MUTED} fontSize={11.5}>{UNIX_TODAY.headline}</text>
+              <text textAnchor="middle" y={22} fill={COLORS.MUTED} fontSize={13}>{UNIX_TODAY.headline}</text>
             </g>
             <g transform={T('linuxHeader', 549, 20)} opacity={O('linuxHeader')}>
               <image href={getIcon('tux')} x={75} y={-30} width={50} height={50} preserveAspectRatio="xMidYMid meet" />
               <text textAnchor="middle" fill={COLORS.LINUX} fontSize={32} fontWeight={900}>LINUX</text>
-              <text textAnchor="middle" y={22} fill={COLORS.MUTED} fontSize={11.5}>{LINUX_TODAY.headline}</text>
+              <text textAnchor="middle" y={22} fill={COLORS.MUTED} fontSize={13}>{LINUX_TODAY.headline}</text>
             </g>
 
             {UNIX_TODAY.stats.map((s, i) => {
@@ -695,7 +695,7 @@ export default function LinuxVsUnixHistoryAnimation({
                 <g key={`u${i}`} transform={T(`unixStat-${i}`, 183, 76 + i * 64)} opacity={O(`unixStat-${i}`)}>
                   <rect x={-160} y={-24} width={320} height={52} rx={12} fill={COLORS.PANEL} stroke={COLORS.UNIX} strokeWidth={1.5} />
                   <image href={getIcon(uIcon)} x={-152} y={-21} width={42} height={42} preserveAspectRatio="xMidYMid meet" />
-                  <text x={-102} y={-4} fill={COLORS.TEXT} fontSize={11}>{s.label}</text>
+                  <text x={-102} y={-4} fill={COLORS.TEXT} fontSize={12}>{s.label}</text>
                   <text x={-102} y={17} fill={s.color} fontSize={13} fontWeight={800}>{s.value}</text>
                 </g>
               )
@@ -706,7 +706,7 @@ export default function LinuxVsUnixHistoryAnimation({
                 <g key={`l${i}`} transform={T(`linuxStat-${i}`, 549, 76 + i * 64)} opacity={O(`linuxStat-${i}`)}>
                   <rect x={-160} y={-24} width={320} height={52} rx={12} fill={COLORS.PANEL} stroke={COLORS.LINUX} strokeWidth={1.5} />
                   <image href={getIcon(lIcon)} x={-152} y={-21} width={42} height={42} preserveAspectRatio="xMidYMid meet" />
-                  <text x={-102} y={-4} fill={COLORS.TEXT} fontSize={11}>{s.label}</text>
+                  <text x={-102} y={-4} fill={COLORS.TEXT} fontSize={12}>{s.label}</text>
                   <text x={-102} y={17} fill={s.color} fontSize={13} fontWeight={800}>{s.value}</text>
                 </g>
               )
@@ -714,10 +714,10 @@ export default function LinuxVsUnixHistoryAnimation({
 
             <g opacity={O('variantCompare')} transform="translate(0, 280)">
               <rect width={732} height={68} rx={14} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={1} />
-              <text x={183} y={26} textAnchor="middle" fill={COLORS.MUTED} fontSize={11.5}>Varian Unix aktif</text>
+              <text x={183} y={26} textAnchor="middle" fill={COLORS.MUTED} fontSize={13}>Varian Unix aktif</text>
               <text x={183} y={52} textAnchor="middle" fill={COLORS.UNIX} fontSize={24} fontWeight={900}>~{unixCount}</text>
               <line x1={366} y1={10} x2={366} y2={58} stroke={COLORS.BORDER} strokeWidth={1} />
-              <text x={549} y={26} textAnchor="middle" fill={COLORS.MUTED} fontSize={11.5}>Varian Linux aktif</text>
+              <text x={549} y={26} textAnchor="middle" fill={COLORS.MUTED} fontSize={13}>Varian Linux aktif</text>
               <text x={549} y={52} textAnchor="middle" fill={COLORS.LINUX} fontSize={24} fontWeight={900}>{distroCount}+</text>
             </g>
 
@@ -735,7 +735,7 @@ export default function LinuxVsUnixHistoryAnimation({
                 )}
                 <text x={50} y={68} fill={COLORS.LINUX} fontSize={13.5} fontFamily="sans-serif">{CLOSING_LINE.linux}</text>
               </g>
-              <text x={30} y={96} fill={COLORS.MUTED} fontSize={11.5} fontFamily="monospace">57 tahun. Satu akar. Dua takdir berbeda.</text>
+              <text x={30} y={96} fill={COLORS.MUTED} fontSize={13} fontFamily="monospace">57 tahun. Satu akar. Dua takdir berbeda.</text>
             </g>
           </g>
         )}
