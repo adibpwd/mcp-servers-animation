@@ -22,6 +22,7 @@
     {
       "batch_id": "batch-2",
       "name": "App Chip Accents -- Node/Python/Redis (2/3)",
+      "status": "SUPERSEDED — node-icon/python-icon/redis-icon PNG asli diganti dengan logo resmi (Devicon, MIT license) pada 2026-09-07, bukan lagi hasil AI image-gen generik di bawah ini. Lihat src/content/container-docker/revisi/2026-09-07-0802-revisi-01.md dan icons/_originals/LICENSE-LOGOS.md. Icon description/prompt di bawah dibiarkan sebagai arsip histori (versi generik ada di icons/_originals/backup-ai-generated/).",
       "rows": 1,
       "cols": 3,
       "icons": [
