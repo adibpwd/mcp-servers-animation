@@ -8,6 +8,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import React, { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import gsap from 'gsap'
 import {
   VW, VH, COLORS, PHASES, SFX_MAP,
@@ -137,6 +138,10 @@ export default function LinuxVsUnixHistoryAnimation({
     const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.2 })
     tlRef.current = tl
     window.__animationTimeline = tl
+    // Export safety: lihat tailscale/revision/PLAN-FIX-EXPORT-MESHLINE-MISSING.md
+    // § 6.3.2 — wajib supaya seek-based frame capture saat export tidak
+    // melewatkan setState yang timing-nya berdekatan.
+    window.__flushSync = flushSync
 
     let t = 0
 

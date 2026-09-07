@@ -1,4 +1,4 @@
-const ICONS_API_BASE = 'http://localhost:3300/api/icons';
+const ICONS_API_BASE = 'http://localhost:3373/api/icons';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function sendStatus(text) {

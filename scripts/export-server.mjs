@@ -43,6 +43,11 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true)
     
+    // Allow chrome-extension origins (for icon generator extension)
+    if (origin && origin.startsWith('chrome-extension://')) {
+      return callback(null, true)
+    }
+    
     // Allow all origins in development
     if (process.env.NODE_ENV !== 'production') {
       return callback(null, true)
@@ -51,13 +56,16 @@ app.use(cors({
     // In production, check whitelist
     // Frontend is exposed both on its container port (5173) and the
     // docker-compose published port (3373), so allow both.
+    // Also allow ChatGPT for the icon generator extension (content script runs in chatgpt.com context)
     const allowedOrigins = [
       'http://localhost:5173',
       'http://127.0.0.1:5173',
       'http://100.78.186.122:5173',
       'http://localhost:3373',
       'http://127.0.0.1:3373',
-      'http://100.78.186.122:3373'
+      'http://100.78.186.122:3373',
+      'https://chatgpt.com',
+      'https://chat.openai.com'
     ]
     
     if (allowedOrigins.indexOf(origin) !== -1 || /^http:\/\/.*:(5173|3373)$/.test(origin)) {
@@ -413,15 +421,113 @@ async function startExport(topicId, volume = 75, speed = 1.0) {
 
 // ── Icon Generator API ──────────────────────────────────────────
 
+// GET /api/icons/topics - Auto-scan semua src/content/*/icons/icons.json
+app.get('/api/icons/topics', (req, res) => {
+  try {
+    const contentRoot = path.resolve(ROOT, 'src/content')
+    let topics = []
+
+    if (fs.existsSync(contentRoot)) {
+      const topicDirs = fs.readdirSync(contentRoot, { withFileTypes: true })
+        .filter(d => d.isDirectory())
+        .map(d => d.name)
+
+      for (const topicId of topicDirs) {
+        const iconsFile = path.join(contentRoot, topicId, 'icons', 'icons.json')
+        if (!fs.existsSync(iconsFile)) continue
+
+        try {
+          const cfg = JSON.parse(fs.readFileSync(iconsFile, 'utf-8'))
+          const batches = cfg.batches
+
+          if (Array.isArray(batches) && batches.length > 0) {
+            const batchSummaries = batches.map(b => ({
+              batchId: b.batch_id,
+              name: b.name,
+              rows: b.rows,
+              cols: b.cols,
+              iconCount: Array.isArray(b.icons) ? b.icons.length : 0
+            }))
+            const iconCount = batchSummaries.reduce((sum, b) => sum + b.iconCount, 0)
+            topics.push({
+              id: topicId,
+              title: cfg.title || cfg.name || topicId,
+              description: cfg.description || '',
+              isMultiBatch: true,
+              iconCount,
+              batches: batchSummaries
+            })
+          } else {
+            const icons = Array.isArray(cfg.icons) ? cfg.icons : []
+            topics.push({
+              id: topicId,
+              title: cfg.title || cfg.name || topicId,
+              description: cfg.description || '',
+              isMultiBatch: false,
+              iconCount: icons.length,
+              rows: cfg.generation?.rows,
+              cols: cfg.generation?.cols
+            })
+          }
+        } catch (err) {
+          console.error(`[icons/topics] Skip ${topicId}:`, err.message)
+        }
+      }
+    }
+
+    topics.sort((a, b) => a.id.localeCompare(b.id))
+    res.json({ topics })
+  } catch (error) {
+    console.error('[icons/topics] Error:', error)
+    res.status(500).json({ ok: false, error: error.message })
+  }
+})
+
 // GET /api/icons/metadata - Get icons.json metadata
 app.get('/api/icons/metadata', async (req, res) => {
   try {
-    const metadataPath = path.resolve(ROOT, 'src/content/virtual-memory/icons/icons.json')
+    const topicId = req.query.topicId
+    const batchId = req.query.batchId
+    
+    if (!topicId) {
+      return res.status(400).json({ ok: false, error: 'Missing topicId parameter' })
+    }
+    
+    const metadataPath = path.resolve(ROOT, `src/content/${topicId}/icons/icons.json`)
+    
+    if (!fs.existsSync(metadataPath)) {
+      return res.status(404).json({ ok: false, error: `icons.json not found for topic: ${topicId}` })
+    }
+    
     const data = fs.readFileSync(metadataPath, 'utf8')
-    res.json(JSON.parse(data))
+    const cfg = JSON.parse(data)
+    
+    // If batchId specified, return only that batch
+    if (batchId && Array.isArray(cfg.batches)) {
+      const batch = cfg.batches.find(b => b.batch_id === batchId)
+      if (!batch) {
+        return res.status(404).json({ ok: false, error: `Batch ${batchId} not found` })
+      }
+      // Return batch with generation config from root
+      res.json({
+        name: cfg.name,
+        description: cfg.description,
+        icons: batch.icons,
+        generation: {
+          rows: batch.rows,
+          cols: batch.cols,
+          prompt: batch.prompt,
+          api_endpoint: cfg.generation?.api_endpoint,
+          output_path: cfg.generation?.output_path
+        }
+      })
+    } else {
+      // Return full config
+      res.json(cfg)
+    }
   } catch (error) {
     console.error('[icons/metadata] Error:', error)
-    res.status(500).send('Failed to load metadata: ' + error.message)
+    res.status(500).json({ ok: false, error: 'Failed to load metadata: ' + error.message })
   }
 })
 

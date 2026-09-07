@@ -99,7 +99,7 @@
   ],
   "real_person_photos_note": "Ken Thompson, Dennis Ritchie, and Linus Torvalds are real named people — AI image generation should NOT be used to fabricate their likeness (not accurate, and not appropriate to generate via AI). Instead, source real Creative-Commons-licensed photos (e.g. from Wikipedia) and save them manually as: kt-photo.png (Ken Thompson), dr-photo.png (Dennis Ritchie), linus-photo.png (Linus Torvalds). The code already has graceful fallback to the current initials-circle / stylized-avatar look if these files are absent, so dropping them in later 'just works'.",
   "generation": {
-    "api_endpoint": "http://localhost:3300/api/icons/generate",
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
     "output_path": "src/content/linux-vs-unix/icons"
   },
   "next_steps": [

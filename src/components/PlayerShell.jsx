@@ -7,8 +7,8 @@ import { ProgressIndicator } from './ProgressIndicator'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
-  // Always use the same hostname/IP that browser is using to access frontend on port 3300
-  return `http://${window.location.hostname}:3300`
+  // Always use the same hostname/IP that browser is using to access frontend on port 3373
+  return `http://${window.location.hostname}:3373`
 }
 
 export function PlayerShell({ content, onBack }) {

@@ -9,7 +9,9 @@
 // hardcode literal di sini. Topic lama TIDAK wajib ikut pola ini.
 // ─────────────────────────────────────────────────────────────
 
-import linuxVsUnixManifest from './linux-vs-unix/manifest'
+import linuxVsUnixManifest from './linux-vs-unix/manifest.js'
+import tailscaleManifest from './tailscale/manifest.js'
+import containerDockerManifest from './container-docker/manifest.js'
 
 export const CONTENT_REGISTRY = [
   // ═══════════════════════════════════════════════════════════
@@ -127,6 +129,12 @@ export const CONTENT_REGISTRY = [
     component: () => import('./virtual-memory/Animation'),
   },
 
+  {
+    ...containerDockerManifest,
+    status:    'ready',
+    component: () => import('./container-docker/Animation'),
+  },
+
   // ═════════════════════════════════════════════════════════════
   // 🔜 COMING SOON — Tier 4 (Advanced / Specialist)
   // ═════════════════════════════════════════════════════════════
@@ -141,17 +149,6 @@ export const CONTENT_REGISTRY = [
   //   color:     '#10B981',
   //   status:    'coming-soon',
   //   component: () => import('./systemd-architecture/Animation'),
-  // },
-
-  // {
-  //   id:        'container-docker',
-  //   title:     'Container/Docker Architecture',
-  //   subtitle:  'Namespaces, Cgroups, and how containers work',
-  //   category:  'Linux Deep Dive',
-  //   tags:      ['Docker', 'Container', 'Namespaces', 'Advanced'],
-  //   color:     '#0EA5E9',
-  //   status:    'coming-soon',
-  //   component: () => import('./container-docker/Animation'),
   // },
 
   // {
@@ -183,6 +180,12 @@ export const CONTENT_REGISTRY = [
   // ═══════════════════════════════════════════════════════════
   // ✅ NEW TOPIC — migrasi ke kontrak baru (manifest.js)
   // ═══════════════════════════════════════════════════════════
+
+  {
+    ...tailscaleManifest,
+    status:    'ready',
+    component: () => import('./tailscale/Animation'),
+  },
 
   {
     ...linuxVsUnixManifest,

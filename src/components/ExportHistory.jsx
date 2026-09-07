@@ -3,7 +3,7 @@ import './ExportHistory.css'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
-  return `http://${window.location.hostname}:3300`
+  return `http://${window.location.hostname}:3373`
 }
 
 export function ExportHistory({ onBack }) {
@@ -143,7 +143,7 @@ export function ExportHistory({ onBack }) {
                   <div className="col-action">
                     {entry.status === 'done' && (
                       <a
-                        href={`http://100.78.186.122:3000/videos/${entry.topicId}.mp4`}
+                        href={`/videos/${entry.topicId}.mp4`}
                         download={`${entry.topicId}.mp4`}
                         className="action-btn download"
                         title="Download"

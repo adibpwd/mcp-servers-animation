@@ -1,0 +1,157 @@
+{
+  "name": "tailscale",
+  "description": "Full icon set for 100% icon-driven Tailscale animation (6 utility, existing + 11 structural, pending). House/Building/Firewall are single-variant (always rose-tinted, matching hardcoded source colors); only Laptop has 4 color variants (danger/crypto/server/success).",
+  "existing_icons": [
+    {
+      "id": "wireguard-key",
+      "category": "utility",
+      "name": "WireGuard Key",
+      "label": "Crypto Key",
+      "description": "Modern cryptographic key icon (not a padlock)"
+    },
+    {
+      "id": "coordination-server",
+      "category": "utility",
+      "name": "Coordination Server",
+      "label": "Coordination Server",
+      "description": "Server rack with a small address-book accent"
+    },
+    {
+      "id": "derp-relay",
+      "category": "utility",
+      "name": "DERP Relay",
+      "label": "Relay Tower",
+      "description": "Signal repeater / relay tower icon, visually distinct from a plain server rack"
+    },
+    {
+      "id": "mesh-network",
+      "category": "utility",
+      "name": "Mesh Network",
+      "label": "Mesh Network",
+      "description": "Small interconnected nodes forming a network graph"
+    },
+    {
+      "id": "tailscale-logo",
+      "category": "utility",
+      "name": "App Logo",
+      "label": "Mesh VPN App",
+      "description": "Simplified abstract mesh-VPN app mark, flat monochrome (NOT the real Tailscale trademark)"
+    },
+    {
+      "id": "mobile-phone",
+      "category": "utility",
+      "name": "Mobile Phone",
+      "label": "Smartphone",
+      "description": "Simple smartphone icon"
+    }
+  ],
+  "icons": [
+    {
+      "id": "cloud-internet",
+      "category": "structural",
+      "color": "#94A3B8",
+      "name": "Cloud",
+      "label": "Internet",
+      "description": "Cloud puffs, internet symbol, muted gray-blue tint",
+      "usage": "Act 1 cloudInternet — replaces CloudShape component (color=COLORS.MUTED)"
+    },
+    {
+      "id": "firewall-normal",
+      "category": "structural",
+      "color": "#F43F5E",
+      "name": "Firewall",
+      "label": "Barrier",
+      "description": "Vertical firewall/barrier icon, brick or diagonal-line texture, rose/red tint",
+      "usage": "Act 1/4 wallHome, wallOffice, wallHome4, wallOffice4 — replaces FirewallWall component (normal)"
+    },
+    {
+      "id": "firewall-strict",
+      "category": "structural",
+      "color": "#F43F5E",
+      "name": "Firewall Strict",
+      "label": "Strict Barrier",
+      "description": "Vertical firewall variant with hazard cross-hatching pattern, same rose/red tint, denser than firewall-normal",
+      "usage": "Act 4 wallOfficeStrict — replaces FirewallWall component (strict=true)"
+    },
+    {
+      "id": "face-surprised",
+      "category": "structural",
+      "color": "#FBBF24",
+      "name": "Surprised Face",
+      "label": "Surprised",
+      "description": "Emoji-like surprised face, dot eyes, open O-mouth, amber tint",
+      "usage": "Act 1 reactFace — replaces FaceReact component (mood=surprised)"
+    },
+    {
+      "id": "face-happy",
+      "category": "structural",
+      "color": "#2CD1A8",
+      "name": "Happy Face",
+      "label": "Happy",
+      "description": "Emoji-like happy face, dot eyes, smile curve, mint tint",
+      "usage": "Act 5 happyFace — replaces FaceReact component (mood=happy)"
+    },
+    {
+      "id": "house-frame",
+      "category": "structural",
+      "color": "#F43F5E",
+      "name": "House",
+      "label": "Home",
+      "description": "House with roof, minimalist front view, rose/red tint — SINGLE variant (source hardcodes this color always)",
+      "usage": "Act 1/2/3/4/5 houseBox, houseBox2, houseBox3, houseBox4, meshHome — replaces HouseFrame component"
+    },
+    {
+      "id": "building-frame",
+      "category": "structural",
+      "color": "#F43F5E",
+      "name": "Building",
+      "label": "Office",
+      "description": "Office/apartment building, tall, 3x3 window grid, rose/red tint — SINGLE variant (source hardcodes this color always)",
+      "usage": "Act 1/2/3/4/5 officeBox, officeBox2, officeBox3, officeBox4, meshOffice — replaces BuildingFrame component"
+    },
+    {
+      "id": "laptop-danger",
+      "category": "structural",
+      "color": "#F43F5E",
+      "name": "Laptop (Danger)",
+      "label": "Computer",
+      "description": "Laptop/notebook, front view, flat design, rose/red tint",
+      "usage": "Act 1 houseBox, officeBox — replaces Laptop component color=COLORS.DANGER"
+    },
+    {
+      "id": "laptop-crypto",
+      "category": "structural",
+      "color": "#2CD1A8",
+      "name": "Laptop (Crypto)",
+      "label": "Computer",
+      "description": "Laptop/notebook, front view, flat design, mint tint",
+      "usage": "Act 2 houseBox2, officeBox2 — replaces Laptop component color=COLORS.CRYPTO"
+    },
+    {
+      "id": "laptop-server",
+      "category": "structural",
+      "color": "#FBBF24",
+      "name": "Laptop (Server)",
+      "label": "Computer",
+      "description": "Laptop/notebook, front view, flat design, amber tint",
+      "usage": "Act 3 houseBox3, officeBox3 — replaces Laptop component color=COLORS.SERVER"
+    },
+    {
+      "id": "laptop-success",
+      "category": "structural",
+      "color": "#38BDF8",
+      "name": "Laptop (Success)",
+      "label": "Computer",
+      "description": "Laptop/notebook, front view, flat design, sky-blue tint",
+      "usage": "Act 4 houseBox4, officeBox4; Act 5 meshHome, meshOffice — replaces Laptop component color=COLORS.SUCCESS"
+    }
+  ],
+  "generation": {
+    "rows": 4,
+    "cols": 4,
+    "prompt": "Generate a 4x4 grid of 16 flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Cloud (internet symbol), soft puffs, flat design, muted gray-blue color (#94A3B8)\n2. Firewall/barrier icon, vertical orientation, brick pattern OR diagonal-line texture, rose/red color (#F43F5E) on a dark maroon fill (#4C0519)\n3. Firewall strict variant, vertical, hazard cross-hatching or double-barrier pattern (visually denser than #2), same rose/red color (#F43F5E)\n4. Surprised emoji-like face (dot eyes, open O-mouth), amber/gold color (#FBBF24)\n5. Happy emoji-like face (dot eyes, smile curve), mint color (#2CD1A8)\n6. House with roof, minimalist front view (small door/window optional), rose/red color (#F43F5E)\n7. Office/apartment building, tall, front view, 3x3 window grid clearly visible, rose/red color (#F43F5E)\n8. Laptop/notebook computer, front view, flat design, rose/red color (#F43F5E)\n9. Laptop/notebook computer, front view, flat design, mint color (#2CD1A8)\n10. Laptop/notebook computer, front view, flat design, amber/gold color (#FBBF24)\n11. Laptop/notebook computer, front view, flat design, sky-blue color (#38BDF8)\n12. [EMPTY - leave blank/transparent]\n13. [EMPTY - leave blank/transparent]\n14. [EMPTY - leave blank/transparent]\n15. [EMPTY - leave blank/transparent]\n16. [EMPTY - leave blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact hex color specified per icon (no gradients, single flat fill + optional 1 darker shade for depth)\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 4 rows x 4 columns\n- Recommended total size: 4096x4096 pixels (512x512 per icon)\n- Icons 8-11 (laptop) must share IDENTICAL shape/silhouette, differing ONLY in color",
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/tailscale/icons",
+    "note": "Utility icons (existing 6, see 'existing_icons' above) already generated — do not regenerate. This 'icons' list + 'generation' block covers only the 11 pending structural icons, generated in ONE 4x4 grid call via the extension popup."
+  }
+}

@@ -48,9 +48,12 @@ class SFXLoader {
    * Load and cache audio file
    * @param {string} category - Audio category (ui, transitions, impacts, warnings, success, sfx)
    * @param {string} name - Sound name (without .wav extension)
+   * @param {number} boost - Gain multiplier (>1.0 amplifies beyond native
+   *   HTMLMediaElement.volume ceiling of 1.0; see PLAN-BOOST-TYPING-AUDIO-VOLUME.md).
+   *   Only stored/applied once per cache-key, on first load.
    * @returns {Audio} Audio instance
    */
-  load(category, name) {
+  load(category, name, boost = 1.0) {
     const key = `${category}/${name}`
     if (!this.cache[key]) {
       const el = new Audio(`/audio/${category}/${name}.wav`)
@@ -59,19 +62,37 @@ class SFXLoader {
       // elements ever get created for this sound (avoids resource-limit
       // issues in some browsers when a single Audio is reused too fast,
       // or unbounded growth if we cloned a fresh node on every play call).
-      this.cache[key] = { pool: [el], nextIndex: 0 }
+      this.cache[key] = { pool: [el], nextIndex: 0, boost }
 
       if (this.exportMode && this.audioContext && this.mediaStreamDestination) {
-        try {
-          const source = this.audioContext.createMediaElementSource(el)
-          source.connect(this.mediaStreamDestination)
-          source.connect(this.audioContext.destination) // Also play for monitoring
-        } catch (err) {
-          // Audio element might already be connected, ignore
-        }
+        this._wireGain(el, boost)
       }
     }
     return this.cache[key]
+  }
+
+  /**
+   * Connect an <audio> element into the export Web Audio graph through a
+   * GainNode, so per-sound `boost` can amplify past the native
+   * HTMLMediaElement.volume ceiling (1.0) — needed because raising the
+   * `volume` option alone gets clamped and has no further effect once it
+   * hits that ceiling. boost=1.0 (default) behaves identically to a plain
+   * direct connection. See PLAN-BOOST-TYPING-AUDIO-VOLUME.md for the
+   * reasoning behind this.
+   * @param {HTMLAudioElement} el
+   * @param {number} boost
+   */
+  _wireGain(el, boost) {
+    try {
+      const source = this.audioContext.createMediaElementSource(el)
+      const gainNode = this.audioContext.createGain()
+      gainNode.gain.value = boost
+      source.connect(gainNode)
+      gainNode.connect(this.mediaStreamDestination)
+      gainNode.connect(this.audioContext.destination) // Also play for monitoring
+    } catch (err) {
+      // Audio element might already be connected, ignore
+    }
   }
 
   /**
@@ -89,12 +110,13 @@ class SFXLoader {
     const {
       volume = 75,
       speed = 1.0,
-      delay = 0
+      delay = 0,
+      boost = 1.0
     } = options
 
     const playSound = () => {
       try {
-        const entry = this.load(category, name)
+        const entry = this.load(category, name, boost)
         const POOL_SIZE = 4
 
         // Grow the pool lazily (max POOL_SIZE elements), only cloning
@@ -102,13 +124,10 @@ class SFXLoader {
         if (entry.pool.length < POOL_SIZE) {
           const clone = entry.pool[0].cloneNode(true)
           if (this.exportMode && this.audioContext && this.mediaStreamDestination) {
-            try {
-              const source = this.audioContext.createMediaElementSource(clone)
-              source.connect(this.mediaStreamDestination)
-              source.connect(this.audioContext.destination)
-            } catch (err) {
-              // ignore
-            }
+            // Use the entry's boost (set on first load), not the local
+            // `boost` param, so every clone in the pool stays consistent
+            // even if a later play() call for the same sound omitted it.
+            this._wireGain(clone, entry.boost)
           }
           entry.pool.push(clone)
         }

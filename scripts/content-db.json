@@ -41,7 +41,7 @@
         "Paging",
         "Advanced"
       ],
-      "status": "ready",
+      "status": "posted",
       "priority": 3,
       "color": "#EC4899"
     },
@@ -147,9 +147,41 @@
         "macOS",
         "Windows"
       ],
-      "status": "ready",
+      "status": "posted",
       "priority": 10,
       "color": "#06B6D4"
+    },
+    {
+      "id": "tailscale",
+      "title": "How Tailscale Works",
+      "subtitle": "From blocked NAT to a private mesh network",
+      "category": "Networking",
+      "tags": [
+        "Tailscale",
+        "VPN",
+        "WireGuard",
+        "Mesh Network",
+        "NAT Traversal"
+      ],
+      "status": "posted",
+      "priority": 11,
+      "color": "#6366F1"
+    },
+    {
+      "id": "container-docker",
+      "title": "Docker Container vs Virtual Machine",
+      "subtitle": "Why containers are not just \"tiny VMs\"",
+      "category": "Linux Deep Dive",
+      "tags": [
+        "Docker",
+        "Container",
+        "VM",
+        "Namespaces",
+        "Virtualization"
+      ],
+      "status": "draft",
+      "priority": 12,
+      "color": "#2496ED"
     }
   ]
 }

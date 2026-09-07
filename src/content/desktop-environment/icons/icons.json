@@ -1,0 +1,54 @@
+{
+  "name": "desktop-environment",
+  "description": "Icon set for Desktop Environment (GNOME vs KDE vs XFCE vs i3) Animation — DE identity marks, hardware metric glyphs, generic app icons for dock/taskbar mockups, and moment accents (insight/tension) replacing emoji. Style: minimalist grayscale/monochrome flat icons, TRANSPARENT background so icons blend into the app's dark canvas and colored badges can be layered underneath in JSX.",
+  "style_guide": {
+    "background": "transparent",
+    "palette": "grayscale monochrome (black/white/gray only) — icons stay neutral gray; per-DE color (blue GNOME / green KDE / yellow XFCE / red i3) is applied via badge/chip background in JSX, NOT baked into the PNG, so one icon file (e.g. app-browser) can be reused across all 3 DE mockups without recoloring",
+    "notes": "gnome-logo / kde-logo / xfce-logo should follow each brand's real official mark as closely as possible (GNOME footprint, KDE Plasma 'K' gear, XFCE mouse), redrawn in monochrome only — same treatment as Ubuntu/Fedora/etc in linux-vs-unix/icons.json. i3-grid is NOT a brand logo (i3 has no widely-recognized official mark) — keep it as a pure abstract asymmetric 2x2 split grid representing the tiling window manager concept."
+  },
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "DE Identity & Metrics (1/2)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "gnome-logo", "name": "GNOME", "label": "GNOME Desktop", "description": "Official GNOME footprint logo, redrawn in monochrome — real shape, not a generic circle" },
+        { "id": "kde-logo", "name": "KDE Plasma", "label": "KDE Plasma", "description": "Official KDE Plasma gear-shaped 'K' logo, redrawn in monochrome — real shape" },
+        { "id": "xfce-logo", "name": "XFCE", "label": "XFCE Desktop", "description": "Official XFCE mouse logo, redrawn in monochrome — real shape" },
+        { "id": "i3-grid", "name": "i3 Tiling", "label": "i3 Window Manager", "description": "NOT a brand logo — abstract asymmetric grid split into unequal 2x2 tiled panels, representing a tiling window manager concept" },
+        { "id": "ram-stick", "name": "RAM Stick", "label": "Idle RAM Usage", "description": "Simple memory module / RAM stick silhouette, minimalist" },
+        { "id": "cpu-chip", "name": "CPU Chip", "label": "CPU Overhead", "description": "Square processor chip with small pins on the edges" },
+        { "id": "customize-dial", "name": "Customize Dial", "label": "Customization Level", "description": "Small rotary knob/dial with a pointer notch, matching a gauge-needle style" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG). Icons numbered top-left to bottom-right:\n\n1. Official GNOME desktop environment footprint logo silhouette, redrawn in monochrome (real GNOME brand shape)\n2. Official KDE Plasma gear-shaped 'K' logo silhouette, redrawn in monochrome (real KDE brand shape)\n3. Official XFCE desktop environment mouse logo silhouette, redrawn in monochrome (real XFCE brand shape)\n4. Abstract asymmetric grid icon: a square split into 4 unequal tiled panels (representing a tiling window manager, NOT a brand logo, purely geometric)\n5. Simple RAM memory stick / module silhouette, minimalist flat icon\n6. Square CPU processor chip icon with small pins along the edges\n7. Small rotary control knob/dial with a pointer notch (like a volume or gauge dial)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist line-art\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background (no solid fill behind icons)\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns\n- Items 1-3 must match each real brand's official logo shape as closely as possible, only recolored to monochrome — do not invent a different shape"
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "App Content & Moment Accents (2/2)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "app-browser", "name": "Browser", "label": "Web Browser App", "description": "Generic web browser window icon (globe or compass inside a browser frame, not a specific brand like Chrome/Firefox)" },
+        { "id": "app-terminal", "name": "Terminal", "label": "Terminal App", "description": "Terminal window with a command prompt symbol >_ inside" },
+        { "id": "app-files", "name": "Files", "label": "File Manager App", "description": "File manager / folder icon, simple closed folder shape" },
+        { "id": "app-settings", "name": "Settings", "label": "Settings App", "description": "Gear/cog wheel icon representing system settings" },
+        { "id": "keyboard", "name": "Keyboard", "label": "Keyboard Shortcut Accent", "description": "Simple top-down view of a compact keyboard with a grid of keys" },
+        { "id": "insight-bulb", "name": "Insight Bulb", "label": "Insight Badge Accent", "description": "Classic light bulb glowing, simple flat icon, replaces the light-bulb emoji" },
+        { "id": "tune-wrench", "name": "Tune Wrench", "label": "Tension Beat Accent", "description": "Simple wrench / spanner tool icon, replaces the wrench emoji" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on TRANSPARENT background (PNG). Icons numbered top-left to bottom-right:\n\n1. Generic web browser window icon with a globe or compass symbol inside a simple browser frame (NOT a specific brand like Chrome or Firefox)\n2. Terminal/command-line window icon with a '>_' prompt symbol inside\n3. Simple closed folder icon representing a file manager app\n4. Gear/cog wheel icon representing system settings\n5. Top-down view of a compact computer keyboard, simple grid of small rectangular keys\n6. Classic light bulb icon, glowing/lit, simple flat silhouette\n7. Simple wrench / spanner tool icon\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist line-art\n- Black/gray colors only (grayscale/monochrome), TRANSPARENT background (no solid fill behind icons)\n- Each icon same size, clearly distinct, high contrast\n- Grid layout: 2 rows x 4 columns\n- Icons 1-4 must be generic/neutral apps (no real brand logos), since they represent generic dock/taskbar apps reused across all 3 desktop environment mockups"
+    }
+  ],
+  "generation": {
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/desktop-environment/icons"
+  },
+  "next_steps": [
+    "1. Run `docker compose up -d` so the unified app/API server is live at http://localhost:3373.",
+    "2. Load the Chrome extension `src/extensions/vm-icon-generator`, open a tab at https://chatgpt.com.",
+    "3. Click the extension icon, pick topic 'desktop-environment', run batch-1 then batch-2 (or 'All Batches (Sequential)' if supported).",
+    "4. Verify 14 cropped PNG files land in src/content/desktop-environment/icons/, filenames matching each icon 'id' (e.g. gnome-logo.png, app-browser.png).",
+    "5. Tell Claude when done — loader.js will be created and Animation.jsx will be wired to replace the manual SVG dock circles / emoji with these icons, with safe fallbacks for anything still missing."
+  ]
+}

@@ -3,9 +3,9 @@
 
 const getApiBase = () => {
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:3300`
+    return `http://${window.location.hostname}:3373`
   }
-  return 'http://localhost:3300'
+  return 'http://localhost:3373'
 }
 
 const API_BASE = getApiBase()

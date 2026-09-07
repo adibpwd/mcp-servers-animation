@@ -32,7 +32,7 @@
       "rows": 2,
       "cols": 2,
       "prompt": "Generate a 2x2 grid of 4 minimalist grayscale monochrome icons on transparent background (PNG). Icons are numbered top-left to bottom-right:\n\n1. Display Name 1 (Web browser with globe icon)\n2. Display Name 2 (Database cylinder)\n3. Display Name 3 (Terminal prompt)\n4. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist\n- Black/gray colors only (grayscale/monochrome)\n- Each icon same size and clearly distinct\n- High contrast for visibility\n- Transparent background (PNG)\n- Grid layout: 2 rows × 2 columns\n- Each icon should be recognizable and simple",
-      "api_endpoint": "http://localhost:3300/api/icons/generate",
+      "api_endpoint": "http://localhost:3373/api/icons/generate",
       "output_path": "src/content/YOUR-TOPIC-ID/icons"
     }
   },
@@ -62,7 +62,7 @@
       }
     ],
     "generation": {
-      "api_endpoint": "http://localhost:3300/api/icons/generate",
+      "api_endpoint": "http://localhost:3373/api/icons/generate",
       "output_path": "src/content/YOUR-TOPIC-ID/icons"
     }
   }

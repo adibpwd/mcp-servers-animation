@@ -30,7 +30,7 @@ async function loadTopics() {
   try {
     setStatus('Loading available topics...');
     
-    const response = await fetch('http://localhost:3300/api/icons/topics');
+    const response = await fetch('http://localhost:3373/api/icons/topics');
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
     }
@@ -58,7 +58,7 @@ async function loadTopics() {
     setStatus(`Found ${topics.length} topic(s) with icons config. Select one to start.`);
     
   } catch (error) {
-    setStatus('ERROR: Cannot load topics. Is server running on port 3300?');
+    setStatus('ERROR: Cannot load topics. Is server running on port 3373?');
     console.error('[loadTopics]', error);
     topicSelect.innerHTML = '<option value="">Error loading topics</option>';
   }

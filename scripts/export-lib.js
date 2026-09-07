@@ -54,6 +54,49 @@ const SFX_SCHEDULES = {
     { at: 29.0, file: 'warning.wav' }     // 777 alert (24.2 + 4.8)
   ],
   
+  'desktop-environment': [
+    // INTRO + HOOK (0 - 4.6s)
+    { at: 0.0, category: 'sfx', name: 'whoosh' },   // intro morph start
+    { at: 1.2, category: 'sfx', name: 'whoosh' },   // hook stage start
+
+    // ACT 1: GNOME (4.6 - 11.8s)
+    { at: 4.6, category: 'sfx', name: 'click' },    // act start
+    { at: 6.4, category: 'sfx', name: 'scan' },     // metrics start filling
+    { at: 8.0, category: 'sfx', name: 'success' },  // insight / aha moment
+    { at: 7.3, category: 'ui', name: 'chime' },     // needle dial settle (Tahap 3)
+    { at: 11.48, category: 'transitions', name: 'swoosh-2' }, // slide-out ke Act 2
+
+    // ACT 2: KDE (11.8 - 19.0s)
+    { at: 11.8, category: 'sfx', name: 'click' },
+    { at: 13.6, category: 'sfx', name: 'scan' },
+    { at: 15.2, category: 'sfx', name: 'success' },
+    { at: 14.5, category: 'ui', name: 'chime' },
+    { at: 18.68, category: 'transitions', name: 'swoosh-2' }, // slide-out ke Act 3
+
+    // ACT 3: XFCE (19.0 - 26.2s)
+    { at: 19.0, category: 'sfx', name: 'click' },
+    { at: 20.8, category: 'sfx', name: 'scan' },
+    { at: 22.4, category: 'sfx', name: 'success' },
+    { at: 21.7, category: 'ui', name: 'chime' },
+    { at: 25.88, category: 'transitions', name: 'swoosh-2' }, // slide-out ke Act 4
+
+    // ACT 4: i3 (26.2 - 33.4s)
+    { at: 26.2, category: 'sfx', name: 'click' },
+    { at: 28.0, category: 'sfx', name: 'scan' },
+    { at: 29.6, category: 'sfx', name: 'success' },
+    { at: 28.9, category: 'ui', name: 'chime' },
+    // (Act 4 adalah Act terakhir — tidak ada slide-out sfx, langsung ke closing)
+
+    // CLOSING (33.4 - 38.4s) — race track (Tahap 3): whoosh awal + kedatangan
+    // avatar terurut sesuai raceDurationFor(ramValue) di Animation.jsx
+    // (closingStart 33.4 + RACE_START 0.7 = 34.1 basis; urutan tercepat: i3 < xfce < kde < gnome)
+    { at: 33.4, category: 'sfx', name: 'whoosh' },
+    { at: 35.28, category: 'success', name: 'victory' }, // i3 sampai duluan
+    { at: 35.55, category: 'success', name: 'victory' }, // xfce
+    { at: 36.27, category: 'success', name: 'victory' }, // kde
+    { at: 36.63, category: 'success', name: 'victory' }  // gnome (paling lambat)
+  ],
+
   'virtual-memory': [
     // INTRO (0-1.4s)
     { at: 0.5, category: 'transitions', name: 'swoosh' },

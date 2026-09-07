@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import gsap from 'gsap'
 import { VW, VH, PHASES, COUNTER_START } from './data'
 
@@ -43,6 +44,10 @@ export default function LinuxVsWindowsAnimation({
     const master = gsap.timeline({ repeat: -1, repeatDelay: 1.0 })
     timelineRef.current = master
     window.__animationTimeline = master
+    // Export safety: lihat tailscale/revision/PLAN-FIX-EXPORT-MESHLINE-MISSING.md
+    // § 6.3.2 — wajib supaya seek-based frame capture saat export tidak
+    // melewatkan setState yang timing-nya berdekatan.
+    window.__flushSync = flushSync
 
     let time = 0
 

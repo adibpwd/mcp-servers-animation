@@ -3,7 +3,7 @@
 // Satu sumber kebenaran metadata untuk topic ini.
 // registry.js membaca field ini (import + spread) alih-alih
 // hardcode object literal, sesuai kontrak baru di
-// _docs/project/CONTENT_STANDARDIZATION_PLAN.md (bagian 3.3).
+// docs/standardizations/02-standar-konten.md (bagian 5).
 // ─────────────────────────────────────────────────────────────
 
 export default {
