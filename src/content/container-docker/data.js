@@ -117,7 +117,7 @@ export const TRADEOFF_CAPTION = 'Container ringan karena numpang kernel. Numpang
 // ═══════════════════════════════════════════════
 export const CLOSING_NOTE = 'VM tetap dipakai kalau butuh isolasi lebih kuat atau OS/kernel beda total.'
 export const CLOSING_LINE = 'Container bukan versi kecil dari VM — beda cara ngebungkusnya.'
-export const CLOSING_BRAND = 'Itu yang bikin laptop lo lega.'
+export const CLOSING_BRAND = 'Itu yang bikin laptop jadi lega.'
 
 // ═══════════════════════════════════════════════
 // SFX MAP — hanya nama yang sudah tersedia di public/audio/*
