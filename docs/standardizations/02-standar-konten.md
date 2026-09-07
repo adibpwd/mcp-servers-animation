@@ -1,6 +1,6 @@
 # 02 — Standar Konten: Kontrak Folder Topic
 
-> Alur baca lengkap: `01-architecture` → **`02-standar-konten`** → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → `05-svg-text-guide` → `06-icon-generation`
+> Alur baca lengkap: `01-architecture` → **`02-standar-konten`** → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → `05-svg-text-guide` → `06-icon-generation` → `08-audio-sfx-generation`
 
 Dokumen ini mendefinisikan kontrak antara 1 folder topic (`src/content/<topic-id>/`)
 dengan sistem pusat (`registry.js`, `PlayerShell`, export engine). Baca ini
@@ -40,9 +40,22 @@ src/content/<topic-id>/
 ├── _docs/          (opsional, planning notes, prefix underscore
 │                    = bukan bagian kontrak, boleh isi apa saja)
 ├── _drafts/        (opsional, backup/versi lama, prefix underscore)
+├── revisi/         (opsional, catatan perbaikan/perubahan pasca rilis
+│                    awal — lihat catatan di bawah)
 └── (TIDAK BOLEH ada sfx-loader.js lokal lagi — wajib import dari
     shared module, lihat 5)
 ```
+
+**Folder `revisi/` (opsional)** — dipakai untuk mencatat perbaikan/
+perubahan yang terjadi SETELAH topic sudah dianggap selesai/production-
+ready (beda dari `_docs/` yang isinya planning SEBELUM topic jadi).
+Konvensi: 1 file `README.md` sebagai index status ringkas (daftar
+perubahan apa saja yang pernah terjadi & statusnya), plus file
+per-perbaikan dengan nama berformat `YYYY-MM-DD-HHMM-revisi-NN.md` untuk
+perbaikan yang butuh detail lebih panjang (audit, checklist eksekusi,
+opsi yang dipertimbangkan). Tidak wajib dipakai untuk topic yang tidak
+butuh — kalau perbaikan cukup dicatat singkat di commit message, tidak
+perlu bikin folder ini.
 
 Contoh topic yang sudah mengikuti kontrak ini: `src/content/linux-vs-unix/`.
 8 topic lain (mcp-servers, file-permission, virtual-memory, dst) masih

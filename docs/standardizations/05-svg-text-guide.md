@@ -1,6 +1,6 @@
 # 05 — SVG Text Guide
 
-> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → **`05-svg-text-guide`** → `06-icon-generation`
+> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → **`05-svg-text-guide`** → `06-icon-generation` → `08-audio-sfx-generation`
 
 ## Masalah: SVG Text Tidak Support Word Wrap
 
@@ -183,6 +183,72 @@ Palet warna standar dipakai konsisten di semua topic (dipindahkan dari
 Pakai warna semantik yang sesuai konteks (misal: elemen RAM selalu hijau,
 elemen error selalu merah) supaya audiens bisa asosiasi warna↔konsep
 lintas-topic tanpa perlu baca ulang label tiap kali.
+
+## Formula Cek Overlap Antar-Elemen Horizontal (Center-Anchor)
+
+Komponen box/badge/card yang digambar dari titik lokal `x=0` sampai
+`x=w`, lalu dipanggil dengan translate `x={-w/2}` di call site, secara
+efektif **center di titik anchor-nya** dengan radius setengah-lebar
+(`w/2`) ke kiri dan ke kanan:
+
+```jsx
+// Definisi komponen: rect digambar dari x=0 s/d x=w
+const Badge = ({ x, y, text, w = 300 }) => (
+  <g transform={`translate(${x},${y})`}>
+    <rect width={w} height={40} rx={20} />
+    <text x={w / 2} y={25} textAnchor="middle">{text}</text>
+  </g>
+)
+
+// Dipanggil dengan translate x={-w/2} → efektif center di anchor
+<g transform={T('badgeA', 300, 540)}>
+  <Badge x={-150} y={0} text="..." w={300} />
+</g>
+```
+
+Elemen ini menempati rentang absolut **`[anchor - w/2, anchor + w/2]`**.
+Kalau ada 2 elemen sejenis bertetangga di posisi horizontal, keduanya
+**aman dari overlap** hanya kalau:
+
+```
+|anchor2 - anchor1|  >=  (w1 / 2) + (w2 / 2) + gap_minimal
+```
+
+**Contoh kasus nyata (overlap, salah):**
+
+```
+Badge A: anchor x=300, w=300 → rentang 150–450
+Badge B: anchor x=520, w=300 → rentang 370–670
+Jarak anchor: |520-300| = 220
+Dibutuhkan minimal: (300/2)+(300/2) = 300
+220 < 300 → OVERLAP 80px (rentang 370–450 tabrakan)
+```
+
+**Fix (geser anchor, lebar tetap):**
+
+```
+Badge A: anchor x=250, w=300 → rentang 100–400
+Badge B: anchor x=570, w=300 → rentang 420–720
+Jarak anchor: |570-250| = 320 >= 300 → aman, sisa gap 20px
+```
+
+**Cara pakai formula ini sebelum commit:**
+1. Untuk tiap elemen fixed-width yang sejajar secara horizontal, catat
+   `anchor x` dan `w`.
+2. Hitung jarak antar-anchor, bandingkan dengan jumlah setengah-lebar
+   kedua elemen + gap minimal yang diinginkan (disarankan ≥15-20px).
+3. Kalau kurang, pilih salah satu: geser anchor (aman, tidak mengubah
+   lebar/text-wrap), atau perkecil `w` (perhatikan efek samping —
+   text bisa ke-wrap jadi lebih banyak baris kalau `w` dikecilkan).
+
+Prinsip yang sama berlaku untuk overlap **vertikal** — ganti `x`/`w`
+dengan `y`/`height` di formula di atas.
+
+**Jangan andalkan cuma eyeball di preview** untuk mengecek elemen fixed-
+width sejajar — bug overlap kadang baru kelihatan jelas di ukuran layar
+tertentu atau kelewat kalau elemen lain di dekatnya menutupi sebagian
+tabrakan. Hitung dulu pakai formula di atas, baru verifikasi visual di
+preview sebagai konfirmasi akhir (bukan pengganti perhitungan).
 
 ## Alternatif: HTML Overlay / `foreignObject`
 

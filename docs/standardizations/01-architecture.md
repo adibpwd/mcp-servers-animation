@@ -2,7 +2,7 @@
 
 Baca ini dulu sebelum bikin topic baru. Menjelaskan bagaimana animasi dibuat dari GSAP timeline sampai muncul di layar.
 
-> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → `05-svg-text-guide` → `06-icon-generation`
+> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → `05-svg-text-guide` → `06-icon-generation` → `08-audio-sfx-generation`
 
 ---
 

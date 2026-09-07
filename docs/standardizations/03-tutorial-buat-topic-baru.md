@@ -1,6 +1,6 @@
 # 03 — Tutorial: Bikin Topic Baru dari Nol
 
-> Alur baca lengkap: `01-architecture` → `02-standar-konten` → **`03-tutorial-buat-topic-baru`** → `04-referensi-gsap` → `05-svg-text-guide` → `06-icon-generation`
+> Alur baca lengkap: `01-architecture` → `02-standar-konten` → **`03-tutorial-buat-topic-baru`** → `04-referensi-gsap` → `05-svg-text-guide` → `06-icon-generation` → `08-audio-sfx-generation`
 
 Tutorial ini urut sesuai alur kerja nyata: prinsip storytelling → setup
 folder → bikin Intro → bikin Act 1 sampai Act akhir → sambung audio →
@@ -471,6 +471,27 @@ saat menulis `Animation.jsx` topic baru:
 - [ ] Objek yang representasi hal sama lintas-Act dirender persistent,
       bukan pop-in ulang tiap Act (lihat `04-referensi-gsap.md` §
       "Persistent Anchor Object")
+- [ ] Elemen fixed-width yang sejajar horizontal (Badge/Box/Card) sudah
+      dicek tidak overlap pakai formula center-anchor (lihat
+      `05-svg-text-guide.md` § "Formula Cek Overlap Antar-Elemen
+      Horizontal") — jangan cuma andalkan eyeball di preview
+- [ ] Audit SFX Coverage sudah dilakukan: baca ulang seluruh timeline,
+      tandai motion signifikan yang masih total silent, dan pastikan
+      tiap `sfx: false` punya alasan jelas (lihat `04-referensi-gsap.md`
+      § "Policy: `sfx: false` Wajib Ada Alasan")
+- [ ] `SFX_MAP` di `data.js` di-cross-check terhadap pemanggilan aktual
+      di `Animation.jsx` — tidak ada entry yang didefinisikan tapi tidak
+      pernah dipanggil (atau sudah jelas alasannya kalau memang disiapkan
+      untuk dipakai segera)
+- [ ] Kalau ada helper SFX generik (`popIn()` atau sejenis) yang menerima
+      `sfxName` dari berbagai kategori folder audio, pastikan kategori
+      di-declare eksplisit per pemanggilan — bukan hardcode 1 kategori
+      (lihat `04-referensi-gsap.md` § "Referensi: `popIn()` dengan
+      `sfxCategory` Eksplisit")
+- [ ] Komponen text-container baru (`Badge`/`TextCard`/sejenisnya) sudah
+      support prop `icon` opsional sejak awal dibuat (lihat
+      `06-icon-generation.md` § "Checklist Tambahan: Icon di Komponen
+      Text-Container")
 
 **Storytelling (lihat Langkah 3.0, 3.6 & 3.7):**
 - [ ] Act 1 melempar pertanyaan/misteri, baru terjawab penuh di Act akhir
@@ -488,3 +509,4 @@ saat menulis `Animation.jsx` topic baru:
   `04-referensi-gsap.md`
 - Text overflow / multi-line di SVG → `05-svg-text-guide.md`
 - Generate icon set untuk topic baru → `06-icon-generation.md`
+- Generate/sourcing aset audio SFX untuk topic baru → `08-audio-sfx-generation.md`

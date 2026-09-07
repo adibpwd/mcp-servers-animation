@@ -1,6 +1,6 @@
 # 04 — Referensi GSAP Timeline
 
-> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → **`04-referensi-gsap`** → `05-svg-text-guide` → `06-icon-generation`
+> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → **`04-referensi-gsap`** → `05-svg-text-guide` → `06-icon-generation` → `08-audio-sfx-generation`
 
 Materi referensi (bukan urutan wajib dibaca) untuk pola GSAP di luar yang
 sudah dibahas di `03-tutorial-buat-topic-baru.md`. Buka bagian yang
@@ -338,6 +338,80 @@ Randomness yang TIDAK mempengaruhi timing (misal variasi warna kosmetik
 yang tidak mengubah `t`) aman pakai `Math.random()` seperti biasa — aturan
 ini spesifik untuk yang mempengaruhi durasi/waktu timeline.
 
+## Referensi: `popIn()` dengan `sfxCategory` Eksplisit
+
+Helper `popIn(tl, time, id, opts)` yang dipakai untuk entrance elemen
+(fade + scale + SFX opsional) sering ditulis generik supaya dipakai
+lintas Act. Kalau helper ini memutar SFX lewat `sfxLoader`, **jangan
+hardcode 1 kategori folder audio** — asset di `public/audio/` terbagi
+per kategori (`ui/`, `impacts/`, `transitions/`, `warnings/`, `success/`,
+`sfx/`, dst), dan tiap `sfxName` di `SFX_MAP` bisa datang dari kategori
+manapun. `popIn()` wajib terima parameter kategori eksplisit, bukan
+selalu memanggil kategori yang sama:
+
+```js
+// ❌ BAD — hardcode 1 kategori, gagal silent untuk SFX kategori lain
+const popIn = (tl, time, id, { sfx = true, sfxName = 'pop' } = {}) => {
+  tl.add(() => setVisible(id, true), time)
+  tl.fromTo(refs[id], { scale: 0, opacity: 0 }, { scale: 1, opacity: 1 }, time)
+  if (sfx) sfxLoader.ui(sfxName, { volume: volumeRef.current }) // selalu 'ui' — SALAH
+}
+
+// ✅ GOOD — kategori eksplisit, default 'ui' tapi bisa di-override
+const popIn = (tl, time, id, { sfx = true, sfxName = 'pop', sfxCategory = 'ui' } = {}) => {
+  tl.add(() => setVisible(id, true), time)
+  tl.fromTo(refs[id], { scale: 0, opacity: 0 }, { scale: 1, opacity: 1 }, time)
+  if (sfx) sfxLoader.play(sfxCategory, sfxName, { volume: volumeRef.current })
+}
+
+// Pemanggilan — default kategori 'ui' tetap jalan tanpa perubahan
+popIn(tl, t, 'insightBadge')
+
+// Pemanggilan dengan SFX dari kategori lain — WAJIB declare sfxCategory
+popIn(tl, t, 'kernelArrow', { sfxName: SFX_MAP.CONNECTOR_SNAP.name, sfxCategory: 'impacts' })
+```
+
+`sfxLoader.play(category, name, opts)` generik (menerima kategori sebagai
+parameter) aman dipakai untuk kategori manapun — beda dengan method
+spesifik seperti `sfxLoader.ui(...)` yang cuma benar untuk 1 kategori.
+Kalau `SFX_MAP` sebuah topic sudah punya banyak kategori berbeda, cek
+ulang bahwa tiap pemanggilan `popIn()`/sejenisnya sudah declare
+`sfxCategory` yang cocok dengan `category` di entry `SFX_MAP`-nya —
+mismatch ini **tidak melempar error** (biasanya di-catch diam-diam),
+jadi harus dicek manual, bukan menunggu error muncul di console.
+
+## Policy: `sfx: false` Wajib Ada Alasan
+
+`popIn()` yang secara default memutar SFX (`sfx: true`) kadang sengaja
+di-set `sfx: false` untuk elemen yang tidak butuh suara sendiri (mis.
+elemen kecil yang muncul bersamaan dengan elemen lain yang sudah punya
+SFX). Supaya keputusan ini tidak berubah jadi "kelupaan pasang suara"
+yang baru ketahuan pas audit, ikuti aturan berikut:
+
+- Kalau sebuah `popIn()` di-set `sfx: false`, HARUS ada salah satu dari
+  dua hal ini:
+  1. Ada `sfxOn()`/pemutaran SFX lain yang jalan di elemen **related**
+     pada waktu yang berdekatan (radius ~0.3 detik) — sehingga momen itu
+     tetap "terwakili" suara, meski tidak dari elemen ini sendiri, ATAU
+  2. Elemen itu memang dekoratif/kecil dan sengaja dibiarkan silent
+     (komentar singkat di kode boleh ditambahkan kalau perlu penjelasan
+     kenapa).
+- **Motion yang signifikan secara visual/durasi** (tween nilai yang
+  berlangsung lama, elemen besar yang jadi fokus utama Act) TIDAK BOLEH
+  `sfx: false` tanpa pengganti — motion seperti ini paling gampang
+  kelewat kalau tidak di-audit khusus (lihat checklist di
+  `03-tutorial-buat-topic-baru.md`).
+- Sebelum menganggap sebuah topic selesai, audit ulang SEMUA `sfx: false`
+  yang ada di `Animation.jsx` — pastikan tiap satu punya alasan yang
+  jelas (poin 1 atau 2 di atas), bukan keputusan ad-hoc yang lupa
+  ditinjau ulang.
+
+Sebagai tambahan, cross-check juga `SFX_MAP` di `data.js` terhadap
+pemanggilan aktual di `Animation.jsx` — entry yang didefinisikan tapi
+tidak pernah dipanggil manapun adalah sinyal config sudah basi (SFX yang
+direncanakan tapi lupa di-wire, atau sisa dari eksperimen yang sudah
+tidak dipakai).
+
 ## Common Pitfalls
 
 | Pitfall | Fix |
@@ -349,6 +423,8 @@ ini spesifik untuk yang mempengaruhi durasi/waktu timeline.
 | Salah increment time cursor (increment beda dari `duration` tween) | Animasi overlap tidak sengaja — selalu `t += duration_yang_sama_dengan_tween` |
 | `Math.random()` untuk timing (delay antar-karakter, jeda acak, dst) | Desync audio/video saat export multi-proses — pakai seeded random, lihat § "Determinism" di atas |
 | Objek "anchor" (representasi hal sama) ditaruh di dalam `{phaseIdx === N && ...}` | Pop-in ulang tiap ganti Act padahal bukan objek baru — lihat § "Persistent Anchor Object Lintas-Act" |
+| Helper `popIn()`/pemutar SFX generik hardcode 1 kategori folder audio (mis. selalu manggil `sfxLoader.ui(...)`) | SFX dari kategori lain (`impacts/`, `transitions/`, dll) gagal main **secara silent, tanpa error** — lihat § "Referensi: `popIn()` dengan `sfxCategory` Eksplisit" |
+| Elemen fixed-width (Badge/Box) disusun sejajar tanpa hitung setengah-lebar | Overlap visual yang lolos build-check syntax tapi rusak secara behavior — lihat `05-svg-text-guide.md` § "Formula Cek Overlap Antar-Elemen Horizontal" |
 
 ## Debugging Timeline
 

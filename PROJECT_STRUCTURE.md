@@ -82,7 +82,8 @@ docs/
 ├── 04-referensi-gsap.md         ← Referensi API & contoh GSAP (library animasi)
 ├── 05-svg-text-guide.md         ← Panduan membuat & styling SVG text
 ├── 06-icon-generation.md        ← Panduan generate icon otomatis untuk aset
-└── 07-plan-single-service.md    ← Template perencanaan topic single-service
+├── 07-plan-single-service.md    ← Template perencanaan topic single-service
+└── 08-audio-sfx-generation.md   ← Panduan sourcing & integrasi aset audio SFX
 ```
 
 ### Folder Lainnya

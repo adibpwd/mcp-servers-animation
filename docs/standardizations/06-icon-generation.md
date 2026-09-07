@@ -1,6 +1,6 @@
 # 06 — Icon Generation Guide
 
-> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → `05-svg-text-guide` → **`06-icon-generation`**
+> Alur baca lengkap: `01-architecture` → `02-standar-konten` → `03-tutorial-buat-topic-baru` → `04-referensi-gsap` → `05-svg-text-guide` → **`06-icon-generation`** → `08-audio-sfx-generation`
 
 Acuan arsitektur sistem pembuatan aset icon berbasis AI (ChatGPT/DALL-E 3)
 dan auto-crop backend untuk topic baru.
@@ -178,3 +178,73 @@ plan awal (dipakai di 1 Act yang tidak disebut di draft pertama). Salah
 asumsi begini bikin rencana generate icon salah hitung — boros generate
 varian yang tidak perlu ada, sekaligus kelewat varian yang justru
 dibutuhkan.
+
+## 8. Icon Brand: AI-Generate vs Download Logo Asli
+
+AI image-gen (§1-6 di atas) cocok untuk icon **konseptual/ilustratif**
+(hardware, proses, komponen abstrak) — tapi untuk **logo brand yang
+sudah dikenal luas audiens** (bahasa pemrograman, distro OS, tools/
+platform populer), hasil AI-generate biasanya kurang akurat/kurang
+nempel ke bentuk asli yang sudah familiar, walau sudah diarahkan
+seakurat mungkin lewat prompt.
+
+Gunakan tabel keputusan berikut sebelum generate icon brand baru:
+
+| Situasi | Rekomendasi |
+|---|---|
+| Brand/logo dikenal luas, risiko trademark rendah (bahasa pemrograman, tools open-source, distro Linux) | **Download logo asli** dari sumber resmi (lihat §9), bukan AI-generate |
+| Konsep abstrak/ilustratif, bukan brand mark (hardware generik, proses, ikon UI) | Tetap **AI-generate** via `vm-icon-generator` (§1-6) |
+| Brand komersial aktif dengan trademark ketat (produk SaaS, brand mark maskot seperti whale Docker) | **Konfirmasi eksplisit dengan pemilik project dulu** sebelum pakai logo resmi — default aman: tetap generik/ilustratif kalau belum ada konfirmasi |
+
+Jangan generate ulang logo pakai AI sebagai cara "memperbaiki" hasil
+AI-generate yang kurang akurat — itu sumber masalahnya sendiri. Solusi
+yang benar adalah pindah ke sumber logo resmi (§9), bukan re-prompt AI
+dengan variasi lain.
+
+## 9. Sumber & Lisensi Logo Asli (Kalau Pilih Download, Bukan Generate)
+
+| Kategori | Sumber utama | Format | Lisensi |
+|---|---|---|---|
+| Logo full-color (produk butuh warna asli brand) | Devicon (`cdn.jsdelivr.net/npm/devicon@latest/icons/{name}/{name}-original.svg`) | SVG warna | MIT |
+| Logo monokrom (produk pakai gaya flat/1 warna) | Simple Icons (`cdn.jsdelivr.net/npm/simple-icons@latest/icons/{slug}.svg`) | SVG monokrom | CC0 |
+| Fallback kalau tidak ada di 2 sumber di atas (OS/brand lama, kurang umum) | Wikimedia Commons | SVG/PNG | Cek lisensi per file (umumnya PD/fair-use logo) |
+
+**Konversi & penyimpanan:**
+- Convert SVG → PNG pakai `scripts/svg-to-png.mjs` (headless Chrome via
+  Puppeteer — ImageMagick bawaan tidak selalu render gradient SVG dengan
+  benar).
+- Simpan file SVG asli di `icons/_originals/<nama-icon>.svg` untuk arsip.
+- Catat sumber & lisensi tiap logo di `icons/_originals/LICENSE-LOGOS.md`
+  (1 baris per icon: nama, sumber, lisensi).
+- Kalau menggantikan icon AI-generate lama, backup versi lama ke
+  `icons/_originals/backup-ai-generated/` sebelum overwrite — jangan
+  langsung hapus.
+- Simpan nama file PNG hasil akhir **sama seperti nama file lama**
+  (tidak berubah), supaya `loader.js` dan pemanggilan di `Animation.jsx`
+  tidak perlu diubah sama sekali.
+
+**Catatan operasional — akses jaringan:** environment sandbox terbatas
+(kalau assistant AI menjalankan perintah lewat sandbox executor bawaan)
+biasanya hanya boleh akses domain paket resmi (npm, pypi, github, dst)
+dan TIDAK termasuk CDN aset seperti `cdn.jsdelivr.net` atau
+`commons.wikimedia.org`. Untuk download logo dari sumber-sumber di atas,
+gunakan terminal dengan akses jaringan penuh ke komputer/host yang
+sebenarnya (bukan sandbox terbatas) — semua proses download & konversi
+tetap terjadi langsung di folder project, tidak lewat sandbox.
+
+## 10. Checklist Tambahan: Icon di Komponen Text-Container
+
+Icon tidak hanya relevan untuk shape diagram (`DiagramBox` dkk) — momen
+teks polos (`Badge`, `TextCard`, atau komponen sejenis) yang berisi
+insight/kesimpulan/pertanyaan penting JUGA layak dipertimbangkan untuk
+dikasih icon pendamping, supaya momen penting itu tidak "tenggelam"
+sebagai teks biasa. Sebelum menganggap set icon 1 topic sudah lengkap:
+
+- [ ] Audit SEMUA elemen `Badge`/`TextCard`/komponen sejenis yang isinya
+      teks polos tanpa gambar — bukan cuma shape diagram
+- [ ] Untuk tiap elemen itu, putuskan: perlu icon pendamping (insight
+      penting, pertanyaan hook, payoff) atau memang cukup teks saja
+      (label kecil, sudah cukup jelas dari konteks)
+- [ ] Kalau komponen `Badge`/`TextCard` di topic ini belum punya prop
+      `icon` opsional, tambahkan (pola sama seperti `DiagramBox`) —
+      lakukan ini di awal pembuatan topic, bukan retrofit di akhir
