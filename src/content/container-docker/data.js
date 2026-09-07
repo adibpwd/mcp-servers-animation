@@ -150,10 +150,34 @@ export const SFX_MAP = {
 
   ALERT_PULSE: { category: 'warnings', name: 'alert-pulse' },
   ERROR_BEEP: { category: 'warnings', name: 'error-beep' },
+  CRITICAL_ALERT: { category: 'warnings', name: 'critical-alert' },  // puncak tension meter Act 1
+  ERROR_HUM: { category: 'warnings', name: 'error-hum' },            // ambient tension meter naik
+  LATENCY_TICK: { category: 'warnings', name: 'latency-tick' },      // tick loop boot-time bar Act 4
+  GEIGER: { category: 'warnings', name: 'geiger-accelerate' },       // NEW (Kenney) — tick dipercepat, meter Act 1
 
   SCAN: { category: 'sfx', name: 'scan' },
   MATERIALIZE: { category: 'sfx', name: 'materialize' },
   SUCCESS: { category: 'sfx', name: 'success' },
   ERROR: { category: 'sfx', name: 'error' },
+  CLICK: { category: 'sfx', name: 'click' },
+  WARNING: { category: 'sfx', name: 'warning' },
   TYPING: { category: 'sfx', name: 'typing', boost: 2.2 },   // intro hacker-typing
+
+  BOUNCE: { category: 'ui', name: 'bounce' },                       // playful pop — laptopAnchor Act 1
+  PLINK: { category: 'ui', name: 'plink' },                         // aksen angka Act 4
+  BEEP2: { category: 'ui', name: 'beep-2' },
+  NUMBER_TALLY: { category: 'ui', name: 'number-tally' },    // NEW (Kenney) — angka Act 4
+
+  SWOOSH2: { category: 'transitions', name: 'swoosh-2' },
+  LIGHT_SWOOSH: { category: 'transitions', name: 'light-swoosh-quick' },  // NEW (Kenney) — container ringan
+
+  IMPACT: { category: 'impacts', name: 'impact' },                  // "benturan" netral — hypervisorBox Act 2
+  FAN_SPINUP: { category: 'impacts', name: 'fan-spinup' },           // NEW (Kenney) — laptop mulai panas Act 1
+  CONNECTOR_SNAP: { category: 'impacts', name: 'connector-snap' },   // NEW (Kenney) — panah kernel nyambung Act 3
+
+  SSD_ACCESS: { category: 'success', name: 'ssd-access' },
+  SWAP_IN_COMPLETE: { category: 'success', name: 'swap-in-complete' },
+  RELIEF_SETTLE: { category: 'success', name: 'relief-settle' },    // NEW (Kenney) — payoff lega Act 5
+
+  WHOOSH_ALT: { category: 'sfx', name: 'whoosh' },                  // variasi whoosh (folder sfx/, beda file dari transitions/whoosh) — transisi Act 5
 }

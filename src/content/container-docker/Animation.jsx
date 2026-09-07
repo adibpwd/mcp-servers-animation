@@ -85,12 +85,12 @@ export default function ContainerDockerAnimation({
 
   // ── generic reveal helper (pop-in) ──
   const popIn = (tl, time, id, opts = {}) => {
-    const { duration = 0.45, ease = 'back.out(1.6)', sfx = true, fromX = 0, fromY = 0, sfxName = SFX_MAP.POP.name } = opts
+    const { duration = 0.45, ease = 'back.out(1.6)', sfx = true, fromX = 0, fromY = 0, sfxName = SFX_MAP.POP.name, sfxCategory = 'ui', volumeMult = 1 } = opts
     tl.add(() => setPop(prev => ({ ...prev, [id]: { scale: 0, opacity: 0, x: fromX, y: fromY } })), time)
     const o = { v: 0 }
     tl.to(o, {
       v: 1, duration, ease,
-      onStart: () => { if (sfx) sfxLoader.ui(sfxName, { volume, speed }) },
+      onStart: () => { if (sfx) sfxLoader.play(sfxCategory, sfxName, { volume: volume * volumeMult, speed }) },
       onUpdate: () => setPop(prev => ({
         ...prev,
         [id]: { scale: o.v, opacity: Math.min(1, o.v * 1.4), x: fromX * (1 - o.v), y: fromY * (1 - o.v) },
@@ -189,39 +189,57 @@ export default function ContainerDockerAnimation({
       sfxLoader.transition(SFX_MAP.WHOOSH_LOW.name, { volume, speed })
     }, t)
     say(tl, t + 0.1, 'Mau jalanin 3 app di 1 laptop.')
-    popIn(tl, t + 0.3, 'laptopAnchor', { fromY: 15, sfx: true })
+    popIn(tl, t + 0.3, 'laptopAnchor', { fromY: 15, sfx: true, sfxName: SFX_MAP.BOUNCE.name })
 
-    // 3 app chip di atas
+    // 3 app chip di atas — TICK pelan (bukan POP, biar gak numpuk sama laptopAnchor)
     APPS.forEach((app, i) => {
-      popIn(tl, t + 0.6 + i * 0.15, `appChip-${i}`, { duration: 0.3, sfx: false })
+      popIn(tl, t + 0.6 + i * 0.15, `appChip-${i}`, { duration: 0.3, sfx: true, sfxName: SFX_MAP.TICK.name, volumeMult: 0.5 })
     })
 
-    // 3 VM box muncul SATU-SATU, berat/lambat (disk-spin SFX)
+    // 3 VM box muncul SATU-SATU, berat/lambat (disk-spin SFX). Slot ke-3
+    // (i===2) dilapis FAN_SPINUP — laptop mulai kepanasan.
     APPS.forEach((app, i) => {
       const bootObj = { v: 0 }
       tl.add(() => setPop(prev => ({ ...prev, [`slot-${i}`]: { scale: 0, opacity: 0, x: 0, y: 0 } })), t + 1.1 + i * 0.9)
       tl.to(bootObj, {
         v: 1, duration: 0.75, ease: 'power1.out',
-        onStart: () => sfxLoader.impact(SFX_MAP.DISK_SPIN.name, { volume: volume * 0.9, speed: speed * 0.85 }),
+        onStart: () => {
+          sfxLoader.impact(SFX_MAP.DISK_SPIN.name, { volume: volume * 0.9, speed: speed * 0.85 })
+          if (i === 2) sfxLoader.impact(SFX_MAP.FAN_SPINUP.name, { volume: volume * 0.7, speed })
+        },
         onUpdate: () => setPop(prev => ({ ...prev, [`slot-${i}`]: { scale: bootObj.v, opacity: bootObj.v, x: 0, y: 0 } })),
       }, t + 1.1 + i * 0.9)
     })
 
-    // meter RAM/CPU naik cepat ke merah
+    // meter RAM/CPU naik cepat ke merah — GEIGER (tick dipercepat) selama
+    // tween, plus CRITICAL_ALERT sekali pas nembus ambang merah (70)
     popIn(tl, t + 1.1, 'meterAnchor', { fromY: -10, sfx: false })
     const meterObj1 = { v: 15 }
+    let meterRedTriggered = false
     tl.to(meterObj1, {
       v: 92, duration: 2.6, ease: 'power1.in',
-      onUpdate: () => { setMeterValue(meterObj1.v); setMeterColor(meterObj1.v > 70 ? COLORS.ISOLATION : COLORS.VM) },
+      onStart: () => {
+        meterRedTriggered = false
+        sfxLoader.warning(SFX_MAP.GEIGER.name, { volume, speed })
+        sfxLoader.warning(SFX_MAP.ERROR_HUM.name, { volume: volume * 0.5, speed })
+      },
+      onUpdate: () => {
+        setMeterValue(meterObj1.v)
+        const isRed = meterObj1.v > 70
+        setMeterColor(isRed ? COLORS.ISOLATION : COLORS.VM)
+        if (isRed && !meterRedTriggered) {
+          meterRedTriggered = true
+          sfxLoader.warning(SFX_MAP.CRITICAL_ALERT.name, { volume, speed })
+        }
+      },
     }, t + 1.3)
 
-    // karakter capek + speech bubble hook
-    popIn(tl, t + 4.2, 'faceAnchor', { fromY: 10, sfx: false })
+    // speech bubble hook (tanpa face icon di Act 1)
     sfxOn(tl, t + 4.2, () => sfxLoader.warning(SFX_MAP.ALERT_PULSE.name, { volume, speed }))
     popIn(tl, t + 4.5, 'hookBubble', { duration: 0.4, ease: 'back.out(1.8)', sfx: false })
     say(tl, t + 4.6, HOOK_QUESTION)
 
-    popIn(tl, t + 7.0, 'cliffhangerCard', { fromY: 12, sfx: false })
+    popIn(tl, t + 7.0, 'cliffhangerCard', { fromY: 12, sfx: true, sfxName: SFX_MAP.CHIME.name })
     say(tl, t + 7.1, HOOK_CLIFFHANGER)
     t += PHASES[0].duration
 
@@ -232,7 +250,7 @@ export default function ContainerDockerAnimation({
     }, t)
     say(tl, t + 0.1, 'Paham dulu apa itu Virtual Machine.')
     popIn(tl, t + 0.3, 'hwBar2', { fromY: 15, sfx: false })
-    popIn(tl, t + 0.6, 'hypervisorBox', { fromY: 12, sfx: true, sfxName: SFX_MAP.POP.name })
+    popIn(tl, t + 0.6, 'hypervisorBox', { fromY: 12, sfx: true, sfxName: SFX_MAP.IMPACT.name, sfxCategory: 'impacts' })
 
     // 3 Guest OS boot lambat (progress bar + kernel icon muncul berat)
     Array.from({ length: 3 }).forEach((_, i) => {
@@ -247,7 +265,7 @@ export default function ContainerDockerAnimation({
 
     popIn(tl, t + 4.2, 'vmInsightBadge', { duration: 0.4, ease: 'back.out(1.8)', sfx: false })
     sfxOn(tl, t + 4.2, () => sfxLoader.sfx(SFX_MAP.SUCCESS.name, { volume, speed }))
-    popIn(tl, t + 6.5, 'vmCaptionCard', { fromY: 12, sfx: false })
+    popIn(tl, t + 6.5, 'vmCaptionCard', { fromY: 12, sfx: true, sfxName: SFX_MAP.CHIME.name })
     say(tl, t + 6.6, VM_CAPTION)
     t += PHASES[1].duration
 
@@ -259,64 +277,77 @@ export default function ContainerDockerAnimation({
     say(tl, t + 0.1, CONTAINER_QUESTION)
     popIn(tl, t + 0.4, 'hwBar3', { fromY: 15, sfx: false })
     popIn(tl, t + 0.7, 'kernelBox', { fromY: 12, sfx: true, sfxName: SFX_MAP.POP.name })
-    popIn(tl, t + 1.0, 'dockerEngineBox', { fromY: 10, sfx: true, sfxName: SFX_MAP.POP2.name })
+    popIn(tl, t + 1.0, 'dockerEngineBox', { fromY: 10, sfx: true, sfxName: SFX_MAP.CLICK.name, sfxCategory: 'sfx' })
 
-    // panah shared-kernel + container snap-in cepat (kontras vs Act 2)
+    // panah shared-kernel — tiap panah punya CONNECTOR_SNAP sendiri (biar
+    // kedengeran individual, bukan 1 SWAP dibagi rata ke 3 panah)
     Array.from({ length: 3 }).forEach((_, i) => {
-      popIn(tl, t + 1.5 + i * 0.15, `kernelArrow-${i}`, { duration: 0.3, sfx: false })
+      popIn(tl, t + 1.5 + i * 0.15, `kernelArrow-${i}`, { duration: 0.3, sfx: true, sfxName: SFX_MAP.CONNECTOR_SNAP.name, sfxCategory: 'impacts', volumeMult: 0.7 })
     })
-    sfxOn(tl, t + 1.5, () => sfxLoader.impact(SFX_MAP.SWAP.name, { volume, speed }))
+    // container snap-in cepat & ringan (LIGHT_SWOOSH) — kontras eksplisit
+    // vs DISK_SPIN yang berat di Act 1/2. SSD_ACCESS dilapis di container
+    // pertama — nuansa "akses cepat" vs boot berat VM.
+    sfxOn(tl, t + 2.1, () => sfxLoader.success(SFX_MAP.SSD_ACCESS.name, { volume: volume * 0.8, speed }))
     Array.from({ length: 3 }).forEach((_, i) => {
       popIn(tl, t + 2.1 + i * 0.15, `containerBox-${i}`, {
-        duration: 0.25, ease: 'back.out(2.2)', sfxName: SFX_MAP.POP2.name,
+        duration: 0.25, ease: 'back.out(2.2)', sfx: true,
+        sfxName: SFX_MAP.LIGHT_SWOOSH.name, sfxCategory: 'transitions',
       })
     })
-    popIn(tl, t + 2.8, 'namespaceLabel', { duration: 0.3, sfx: false })
-    popIn(tl, t + 3.0, 'cgroupLabel', { duration: 0.3, sfx: false })
+    popIn(tl, t + 2.8, 'namespaceLabel', { duration: 0.3, sfx: true, sfxName: SFX_MAP.BEEP2.name, volumeMult: 0.6 })
+    popIn(tl, t + 3.0, 'cgroupLabel', { duration: 0.3, sfx: true, sfxName: SFX_MAP.BEEP2.name, volumeMult: 0.6 })
 
     popIn(tl, t + 4.2, 'containerInsightBadge', { duration: 0.4, ease: 'back.out(1.8)', sfx: false })
     sfxOn(tl, t + 4.2, () => sfxLoader.success(SFX_MAP.CONFIRM.name, { volume, speed }))
-    popIn(tl, t + 8.0, 'containerPayoffCard', { fromY: 12, sfx: false })
+    popIn(tl, t + 8.0, 'containerPayoffCard', { fromY: 12, sfx: true, sfxName: SFX_MAP.CHIME.name })
     say(tl, t + 8.1, CONTAINER_PAYOFF)
     t += PHASES[2].duration
 
     // ═══════════════ ACT 4 — Bukan Cuma "Lebih Kecil" ═══════════════
     tl.add(() => {
       setPhaseIdx(3)
-      sfxLoader.transition(SFX_MAP.WHOOSH.name, { volume, speed })
+      sfxLoader.transition(SFX_MAP.SWOOSH2.name, { volume, speed })
     }, t)
     say(tl, t + 0.1, 'Bandingin ukuran & waktu boot-nya.')
     popIn(tl, t + 0.3, 'vmPanel4', { fromX: -20, sfx: true, sfxName: SFX_MAP.POP.name })
     popIn(tl, t + 0.5, 'containerPanel4', { fromX: 20, sfx: true, sfxName: SFX_MAP.POP2.name })
+    // PLINK — aksen kecil pas angka UKURAN/BOOT di kedua panel settle
+    sfxOn(tl, t + 0.9, () => sfxLoader.ui(SFX_MAP.PLINK.name, { volume: volume * 0.7, speed }))
 
+    // size bar (GB→MB) — TICK + NUMBER_TALLY (kesan angka lagi dihitung cepat)
     const sizeBarObj = { v: 0 }
     tl.to(sizeBarObj, {
       v: 1, duration: 0.8, ease: 'power2.out',
-      onStart: () => sfxLoader.ui(SFX_MAP.TICK.name, { volume, speed }),
+      onStart: () => {
+        sfxLoader.ui(SFX_MAP.TICK.name, { volume, speed })
+        sfxLoader.ui(SFX_MAP.NUMBER_TALLY.name, { volume: volume * 0.8, speed })
+      },
       onUpdate: () => setPop(prev => ({ ...prev, sizeBar: { scale: sizeBarObj.v, opacity: 1 } })),
     }, t + 1.0)
+    // boot-time bar (MENIT→DETIK) — LATENCY_TICK, konsisten sama size bar di atasnya
     const bootBarObj = { v: 0 }
     tl.to(bootBarObj, {
       v: 1, duration: 0.8, ease: 'power2.out',
+      onStart: () => sfxLoader.warning(SFX_MAP.LATENCY_TICK.name, { volume, speed }),
       onUpdate: () => setPop(prev => ({ ...prev, bootBar: { scale: bootBarObj.v, opacity: 1 } })),
     }, t + 1.6)
 
-    popIn(tl, t + 2.8, 'tradeoffQuestionBadge', { duration: 0.3, sfx: false })
+    popIn(tl, t + 2.8, 'tradeoffQuestionBadge', { duration: 0.3, sfx: true, sfxName: SFX_MAP.CHIME.name })
     say(tl, t + 2.9, TRADEOFF_QUESTION)
     // ── jeda tegangan sebelum reveal isolation wall (aturan 03-tutorial) ──
     sfxOn(tl, t + 4.3, () => sfxLoader.warning(SFX_MAP.ALERT_PULSE.name, { volume, speed }))
-    popIn(tl, t + 4.5, 'isolationWallVM', { fromY: 10, sfx: false })
+    popIn(tl, t + 4.5, 'isolationWallVM', { fromY: 10, sfx: true, sfxName: SFX_MAP.WARNING.name, sfxCategory: 'sfx', volumeMult: 0.8 })
     popIn(tl, t + 4.8, 'isolationWallContainer', { fromY: 10, sfx: false })
     sfxOn(tl, t + 4.8, () => sfxLoader.impact(SFX_MAP.UNLOCK.name, { volume, speed }))
 
-    popIn(tl, t + 6.0, 'tradeoffCaptionCard', { fromY: 12, sfx: false })
+    popIn(tl, t + 6.0, 'tradeoffCaptionCard', { fromY: 12, sfx: true, sfxName: SFX_MAP.CHIME.name })
     say(tl, t + 6.1, TRADEOFF_CAPTION)
     t += PHASES[3].duration
 
     // ═══════════════ ACT 5 — Payoff: Laptop Sama, Jauh Lebih Lega ═══════════════
     tl.add(() => {
       setPhaseIdx(4)
-      sfxLoader.transition(SFX_MAP.WHOOSH.name, { volume, speed })
+      sfxLoader.sfx(SFX_MAP.WHOOSH_ALT.name, { volume, speed })
     }, t)
     say(tl, t + 0.1, 'Ganti 3 VM jadi 3 container di laptop yang sama.')
 
@@ -330,7 +361,8 @@ export default function ContainerDockerAnimation({
     const widthObj = { v: 150 }
     tl.to(widthObj, {
       v: 70, duration: 0.5, ease: 'power2.inOut',
-      onStart: () => sfxLoader.ui(SFX_MAP.POP2.name, { volume, speed }),
+      onStart: () => sfxLoader.transition(SFX_MAP.LIGHT_SWOOSH.name, { volume, speed }),
+      onComplete: () => sfxLoader.success(SFX_MAP.SWAP_IN_COMPLETE.name, { volume, speed }),
       onUpdate: () => setSlotWidth([widthObj.v, widthObj.v, widthObj.v]),
     }, t + 0.4)
 
@@ -344,8 +376,10 @@ export default function ContainerDockerAnimation({
 
     tl.add(() => setFaceHappy(true), t + 1.7)
     sfxOn(tl, t + 1.7, () => sfxLoader.success(SFX_MAP.VICTORY.name, { volume, speed }))
+    // RELIEF_SETTLE — nuansa "lega" yang beda dari VICTORY yang "seru"
+    sfxOn(tl, t + 2.0, () => sfxLoader.success(SFX_MAP.RELIEF_SETTLE.name, { volume: volume * 0.8, speed }))
 
-    popIn(tl, t + 3.0, 'closingNoteCard', { fromY: 10, sfx: false })
+    popIn(tl, t + 3.0, 'closingNoteCard', { fromY: 10, sfx: true, sfxName: SFX_MAP.CHIME.name })
     say(tl, t + 3.1, CLOSING_NOTE)
 
     popIn(tl, t + 5.5, 'closingLineCard', { fromY: 15, sfx: false })
@@ -571,7 +605,7 @@ export default function ContainerDockerAnimation({
           </g>
         )}
 
-        {/* ═══════ ACT 1 & ACT 5 shared ANCHOR (laptop + slots + meter + face) ═══════ */}
+        {/* ═══════ ACT 1 & ACT 5 shared ANCHOR (laptop + slots + meter) ═══════ */}
         {(phaseIdx === 0 || phaseIdx === 4) && (
           <g transform="translate(0, 90)">
             <g transform={T('laptopAnchor', 410, 220)} opacity={O('laptopAnchor')}>
@@ -595,6 +629,12 @@ export default function ContainerDockerAnimation({
             <g transform={T('meterAnchor', 410, 330)} opacity={O('meterAnchor')}>
               <Meter x={0} y={0} value={meterValue} color={meterColor} />
             </g>
+          </g>
+        )}
+
+        {/* ═══════ ACT 5 only — face icon (payoff, tidak dipakai di Act 1) ═══════ */}
+        {phaseIdx === 4 && (
+          <g transform="translate(0, 90)">
             <g transform={T('faceAnchor', 410, 420)} opacity={O('faceAnchor')}>
               <FaceCharacter x={0} y={0} happy={faceHappy} />
             </g>
@@ -670,10 +710,10 @@ export default function ContainerDockerAnimation({
                 </g>
               )
             })}
-            <g transform={T('namespaceLabel', 300, 540)} opacity={O('namespaceLabel')}>
+            <g transform={T('namespaceLabel', 250, 540)} opacity={O('namespaceLabel')}>
               <Badge x={-150} y={0} text={NAMESPACE_LABEL} color={COLORS.CONTAINER} w={300} icon="namespace-icon" />
             </g>
-            <g transform={T('cgroupLabel', 520, 540)} opacity={O('cgroupLabel')}>
+            <g transform={T('cgroupLabel', 570, 540)} opacity={O('cgroupLabel')}>
               <Badge x={-150} y={0} text={CGROUP_LABEL} color={COLORS.CONTAINER} w={300} icon="cgroup-icon" />
             </g>
             <g transform={T('containerInsightBadge', 410, 620)} opacity={O('containerInsightBadge')}>
