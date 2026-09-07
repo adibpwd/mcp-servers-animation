@@ -386,24 +386,27 @@ export default function ContainerDockerAnimation({
     return lines
   }
 
-  const Badge = ({ x, y, text, color = COLORS.DOCKER, w = 280 }) => {
-    const lines = wrapText(text, Math.floor((w - 30) / 7.5))
+  const Badge = ({ x, y, text, color = COLORS.DOCKER, w = 280, icon = null }) => {
+    const iconPad = icon ? 26 : 0
+    const lines = wrapText(text, Math.floor((w - 30 - iconPad) / 7.5))
     const dy = 18
     const h = lines.length * dy + 22
     return (
       <g transform={`translate(${x},${y})`}>
         <rect x={0} y={0} width={w} height={h} rx={h / 2} fill={COLORS.PANEL} stroke={color} strokeWidth={2.5} filter="url(#glow)" />
-        <text x={w / 2} y={h / 2 + 5} textAnchor="middle" fontSize={14} fontWeight={700} fontFamily="sans-serif" fill={color}>
-          {lines.map((line, i) => <tspan key={i} x={w / 2} dy={i === 0 ? -((lines.length - 1) * dy) / 2 : dy}>{line}</tspan>)}
+        {icon && <image href={getIcon(icon)} x={16} y={h / 2 - 10} width={20} height={20} />}
+        <text x={w / 2 + iconPad / 2} y={h / 2 + 5} textAnchor="middle" fontSize={14} fontWeight={700} fontFamily="sans-serif" fill={color}>
+          {lines.map((line, i) => <tspan key={i} x={w / 2 + iconPad / 2} dy={i === 0 ? -((lines.length - 1) * dy) / 2 : dy}>{line}</tspan>)}
         </text>
       </g>
     )
   }
 
-  const TextCard = ({ x, y, text, w = 640, color = COLORS.BORDER }) => (
+  const TextCard = ({ x, y, text, w = 640, color = COLORS.BORDER, icon = null }) => (
     <g transform={`translate(${x},${y})`}>
       <rect x={-w / 2} y={0} width={w} height={58} rx={14} fill={COLORS.PANEL} stroke={color} strokeWidth={1.5} />
-      <text x={0} y={24} textAnchor="middle" fill={COLORS.TEXT} fontSize={13} fontFamily="sans-serif">{text}</text>
+      {icon && <image href={getIcon(icon)} x={-w / 2 + 14} y={19} width={20} height={20} />}
+      <text x={icon ? 12 : 0} y={24} textAnchor="middle" fill={COLORS.TEXT} fontSize={13} fontFamily="sans-serif">{text}</text>
     </g>
   )
 
@@ -602,7 +605,7 @@ export default function ContainerDockerAnimation({
         {phaseIdx === 0 && (
           <g transform="translate(0, 90)">
             <g transform={T('hookBubble', 410, 480)} opacity={O('hookBubble')}>
-              <Badge x={-180} y={0} text={HOOK_QUESTION} color={COLORS.ISOLATION} w={360} />
+              <Badge x={-180} y={0} text={HOOK_QUESTION} color={COLORS.ISOLATION} w={360} icon="question-icon" />
             </g>
             <g transform={T('cliffhangerCard', 410, 560)} opacity={O('cliffhangerCard')}>
               <TextCard x={0} y={0} text={HOOK_CLIFFHANGER} />
@@ -630,7 +633,7 @@ export default function ContainerDockerAnimation({
               )
             })}
             <g transform={T('vmInsightBadge', 410, 560)} opacity={O('vmInsightBadge')}>
-              <Badge x={-210} y={0} text={VM_INSIGHT} color={COLORS.HYPERVISOR} w={420} />
+              <Badge x={-210} y={0} text={VM_INSIGHT} color={COLORS.HYPERVISOR} w={420} icon="insight-icon" />
             </g>
             <g transform={T('vmCaptionCard', 410, 650)} opacity={O('vmCaptionCard')}>
               <TextCard x={0} y={0} text={VM_CAPTION} />
@@ -668,13 +671,13 @@ export default function ContainerDockerAnimation({
               )
             })}
             <g transform={T('namespaceLabel', 300, 540)} opacity={O('namespaceLabel')}>
-              <Badge x={-150} y={0} text={NAMESPACE_LABEL} color={COLORS.CONTAINER} w={300} />
+              <Badge x={-150} y={0} text={NAMESPACE_LABEL} color={COLORS.CONTAINER} w={300} icon="namespace-icon" />
             </g>
             <g transform={T('cgroupLabel', 520, 540)} opacity={O('cgroupLabel')}>
-              <Badge x={-150} y={0} text={CGROUP_LABEL} color={COLORS.CONTAINER} w={300} />
+              <Badge x={-150} y={0} text={CGROUP_LABEL} color={COLORS.CONTAINER} w={300} icon="cgroup-icon" />
             </g>
             <g transform={T('containerInsightBadge', 410, 620)} opacity={O('containerInsightBadge')}>
-              <Badge x={-210} y={0} text={CONTAINER_INSIGHT} color={COLORS.CONTAINER} w={420} />
+              <Badge x={-210} y={0} text={CONTAINER_INSIGHT} color={COLORS.CONTAINER} w={420} icon="insight-icon" />
             </g>
             <g transform={T('containerPayoffCard', 410, 700)} opacity={O('containerPayoffCard')}>
               <TextCard x={0} y={0} text={CONTAINER_PAYOFF} />
@@ -700,7 +703,7 @@ export default function ContainerDockerAnimation({
               <rect x={-140} y={122} width={Math.max(6, 280 * P('bootBar').scale * 0.15)} height={14} rx={7} fill={COLORS.CONTAINER} />
             </g>
             <g transform={T('tradeoffQuestionBadge', 410, 380)} opacity={O('tradeoffQuestionBadge')}>
-              <Badge x={-230} y={0} text={TRADEOFF_QUESTION} color={COLORS.ISOLATION} w={460} />
+              <Badge x={-230} y={0} text={TRADEOFF_QUESTION} color={COLORS.ISOLATION} w={460} icon="question-icon" />
             </g>
             <g transform={T('isolationWallVM', 260, 460)} opacity={O('isolationWallVM')}>
               <IsolationWall x={0} y={0} thick={60} color={COLORS.ISOLATION} label="ISOLASI: KUAT" />
@@ -718,13 +721,13 @@ export default function ContainerDockerAnimation({
         {phaseIdx === 4 && (
           <g transform="translate(0, 90)">
             <g transform={T('closingNoteCard', 410, 500)} opacity={O('closingNoteCard')}>
-              <TextCard x={0} y={0} text={CLOSING_NOTE} />
+              <TextCard x={0} y={0} text={CLOSING_NOTE} icon="payoff-check-icon" />
             </g>
             <g transform={T('closingLineCard', 410, 580)} opacity={O('closingLineCard')}>
-              <TextCard x={0} y={0} text={CLOSING_LINE} color={COLORS.DOCKER} />
+              <TextCard x={0} y={0} text={CLOSING_LINE} color={COLORS.DOCKER} icon="payoff-check-icon" />
             </g>
             <g transform={T('closingBrandBadge', 410, 660)} opacity={O('closingBrandBadge')}>
-              <Badge x={-160} y={0} text={CLOSING_BRAND} color={COLORS.DOCKER} w={320} />
+              <Badge x={-160} y={0} text={CLOSING_BRAND} color={COLORS.DOCKER} w={320} icon="payoff-check-icon" />
             </g>
           </g>
         )}

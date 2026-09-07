@@ -42,6 +42,21 @@
         { "id": "chip-icon", "category": "accent", "color": "#94A3B8", "name": "CPU/RAM Chip Accent", "label": "RAM/CPU Chip", "description": "Icon kecil chip/IC generik (kotak dengan pin kecil di 4 sisi), slate/gray netral -- WARNA TETAP NETRAL (bukan ikut warna meter yang berubah merah/oranye/hijau), supaya konsisten dipakai di Act 1 & 5", "usage": "Meter RAM/CPU -- accent icon kecil di sebelah kiri label teks" }
       ],
       "prompt": "Generate a 1x2 row of 2 flat-design minimalist accent icons on transparent background (PNG), both using ONLY slate-gray color (#94A3B8), numbered left to right:\n\n1. Simple generic circuit-board/motherboard icon: a rectangle with a few thin trace lines and 1-2 small square chip shapes on it, flat silhouette, slate-gray (#94A3B8)\n2. Simple generic CPU/RAM chip icon: a square with small tick/pin marks evenly spaced on all 4 sides, flat silhouette, slate-gray (#94A3B8)\n\nStyle requirements:\n- Flat design, minimalist, bold simple silhouettes (small ACCENT icons, will be placed at ~16x16px)\n- Single flat color (#94A3B8) only, no gradients, no other colors\n- Each icon same overall size, high contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 1 row x 2 columns\n- Recommended total size: ~2048x1024 pixels (roughly 1024x1024 per icon before crop)"
+    },
+    {
+      "batch_id": "batch-4",
+      "name": "Text-Only Moment Accents -- Question/Insight/Namespace/Cgroup/Payoff (4/4)",
+      "status": "PENDING GENERATION -- Animation.jsx (Badge/TextCard prop icon) & data-wiring di 8 titik SUDAH selesai (2026-09-07), tapi file PNG-nya BELUM di-generate. loader.js belum di-update supaya getIcon() masih fallback null (aman, tidak break render) sampai PNG-nya ada. Lihat revisi/2026-09-07-0802-revisi-01.md Plan Tambahan.",
+      "rows": 1,
+      "cols": 5,
+      "icons": [
+        { "id": "question-icon", "category": "accent", "color": "#F43F5E", "name": "Question Accent", "label": "Question", "description": "Icon kecil generik tanda tanya/mikir (mis. bubble tanda tanya atau ikon lampu-mikir sederhana), rose/red tint (senada COLORS.ISOLATION) -- dipakai di Badge yang isinya PERTANYAAN, bukan pernyataan", "usage": "Act 1 hookBubble & Act 4 tradeoffQuestionBadge -- accent icon" },
+        { "id": "insight-icon", "category": "accent", "color": "#A78BFA", "name": "Insight/Lightbulb Accent", "label": "Insight", "description": "Icon kecil lightbulb generik (bohlam sederhana dengan 2-3 garis 'nyala' di sekitarnya), violet tint -- dipakai di Badge yang isinya KESIMPULAN/insight utama tiap Act", "usage": "Act 2 vmInsightBadge & Act 3 containerInsightBadge -- accent icon" },
+        { "id": "namespace-icon", "category": "accent", "color": "#34D399", "name": "Namespace/Partition Accent", "label": "Namespace", "description": "Icon kecil generik sekat/partisi (mis. kotak terbagi 2-3 bagian dengan garis pemisah tegas), green tint (senada COLORS.CONTAINER) -- representasi konkret dari 'sekat privasi'", "usage": "Act 3 namespaceLabel -- accent icon" },
+        { "id": "cgroup-icon", "category": "accent", "color": "#34D399", "name": "Cgroup/Resource Gauge Accent", "label": "Cgroup", "description": "Icon kecil generik gauge/meter atau slice-pie sederhana (representasi jatah/kuota resource), green tint (senada COLORS.CONTAINER) -- representasi konkret dari 'jatah resource'", "usage": "Act 3 cgroupLabel -- accent icon" },
+        { "id": "payoff-check-icon", "category": "accent", "color": "#2496ED", "name": "Payoff Checkmark Accent", "label": "Payoff", "description": "Icon kecil generik checkmark/centang dalam lingkaran, docker-brand blue tint (senada COLORS.DOCKER) -- aksen penutup yang memuaskan untuk bagian PAYOFF (Act 5)", "usage": "Act 5 closingNoteCard, closingLineCard, closingBrandBadge -- accent icon" }
+      ],
+      "prompt": "Generate a 1x5 row of 5 flat-design minimalist GENERIC accent icons on transparent background (PNG), numbered left to right. These are abstract concept icons, NOT logos/brands -- no trademark concerns:\n\n1. QUESTION ACCENT: a simple rounded question-mark inside a soft speech-bubble or circle outline, rose/red color (#F43F5E), flat fill\n2. INSIGHT ACCENT: a simple lightbulb silhouette with 2-3 short radiating lines around the top to suggest 'idea/glow', violet color (#A78BFA), flat fill\n3. NAMESPACE ACCENT: a square or rounded-square split into 2-3 sections by bold divider lines (partition/compartment feel), green color (#34D399), flat fill\n4. CGROUP ACCENT: a simple gauge/dial or pie-slice icon suggesting a resource quota/allocation, green color (#34D399), flat fill\n5. PAYOFF CHECK ACCENT: a checkmark inside a filled or outlined circle, docker-brand blue color (#2496ED), flat fill\n\nStyle requirements:\n- Flat design, minimalist, bold simple silhouettes (small ACCENT icons, will be placed at ~20x20px inside Badge/TextCard)\n- Use ONLY the exact hex color specified per icon, no gradients\n- Each icon same overall size, high contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 1 row x 5 columns\n- Recommended total size: ~5120x1024 pixels (roughly 1024x1024 per icon before crop)"
     }
   ],
   "generation": {
@@ -49,10 +64,12 @@
     "output_path": "src/content/container-docker/icons"
   },
   "next_steps": [
-    "1. Pastikan server unified app/API sudah live di http://localhost:3373 (sudah dicek aktif).",
-    "2. Load Chrome extension `src/extensions/vm-icon-generator`, buka tab https://chatgpt.com.",
-    "3. Klik icon extension, pilih topic 'container-docker', jalankan batch-2 DAN batch-3 (batch-1 sudah ada file PNG-nya, tidak perlu diulang) -- popup mendukung multi-select batch sekaligus.",
-    "4. Verifikasi 5 file PNG baru masuk ke src/content/container-docker/icons/: node-icon.png, python-icon.png, redis-icon.png (batch-2), hardware-icon.png, chip-icon.png (batch-3).",
-    "5. Setelah itu, minta Claude lanjutkan: loader.js akan ditambah entry baru untuk kelima icon. Kode Animation.jsx (appChip, hwBar2/hwBar3, Meter) SUDAH di-wire duluan dan aman -- icon yang belum ada filenya otomatis fallback tidak tampil (href null), begitu PNG masuk & loader.js diupdate, langsung muncul tanpa perlu ubah Animation.jsx lagi."
+    "batch-2 & batch-3: SELESAI (node/python/redis diganti Devicon 2026-09-07; hardware-icon/chip-icon sudah ada filenya).",
+    "batch-1 docker-engine-icon: SELESAI diganti logo whale resmi (Simple Icons) 2026-09-07.",
+    "batch-4 (PENDING): 5 icon baru (question/insight/namespace/cgroup/payoff-check) -- kode Animation.jsx SUDAH di-wire (8 titik: hookBubble, tradeoffQuestionBadge, vmInsightBadge, containerInsightBadge, namespaceLabel, cgroupLabel, closingNoteCard, closingLineCard, closingBrandBadge), Badge & TextCard SUDAH support prop icon. Yang masih perlu:",
+    "1. Load Chrome extension `src/extensions/vm-icon-generator`, buka tab https://chatgpt.com.",
+    "2. Klik icon extension, pilih topic 'container-docker', jalankan batch-4.",
+    "3. Verifikasi 5 file PNG masuk ke src/content/container-docker/icons/: question-icon.png, insight-icon.png, namespace-icon.png, cgroup-icon.png, payoff-check-icon.png.",
+    "4. Setelah itu, minta Claude lanjutkan: loader.js akan ditambah entry baru untuk kelima icon -- begitu PNG masuk & loader.js diupdate, langsung muncul tanpa perlu ubah Animation.jsx lagi (icon yang belum ada filenya otomatis fallback tidak tampil / href null, aman)."
   ]
 }
