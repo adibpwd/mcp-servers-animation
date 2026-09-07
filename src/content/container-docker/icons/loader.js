@@ -12,6 +12,11 @@ import pythonIcon from './python-icon.png'
 import redisIcon from './redis-icon.png'
 import hardwareIcon from './hardware-icon.png'
 import chipIcon from './chip-icon.png'
+import questionIcon from './question-icon.png'
+import insightIcon from './insight-icon.png'
+import namespaceIcon from './namespace-icon.png'
+import cgroupIcon from './cgroup-icon.png'
+import payoffCheckIcon from './payoff-check-icon.png'
 
 export const ICONS = {
   'laptop': laptopIcon,
@@ -27,6 +32,11 @@ export const ICONS = {
   'redis-icon': redisIcon,
   'hardware-icon': hardwareIcon,
   'chip-icon': chipIcon,
+  'question-icon': questionIcon,
+  'insight-icon': insightIcon,
+  'namespace-icon': namespaceIcon,
+  'cgroup-icon': cgroupIcon,
+  'payoff-check-icon': payoffCheckIcon,
 }
 
 export function getIcon(id) {

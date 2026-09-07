@@ -46,7 +46,7 @@
     {
       "batch_id": "batch-4",
       "name": "Text-Only Moment Accents -- Question/Insight/Namespace/Cgroup/Payoff (4/4)",
-      "status": "PENDING GENERATION -- Animation.jsx (Badge/TextCard prop icon) & data-wiring di 8 titik SUDAH selesai (2026-09-07), tapi file PNG-nya BELUM di-generate. loader.js belum di-update supaya getIcon() masih fallback null (aman, tidak break render) sampai PNG-nya ada. Lihat revisi/2026-09-07-0802-revisi-01.md Plan Tambahan.",
+      "status": "SELESAI (2026-09-07) -- 5 PNG di-generate via vm-icon-generator, loader.js diupdate, Animation.jsx sudah di-wire duluan. Sudah live.",
       "rows": 1,
       "cols": 5,
       "icons": [
