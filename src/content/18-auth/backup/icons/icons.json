@@ -1,0 +1,45 @@
+{
+  "name": "auth",
+  "description": "14 icon untuk topic Authentication — 2 batch, keduanya sudah di-generate (AI-generate PNG via ChatGPT extension vm-icon-generator, per keputusan icon terkonfirmasi lewat eksekusi). Batch-1: objek inti (gerbang, penjaga, amplop bersegel, kartu ID, buku tamu, pencuri, mesin hash). Batch-2: session/token & authorization (kartu tamu bernomor, meja resepsionis, segel ajaib, 2 varian penjaga pintu, pintu terlarang, papan dual-stamp).",
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "Core Objects (Batch 1/2)",
+      "status": "generated",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "entrance-gate", "name": "Entrance Gate", "label": "Department Gate", "description": "Gerbang/pintu departemen tujuan — 2 pilar tegak dengan ambang atas melengkung, gaya flat minimalis, warna cyan (#06B6D4)" },
+        { "id": "gatekeeper-officer", "name": "Gatekeeper Officer", "label": "Gate Guard", "description": "Karakter wajah petugas penjaga gerbang — lingkaran kepala, topi/seragam sederhana, ekspresi siaga/waspada, warna oranye (#FB923C)" },
+        { "id": "locked-envelope", "name": "Locked Envelope", "label": "Sealed Letter", "description": "Amplop tertutup dengan gembok kecil menempel tepat di segel flap, garis outline sederhana, warna biru-cyan (#38BDF8) dengan aksen kuning (#FBBF24) pada gembok" },
+        { "id": "id-card-blank", "name": "ID Card Blank", "label": "Identity Card", "description": "Kartu identitas kosong bentuk persegi panjang sudut membulat, lingkaran foto placeholder di pojok kiri, 2 garis kosong untuk nama & kata sandi, warna biru (#38BDF8)" },
+        { "id": "guestbook-open", "name": "Guestbook Open", "label": "Guest Log", "description": "Buku besar terbuka membentang 2 halaman, garis-garis entri horizontal berjejer di kedua halaman, warna oranye redup (#FB923C)" },
+        { "id": "intruder-silhouette", "name": "Intruder Silhouette", "label": "Sneaking Figure", "description": "Siluet sosok membungkuk/mengintip dari sudut, bentuk gelap solid tanpa detail wajah, aksen glow merah kecil di mata, warna abu gelap dengan merah (#F43F5E)" },
+        { "id": "hash-machine", "name": "Hash Machine", "label": "One-Way Stamper", "description": "Mesin berbentuk drum/turbin unik (bukan kotak persegi), slot masuk di atas & slot keluar pola acak di bawah, panel geometris di badan mesin, warna ungu (#A78BFA)" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Simple entrance gate icon — two upright pillars connected by a curved archway on top, flat outline style, cyan color (#06B6D4)\n2. Simple cartoon face character wearing a small cap/uniform collar, alert/watchful expression, circle head with simple body outline below, orange color (#FB923C)\n3. Closed envelope/letter with a small padlock icon attached directly on the seal flap, simple outline style, sky-blue color (#38BDF8) with the padlock accented in gold/yellow (#FBBF24)\n4. Blank ID card — rounded rectangle badge shape, small circular photo placeholder in top-left corner, two empty horizontal lines below for name and password fields, sky-blue color (#38BDF8)\n5. Large open book/guestbook spanning two pages, horizontal entry lines filling both pages, muted orange color (#FB923C)\n6. Dark solid silhouette of a hunched figure peeking from behind a corner, no facial detail, small glowing red dot accents for eyes, dark charcoal body with red (#F43F5E) glow\n7. Unique drum/turbine-shaped machine (NOT a plain box), narrow input slot on top, scrambled-pattern output slot on bottom, geometric control panel details on the body, purple color (#A78BFA)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "Session, Token & Authorization (Batch 2/2)",
+      "status": "generated",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "visitor-badge", "name": "Visitor Badge", "label": "Numbered Pass", "description": "Kartu tamu bergantung tali lanyard, bentuk oval/rounded rectangle, nomor besar di tengah kartu, warna ungu (#A78BFA)" },
+        { "id": "front-desk", "name": "Front Desk", "label": "Reception Desk", "description": "Meja resepsionis panjang sederhana, bel kecil di atas meja, rak file tipis di belakang, warna oranye (#FB923C)" },
+        { "id": "magic-seal-token", "name": "Magic Seal Token", "label": "Self-Verifying Seal", "description": "Segel bulat dengan pola garis/rune unik bercahaya menyebar di permukaannya (beda dari gembok polos), efek shimmer halus, warna ungu (#A78BFA)" },
+        { "id": "door-officer-a", "name": "Door Officer A", "label": "Room Guard 1", "description": "Karakter wajah petugas pintu varian 1 — lingkaran kepala, topi lurus, ekspresi netral, warna oranye terang (#FB923C)" },
+        { "id": "door-officer-b", "name": "Door Officer B", "label": "Room Guard 2", "description": "Karakter wajah petugas pintu varian 2 — beda bentuk topi & ekspresi dari varian 1, warna cyan (#06B6D4) supaya kontras jelas" },
+        { "id": "restricted-door", "name": "Restricted Door", "label": "Archive Room", "description": "Pintu tunggal dengan simbol tanda seru/terlarang di panel tengah pintu, garis outline tegas, warna merah (#F43F5E)" },
+        { "id": "stamp-authenticated-authorized", "name": "Dual Stamp Board", "label": "Authn vs Authz", "description": "Papan/badge berisi 2 stempel bulat berdampingan — kiri hijau bertuliskan centang (terverifikasi), kanan ungu masih kosong/belum tercentang (izin akses), warna hijau (#34D399) & ungu (#A78BFA)" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Numbered visitor badge hanging from a lanyard strap, oval/rounded-rectangle card shape, large bold number in the center, purple color (#A78BFA)\n2. Simple long reception desk counter, small bell icon on top of the desk, thin file rack visible behind it, orange color (#FB923C)\n3. Round seal/token with a unique glowing rune-like pattern spread across its surface (different from a plain padlock), subtle shimmer effect, purple color (#A78BFA)\n4. Simple cartoon face character (door officer variant 1) with a straight-brim cap, neutral expression, circle head with simple body outline below, bright orange color (#FB923C)\n5. Simple cartoon face character (door officer variant 2), different cap shape and expression from variant 1, cyan color (#06B6D4) for clear contrast\n6. Single door icon with a warning/restricted exclamation symbol on its center panel, bold outline style, red color (#F43F5E)\n7. Badge/board containing two round stamps side by side — left stamp green with a checkmark (verified), right stamp purple and empty/unchecked (access permission), green (#34D399) and purple (#A78BFA)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    }
+  ],
+  "generation": {
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/18-auth/icons",
+    "note": "14/14 PNG sudah digenerate & tersimpan di output_path (dicek Desktop Commander:list_directory + verifikasi RGBA/alpha channel via Pillow — semua transparan, bukan background putih solid). loader.js untuk Animation.jsx BELUM dibuat."
+  }
+}

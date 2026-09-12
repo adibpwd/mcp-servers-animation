@@ -5,6 +5,7 @@ import { PlayerShell } from './components/PlayerShell'
 import { ExportHistory } from './components/ExportHistory'
 import ContentManagement from './components/ContentManagement/ContentManagement'
 import { PlayerPage } from './components/PlayerPage'
+import SceneUiFixtureV1 from './shared/scene-ui/v1/__fixtures__/SceneUiFixtureV1'
 import './App.css'
 
 // Home screen with navigation to content management
@@ -37,6 +38,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/content-management" element={<ContentManagement />} />
         <Route path="/preview/:id" element={<PlayerPage />} />
+        {/* Dev-only fixture, bukan topic — lihat PLAN-12 Tahap A/C */}
+        <Route path="/dev/scene-ui-v1" element={<SceneUiFixtureV1 />} />
       </Routes>
     </BrowserRouter>
   )

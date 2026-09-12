@@ -305,4 +305,4 @@ return () => destroyDots(dots)
 
 - File lama di root (`SETUP_PROMPT.md`, `CHANGES_SUMMARY.md`, dll) bisa dihapus — sudah tidak relevan
 - Folder `src/utils/`, `src/styles/` berisi file lama, belum dipakai di arsitektur baru
-- File `src/components/MCPAnimation.jsx` adalah versi lama, sudah dipindah ke `src/content/mcp-servers/Animation.jsx`
+- File `src/components/MCPAnimation.jsx` adalah versi lama, sudah dipindah ke `src/content/01-mcp-servers/Animation.jsx`

@@ -39,6 +39,83 @@ Konten teknis tetap harus akurat (ikuti `02-standar-konten.md` dan pola
 GSAP di bawah) — storytelling ini soal CARA menyampaikannya, bukan alasan
 untuk melonggarkan akurasi.
 
+## Langkah -1 — Konvensi File Plan (`_docs/*_PLAN.md`)
+
+Sebelum mulai coding, kalau topic ini butuh plan doc dulu (biasanya
+topic dengan kompleksitas sedang/tinggi), file plan-nya WAJIB punya
+section **"Checklist Eksekusi"** berisi checkbox (`- [ ]`), bukan cuma
+daftar "Next Steps" prosa biasa. Alasannya: prosa gampang jadi basi
+(dibaca sekali pas dibuat, gak pernah diupdate lagi), checkbox gampang
+dicek maju-mundur dan kelihatan progress asli.
+
+Aturan:
+1. Checklist mencakup MINIMAL: setup folder 3 file wajib, tiap Act
+   satu-satu (bukan digabung "Act 2-6" jadi 1 baris), sambung SFX real
+   ke `export-lib.js`, ubah status registry ke `'ready'`, dan referensi
+   ke 2 checklist final (`03` §"Checklist Sebelum Commit" & `02` §7).
+2. **Update seiring eksekusi jalan** — tiap kelar 1 item, langsung
+   centang (`- [x]`) di commit/edit yang sama, JANGAN ditumpuk nulis
+   ulang rapi di akhir (itu bikin checklist gak mencerminkan histori
+   asli, cuma laporan retrospektif).
+3. Section `**Status:**` di bagian bawah plan ikut diupdate tiap kali
+   checklist berubah signifikan (`📝 PLAN ONLY` → `🚧 IN PROGRESS` →
+   `✅ DONE`), plus baris `**Terakhir diupdate:**` dengan tanggal.
+4. Item final checklist WAJIB jelas belum layak dicentang sampai topic
+   benar-benar lengkap (contoh: "Checklist Sebelum Commit" jangan
+   dicentang cuma karena Act 1 udah jalan — itu checklist untuk topic
+   utuh, bukan per-Act).
+
+Lihat `src/content/14-http-request-response/_docs/HTTP_REQUEST_RESPONSE_PLAN.md`
+untuk contoh nyata pola ini.
+
+## Langkah -0.5 — Pre-Planning Gate (13 Tahap Wajib Sebelum Coding)
+
+Sebelum menyentuh `data.js` atau `Animation.jsx`, topic baru — terutama
+topic dengan request/response, mutasi data, atau layout bertingkat — wajib
+melalui 13 tahap berikut. Detail kontrak tiap tahap ada di
+`09-standar-pembuatan-konten.md` §1.M–§1.R; bagian ini fokus ke URUTAN
+operasionalnya.
+
+1. **Identitas topic** — tentukan seri, kategori, palette, referensi header,
+   dan metadata (lihat 09 §1.Q Series Identity Contract).
+2. **Audience promise** — tulis satu kalimat: setelah menonton, apa yang
+   dapat dipahami audiens.
+3. **State/data contract** — isi tabel client awal → request → service →
+   response → client akhir (lihat 09 §1.M Content State Contract).
+4. **Storyboard dan act map** — untuk setiap Act: tujuan, entry state,
+   motion, exit state, object persistent, serta durasi (lihat 09 §1.P Act
+   Design Contract dan Langkah 3.0 di bawah).
+5. **Continuity map** — gambar jalur semua actor utama lintas Act; tandai
+   handoff/transform (lihat 09 §1.O Continuity and No-Teleport Contract).
+6. **Visual data model** — tetapkan user/card/object nyata dan field visual
+   yang dapat berubah (lihat 09 §1.N Method Visualization Contract).
+7. **Layout map** — tetapkan header, badge, content, transit, service, safe
+   gutter (lihat 09 §1.R Safe-Zone Layout Contract dan §5 template zona).
+8. **Asset matrix** — tentukan asset normal, state alternate, pair
+   transform, dan dynamic text (lihat `06-icon-generation.md` § Asset State
+   Matrix).
+9. **Timeline budget** — tulis timing tiap beat; tandai hold yang memang
+   punya alasan (lihat 09 §1.O hold budget default).
+10. **Review gate sebelum coding** — review dokumen plan; coding hanya boleh
+    dimulai bila semua bagian di atas lengkap.
+11. **Implementasi bertahap** — header/layout anchor dulu, lalu request
+    flow, lalu mutation, lalu SFX (lanjut ke Langkah 0 di bawah).
+12. **Validation gate** — compile, static audit, preview manual transitions,
+    export test (lihat "Checklist Sebelum Commit" di akhir dokumen ini).
+13. **Revision documentation** — kalau ada feedback, buat revision plan yang
+    menyebut state/timing/object terdampak SEBELUM mengubah kode.
+
+Tahap 1–9 masuk ke file plan `_docs/*_PLAN.md` (lihat Langkah -1 di atas).
+Beri tiap item checklist di file plan salah satu status: `Draft`,
+`Approved`, `Implemented`, `Verified Manual`, atau `Blocked` — bukan cuma
+checkbox centang/kosong, supaya progress lebih granular dari sekadar
+"selesai/belum".
+
+Gate ini WAJIB untuk topic dengan request/response, mutasi data, atau
+layout bertingkat (banyak zona tampil bersamaan). Topic sederhana (single
+concept, tanpa request-response) boleh skip tahap 3, 5, 6 — tapi tetap
+wajib isi tahap 1, 2, 4, 7, 9, 10, 12.
+
 ## Langkah 0 — Setup Folder & Daftar ke Registry
 
 Ikuti struktur wajib di `02-standar-konten.md` bagian 3:
@@ -67,6 +144,57 @@ Lalu daftarkan di `src/content/registry.js` (topic baru cukup baca dari
 
 **Viewport size guideline:** standard `820x640`, konten vertikal-berat
 `820x720`, konten horizontal-berat `920x640`.
+
+## Langkah 0.5 — Pilih Scene Shell (Scene UI V1 atau Custom)
+
+Sebelum menulis satu baris JSX pun di `Animation.jsx`, putuskan dulu chrome
+layout (hero → header, Act badge + dot navigator, content boundary) yang
+dipakai. Detail kontrak lengkap: `09-standar-pembuatan-konten.md` §1.S dan
+`src/shared/scene-ui/README.md`.
+
+Checklist keputusan:
+
+- [ ] Apakah topik ini portrait standard (820×1340)?
+- [ ] Apakah ada hero header (category/title/subtitle) dan minimal dua Act?
+- [ ] Apakah badge Act + dot navigator dipakai?
+- [ ] Kalau jawaban di atas semuanya YA → **gunakan scene-ui V1**, langsung
+      pakai primitive (`IntroHeaderMorphV1`, `ActBadgeNavigatorV1`,
+      `ContentBodyV1`) atau composer `SceneChromeV1`.
+- [ ] Kalau TIDAK (landscape, simulator/dashboard, split-screen, atau
+      sengaja tanpa struktur Act/header standar) → **catat opt-out** di
+      file plan topic (`_docs/*_PLAN.md`): alasan teknis/storytelling,
+      layout map pengganti, safe-zone pengganti, cara navigasi Act (atau
+      alasan tidak memakainya). Copy-paste implementasi lama BUKAN alasan
+      opt-out yang sah.
+
+Poin penting yang tetap berlaku baik pakai V1 maupun custom:
+
+- topic tetap memiliki state `morph progress` dan `active Act` sendiri;
+- GSAP master timeline tetap tinggal di `Animation.jsx` topic (lihat
+  Langkah 1 di bawah);
+- data `PHASES` tetap milik `data.js` topic;
+- scene component (kalau pakai V1) hanya menerima props dan children SVG —
+  tidak membuat timeline/state/SFX sendiri;
+- jangan membuat header/badge inline kedua setelah memakai V1 — kalau ada
+  kebutuhan custom sebagian, gunakan prop opsional yang sudah tersedia
+  (lihat README scene-ui § aturan versioning) dulu sebelum menulis ulang
+  manual;
+- semua visual topic-specific (browser panel, card, cabinet, flowchart, dst)
+  diletakkan di dalam `ContentBodyV1` (kalau pakai V1) memakai local
+  coordinate (0,0 = `body.x`/`body.y`), bukan koordinat canvas absolut.
+
+Quick-start import (nama path & props sudah terverifikasi dari source,
+lihat `src/shared/scene-ui/v1/index.js`):
+
+```jsx
+import {
+  SceneChromeV1, DEFAULT_LAYOUT_V1,
+} from '../../shared/scene-ui/v1'
+```
+
+Lihat `src/shared/scene-ui/README.md` § "Quick Start" untuk contoh JSX
+lengkap, dan Langkah 2 di bawah untuk detail prop `IntroHeaderMorphV1`
+(dipakai baik lewat `SceneChromeV1` maupun langsung).
 
 ## Langkah 1 — Timeline Master (Wadah Semua Act)
 
@@ -117,6 +245,14 @@ Kenapa pola ini dan bukan yang lain:
 
 ## Langkah 2 — Bikin Intro (Hero Thumbnail → Header Morph)
 
+> **Kalau memilih scene-ui V1 di Langkah 0.5:** teknik lerp di bawah ini
+> SUDAH diimplementasikan sebagai `IntroHeaderMorphV1` — topic cukup pass
+> `progress` (state `morphP` dari GSAP, sama seperti contoh di bawah),
+> `category`/`categorySegments`, `titleSegments`, dan `subtitle`. Tidak
+> perlu menulis ulang manual JSX header. Section ini tetap relevan sebagai
+> penjelasan MENGAPA teknik lerp dipakai (berguna untuk topic opt-out
+> custom, atau untuk memahami internal `IntroHeaderMorphV1`).
+
 Frame `t=0` dipakai juga sebagai Cover/Thumbnail Reels, jadi harus rapi,
 besar, dan center — tanpa perlu gambar cover terpisah.
 
@@ -158,6 +294,23 @@ Untuk switch alignment di tengah morph tanpa jump:
   JUDUL TOPIC
 </text>
 ```
+
+**Warna title (WAJIB, bukan opsional):** title intro TIDAK BOLEH pakai
+1 warna flat — split jadi ≥2 `tspan` warna semantik dari `COLORS` topic
+ini sendiri (lihat `05-svg-text-guide.md` § "Color Palette Project"),
+titik split ikut kata/suku kata yang bermakna (bukan asal tengah
+string). Default kombinasi kalau topic tidak punya pasangan warna
+kontras yang lebih relevan ke cerita: hijau (`COLORS.SUCCESS`) untuk
+bagian awal + biru (`COLORS.CLIENT`, sky blue) untuk bagian akhir — ini
+kombinasi yang sudah dipakai di `tailscale` & `http-request-response`.
+Kalau topic punya 2 konsep kontras yang lebih pas (mis. `container-docker`
+pakai hijau `CONTAINER` vs oranye `KERNEL` untuk "Container vs VM"),
+boleh pakai pasangan itu sebagai gantinya. Cursor blok (`█`) ikut warna
+segmen title yang sedang diketik; cursor di baris subtitle pakai warna
+segmen title TERAKHIR. Subtitle sendiri tetap `COLORS.MUTED` (netral),
+tidak ikut split. Contoh lengkap: lihat blok render header di
+`src/content/11-tailscale/Animation.jsx` atau
+`src/content/17-rest-api/Animation.jsx`.
 
 ## Langkah 3 — Bikin Act 1 sampai Act Akhir
 
@@ -243,6 +396,24 @@ muncul" walau semua string sudah bersih, ternyata nempel di komponen
 icon reaksi wajah). Emoji di `caption.md` (caption sosial media, lihat
 `02-standar-konten.md` bagian 3) TIDAK termasuk aturan ini — beda
 konteks, itu teks luar-video, bukan visual in-video.
+
+**Pure explanatory, tanpa kata ganti orang:** semua teks in-video
+(`data.js`, inline `say()`) menjelaskan konsep secara impersonal —
+subjeknya benda/konsep ("laptop", "container", "kernel"), BUKAN menyapa
+penonton langsung. Jangan pakai kata ganti orang atau bentuk lekatnya:
+"lo/lu/kamu/aku/gue/kita/kau" maupun akhiran posesif "-mu"/"-ku" (mis.
+"laptop lo" → "laptop"). Audit sebelum commit pakai grep pola ini ke
+seluruh string yang di-render (`data.js` + string hardcode lain di
+`Animation.jsx` di luar `data.js` kalau ada):
+```
+grep -n -E "[a-zA-Z]+(mu|ku)\b|\blo\b|\blu\b|\bkamu\b|\baku\b|\bgue\b|\bkita\b|\bkau\b"
+```
+Kasus nyata: `CLOSING_BRAND` di `container-docker/data.js` sempat lolos
+dengan teks "Itu yang bikin laptop lo lega." — fix-nya ganti subjek balik
+ke benda generik ("Itu yang bikin laptop jadi lega."), makna tetap sama,
+cuma buang kata ganti orangnya. `caption.md` (caption sosial media)
+TIDAK termasuk aturan ini — sama seperti aturan emoji di atas, beda
+konteks (teks luar-video, boleh lebih santai/personal).
 
 ### 3.1 Satu State per Act, Render Conditional
 
@@ -492,6 +663,11 @@ saat menulis `Animation.jsx` topic baru:
       support prop `icon` opsional sejak awal dibuat (lihat
       `06-icon-generation.md` § "Checklist Tambahan: Icon di Komponen
       Text-Container")
+- [ ] Scene shell sudah diputuskan di Langkah 0.5 (V1 atau opt-out
+      tertulis) — kalau pakai V1, cross-check checklist review §1.S/§2
+      poin 8 di `09-standar-pembuatan-konten.md` (header tetap terlihat,
+      semua dot badge terlihat, content tidak menabrak subtitle/badge,
+      debug overlay mati sebelum export)
 
 **Storytelling (lihat Langkah 3.0, 3.6 & 3.7):**
 - [ ] Act 1 melempar pertanyaan/misteri, baru terjawab penuh di Act akhir
@@ -501,6 +677,9 @@ saat menulis `Animation.jsx` topic baru:
 - [ ] Ending Act akhir menjawab hook Act 1 secara eksplisit ("ternyata gitu")
 - [ ] Kalimat maks ±7-8 kata, 1 ide per kalimat (lihat "Wording Ringkas & Tanpa Emoji")
 - [ ] Tidak ada emoji di teks/icon produksi (`data.js`, `say()`, komponen reaksi wajah)
+- [ ] Tidak ada kata ganti orang ("lo/lu/kamu/aku/gue/kita/kau", akhiran
+      "-mu"/"-ku") di teks in-video — pure explanatory (lihat "Wording
+      Ringkas & Tanpa Emoji" § "Pure explanatory, tanpa kata ganti orang")
 - [ ] Tidak ada kalimat yang dobel persis antara caption bar dan card/badge (lihat 3.7)
 
 ## Lanjutan
@@ -510,3 +689,8 @@ saat menulis `Animation.jsx` topic baru:
 - Text overflow / multi-line di SVG → `05-svg-text-guide.md`
 - Generate icon set untuk topic baru → `06-icon-generation.md`
 - Generate/sourcing aset audio SFX untuk topic baru → `08-audio-sfx-generation.md`
+- Kontrak pre-planning lengkap (state, method, continuity, series identity,
+  safe-zone) untuk topic request/response atau bertingkat →
+  `09-standar-pembuatan-konten.md` §1.M–§1.R
+- Kapan wajib pakai scene-ui V1 vs opt-out custom → `09-standar-pembuatan-konten.md` §1.S
+- API lengkap scene-ui V1 (props, quick-start, versioning) → `src/shared/scene-ui/README.md`

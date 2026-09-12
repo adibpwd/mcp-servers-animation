@@ -18,7 +18,8 @@ export function PlayerShell({ content, onBack }) {
   const [showProgress, setShowProgress] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [audioUnlocked, setAudioUnlocked] = useState(false)
-  
+  const [copiedCaption, setCopiedCaption] = useState(false)
+
   const { settings, updateSettings, isLoaded } = useExportSettings()
 
   // Lazy load the animation component
@@ -171,6 +172,51 @@ export function PlayerShell({ content, onBack }) {
     document.title = `MCP Servers Animation`
   }
 
+  const handleCopyCaption = async () => {
+    try {
+      // Dynamic import raw caption files (query ?raw)
+      const captionModules = import.meta.glob('../content/**/caption.md', { query: '?raw', eager: true })
+      let text = null
+
+      for (const path in captionModules) {
+        // Cocokkan slug id (misal 'https-tls' cocok dengan '23-https-tls' atau 'https-tls')
+        const normPath = path.toLowerCase()
+        const normId = (content.id || '').toLowerCase()
+        if (normPath.includes(`/${normId}/`) || normPath.includes(`-${normId}/`)) {
+          const mod = captionModules[path]
+          text = typeof mod === 'string' ? mod : mod.default
+          break
+        }
+      }
+
+      if (!text) {
+        alert(`Caption file (caption.md) belum tersedia untuk topic "${content.id}".`)
+        return
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text)
+      } else {
+        // Fallback untuk HTTP non-secure context
+        const textArea = document.createElement('textarea')
+        textArea.value = text
+        textArea.style.position = 'fixed'
+        textArea.style.left = '-999999px'
+        textArea.style.top = '-999999px'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textArea)
+      }
+      setCopiedCaption(true)
+      setTimeout(() => setCopiedCaption(false), 2500)
+    } catch (err) {
+      console.error('Failed to copy caption:', err)
+      alert('Gagal menyalin caption ke clipboard.')
+    }
+  }
+
   const canDownload = exportStatus?.videoReady
 
   return (
@@ -257,6 +303,16 @@ export function PlayerShell({ content, onBack }) {
             <span className="control-icon">⬇</span>
             <span>Download</span>
           </a>
+
+          {/* Caption Button */}
+          <button
+            className={`control-btn copy-caption-btn ${copiedCaption ? 'copied' : ''}`}
+            onClick={handleCopyCaption}
+            title="Salin caption.md ke clipboard"
+          >
+            <span className="control-icon">{copiedCaption ? '✓' : '📋'}</span>
+            <span>{copiedCaption ? 'Copied!' : 'Caption'}</span>
+          </button>
         </div>
       </div>
 

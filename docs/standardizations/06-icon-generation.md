@@ -5,6 +5,14 @@
 Acuan arsitektur sistem pembuatan aset icon berbasis AI (ChatGPT/DALL-E 3)
 dan auto-crop backend untuk topic baru.
 
+> **Cross-reference scene-ui V1:** kalau topic memakai scene-ui V1 (lihat
+> `09-standar-pembuatan-konten.md` §1.S), icon/asset yang dihasilkan lewat
+> pipeline di dokumen ini tetap dirender di dalam `ContentBodyV1` (local
+> coordinate, lihat `05-svg-text-guide.md` § "Scene Zones V1 dan Local
+> Coordinates") — pipeline generate/crop icon di bawah ini TIDAK berubah
+> sama sekali, scene-ui V1 hanya mengatur DI MANA icon itu boleh
+> diletakkan (di bawah badge Act), bukan BAGAIMANA icon dibuat.
+
 ## 1. Prinsip Utama & Batasan Grid
 
 1. **Resolusi DALL-E 3** ~1024×1024 atau ~1792×1024px. Maksimal grid per
@@ -248,3 +256,52 @@ sebagai teks biasa. Sebelum menganggap set icon 1 topic sudah lengkap:
 - [ ] Kalau komponen `Badge`/`TextCard` di topic ini belum punya prop
       `icon` opsional, tambahkan (pola sama seperti `DiagramBox`) —
       lakukan ini di awal pembuatan topic, bukan retrofit di akhir
+
+## 11. Asset State Matrix (State-Pair Planning)
+
+Untuk topic yang butuh karakter/objek visual berubah state (mis. user
+berubah dari student jadi professional, card berubah dari filled jadi
+archived), satu asset statis saja tidak cukup — asset plan harus mencatat
+PASANGAN state yang framing, pose, dan proporsinya tetap kompatibel untuk
+ditransformasikan. Lihat juga `09-standar-pembuatan-konten.md` §1.M
+Content State Contract untuk kapan state ini dipakai di timeline.
+
+### Template Wajib
+
+| Asset identity | State A | State B | Apa yang boleh berubah | Apa yang harus sama |
+|---|---|---|---|---|
+| Adib | student, rambut hitam | professional, rambut ungu | pakaian, rambut, badge | wajah direction, framing, scale |
+| Jokowo | student | professional | outfit/role layer | card position, avatar pose |
+| Resource card | filled | archived | content/opacity | slot cabinet location |
+
+Isi tabel ini SEBELUM menulis `icons.json` — kolom "apa yang harus sama"
+menentukan bagian yang wajib identik di prompt ChatGPT kedua state, supaya
+transisi antar-state tidak terlihat seperti dua karakter berbeda.
+
+### Aturan Asset State
+
+**✅ DO:**
+- Rencanakan asset state yang akan ditransformasikan dalam batch generate
+  yang SAMA atau prompt berpasangan — supaya gaya/proporsi konsisten
+  antar-state (beda batch = risiko gaya AI-gen sedikit berbeda tiap run)
+- Tulis eksplisit di plan: pose, framing, proporsi, dan bagian mana SAJA
+  yang boleh berubah antar state (lihat kolom template di atas)
+- Gunakan grid 2×4 atau batch terpisah (bukan grid raksasa) untuk
+  menjaga ketajaman — sama seperti aturan umum di §1-2
+- Uji asset pada ukuran render target (bukan cuma preview 1:1 di editor)
+  SEBELUM timeline final dibuat — ukuran kecil bisa bikin detail
+  pembeda antar-state (mis. warna rambut) tidak kebaca
+- Gunakan desain karakter generik, bukan kemiripan public figure,
+  kecuali scope project secara eksplisit meminta dan mengizinkan itu
+
+**❌ DON'T:**
+- Jangan bakar teks dinamis (nama, umur, status, method) ke dalam asset
+  gambar — nama/umur/status/method WAJIB tetap dirender SVG/JSX terpisah,
+  asset gambar hanya untuk siluet/karakter (prinsip yang sama dengan
+  Method Visualization Contract di `09-standar-pembuatan-konten.md` §1.N,
+  yang menuntut benda fisik + teks dinamis tetap terpisah)
+- Jangan generate state B jauh setelah state A tanpa acuan visual state
+  A — risiko proporsi/pose tidak lagi kompatibel untuk transform
+- Jangan asumsikan 1 asset tunggal cukup untuk cerita yang butuh
+  transformasi visual (mis. "student jadi professional") — itu wajib
+  jadi state-pair sejak planning, bukan ditambal belakangan

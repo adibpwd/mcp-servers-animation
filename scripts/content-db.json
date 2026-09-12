@@ -179,9 +179,188 @@
         "Namespaces",
         "Virtualization"
       ],
-      "status": "draft",
+      "status": "posted",
       "priority": 12,
       "color": "#2496ED"
+    },
+    {
+      "id": "dns-explained",
+      "title": "Cara Kerja DNS",
+      "subtitle": "Domain jadi IP address — buku telepon internet",
+      "category": "Networking",
+      "tags": [
+        "DNS",
+        "Resolver",
+        "Root Server",
+        "TLD",
+        "Networking"
+      ],
+      "status": "draft",
+      "priority": 13,
+      "color": "#06B6D4"
+    },
+    {
+      "id": "http-request-response",
+      "title": "HTTP Request-Response",
+      "subtitle": "Ngirim surat, nunggu balasan",
+      "category": "Networking",
+      "tags": [
+        "HTTP",
+        "Client-Server",
+        "DNS",
+        "Status Code",
+        "Web"
+      ],
+      "status": "posted",
+      "priority": 14,
+      "color": "#38BDF8"
+    },
+    {
+      "id": "async-event-loop",
+      "title": "Async/Await & Event Loop",
+      "subtitle": "Kenapa kode JavaScript kelihatan \"loncat\"",
+      "category": "Programming Concepts",
+      "tags": [
+        "JavaScript",
+        "Async",
+        "Event Loop",
+        "Call Stack",
+        "Web Dev"
+      ],
+      "status": "draft",
+      "priority": 15,
+      "color": "#A78BFA"
+    },
+    {
+      "id": "rest-api",
+      "title": "REST API",
+      "subtitle": "Aturan standar di balik \"istirahat\" yang sibuk",
+      "category": "Networking",
+      "tags": [
+        "REST",
+        "API",
+        "CRUD",
+        "HTTP Methods",
+        "JSON",
+        "Statelessness"
+      ],
+      "status": "posted",
+      "priority": 17,
+      "color": "#A78BFA"
+    },
+    {
+      "id": "auth",
+      "title": "Authentication",
+      "subtitle": "Siapa boleh masuk, siapa boleh buka apa",
+      "category": "Networking",
+      "tags": [
+        "Authentication",
+        "Authorization",
+        "Hashing",
+        "Session",
+        "JWT",
+        "Security"
+      ],
+      "status": "ready",
+      "priority": 18,
+      "color": "#34D399"
+    },
+    {
+      "id": "register",
+      "title": "Register — Buat Akun",
+      "subtitle": "Credential baru masuk sistem, sesi langsung dibuat",
+      "category": "Developer Tools",
+      "tags": [
+        "Register",
+        "Authentication",
+        "Session",
+        "TLS",
+        "Web"
+      ],
+      "status": "ready",
+      "priority": 19,
+      "color": "#FBBF24"
+    },
+    {
+      "id": "email-verification",
+      "title": "Email Verification",
+      "subtitle": "Konfirmasi alamat email sebelum akun aktif",
+      "category": "Developer Tools",
+      "tags": [
+        "Email",
+        "Verification",
+        "Token",
+        "Link",
+        "Security"
+      ],
+      "status": "ready",
+      "priority": 20,
+      "color": "#F59E0B"
+    },
+    {
+      "id": "forgot-password",
+      "title": "Forgot Password",
+      "subtitle": "Reset password via token one-time",
+      "category": "Developer Tools",
+      "tags": [
+        "Password",
+        "Reset",
+        "Token",
+        "Email",
+        "Recovery"
+      ],
+      "status": "draft",
+      "priority": 21,
+      "color": "#F97316"
+    },
+    {
+      "id": "oauth2-delegated-login",
+      "title": "OAuth2 Delegated Login",
+      "subtitle": "Beri izin, bukan password",
+      "category": "Developer Tools",
+      "tags": [
+        "OAuth2",
+        "Authorization",
+        "PKCE",
+        "Delegated Access",
+        "Security"
+      ],
+      "status": "draft",
+      "priority": 22,
+      "color": "#6366F1"
+    },
+    {
+      "id": "https-tls",
+      "title": "HTTPS & TLS",
+      "subtitle": "HTTP dalam terowongan terkunci",
+      "category": "Developer Tools",
+      "tags": [
+        "HTTPS",
+        "TLS",
+        "Encryption",
+        "Certificate",
+        "Security",
+        "Web"
+      ],
+      "status": "ready",
+      "priority": 23,
+      "color": "#34D399"
+    },
+    {
+      "id": "cors",
+      "title": "CORS Explained",
+      "subtitle": "Browser penjaga izin lintas origin",
+      "category": "Developer Tools",
+      "tags": [
+        "CORS",
+        "Browser",
+        "Preflight",
+        "Security",
+        "HTTP"
+      ],
+      "status": "draft",
+      "priority": 24,
+      "color": "#FB923C"
     }
   ]
 }

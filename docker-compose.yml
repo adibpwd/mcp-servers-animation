@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
-  # Unified App - Vite dev server dengan ALL API routes (export, content, icons, dll)
-  app:
+  # Frontend - Vite dev server
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
@@ -11,18 +9,32 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    environment:
-      - NODE_ENV=development
+    env_file:
+      - .env.docker
     command: npm run dev -- --host 0.0.0.0
     networks:
       - mcp-network
-    # Health check
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:5173/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+    depends_on:
+      - export-server
+
+  # Export Server
+  export-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.export
+    ports:
+      - "3300:3300"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./public:/app/public
+      - ./dist:/app/dist
+    environment:
+      - NODE_ENV=production
+      - PORT=3300
+    command: npm run export-server
+    networks:
+      - mcp-network
 
 networks:
   mcp-network:

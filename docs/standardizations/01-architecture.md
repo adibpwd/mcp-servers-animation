@@ -51,3 +51,61 @@ Dipakai TimelineProgressBar untuk baca `tl.time()`/`tl.progress()` tiap frame (~
 ## 6. CSS — Styling
 
 Warna, shadow, filter glow di SVG; untuk UI shell HTML (TimelineProgressBar dkk) pakai CSS biasa.
+
+## 7. State Continuity & Preview Gates (Ringkasan)
+
+Alur data lengkap dari input sampai output:
+
+```
+UI source → GSAP timeline → React visual state → SVG render → Export frame
+```
+
+Timeline state (§2) HARUS melacak state NARATIF, bukan cuma properti
+visual permukaan seperti opacity. Untuk topic dengan request/response
+atau mutasi data, state seperti loading, lokasi request saat ini, hasil
+mutasi resource, dan status response-diterima adalah bagian dari state
+naratif ini — bukan detail implementasi yang boleh diabaikan.
+
+Karena timeline ini `repeat: -1` (§1), SEMUA state naratif itu harus
+di-reset bersih di awal tiap loop — bukan cuma `phaseIdx`. State yang
+lupa di-reset akan "tersangkut" di kondisi akhir loop sebelumnya saat
+animasi mengulang, dan bug ini sering baru kelihatan setelah loop ke-2/3,
+bukan di preview pertama.
+
+Detail kontrak & checklist lengkap untuk continuity ini ada di
+`09-standar-pembuatan-konten.md` §1.O (Continuity and No-Teleport
+Contract) dan §2 poin 7 (Continuity & Act Design Audit) — dokumen ini
+cuma ringkasan kenapa itu penting di level arsitektur.
+
+## 8. Scene UI V1 — Layer Chrome Opsional di Atas SVG (§3)
+
+Untuk topic portrait standar (lihat kriteria wajib-pakai di
+`09-standar-pembuatan-konten.md` §1.S), layer SVG (§3) tidak langsung
+ditulis manual untuk bagian chrome (hero→header, badge Act, content
+boundary) — bagian itu disediakan sebagai pure presentational component
+di `src/shared/scene-ui/v1/`, disisipkan di antara React state (§2) dan
+SVG akhir:
+
+```text
+data.js: PHASES, intro metadata, palette
+                │
+Animation.jsx: GSAP timeline (§1), morph progress, active Act (§2)
+                │
+                ▼
+IntroHeaderMorphV1 + ActBadgeNavigatorV1 + ContentBodyV1
+   (src/shared/scene-ui/v1/ — pure presentational, lihat README-nya)
+                │
+                ▼
+SVG scene (§3)
+```
+
+Pesan utama: `scene-ui V1` menjaga **konsistensi presentation** (posisi
+header, badge, boundary content) lintas topic; **storytelling dan
+timeline tetap milik topic** — component V1 tidak pernah membuat
+timeline/state/SFX sendiri (lihat `04-referensi-gsap.md` §
+"Driving Pure Scene Components from Topic Timeline" untuk detail wiring).
+
+Topic yang opt-out (landscape, simulator/dashboard, split-screen, dsb.)
+tetap menulis layer SVG chrome-nya sendiri secara manual, mengikuti
+diagram §1-§3 di atas tanpa lapisan scene-ui V1 ini — lihat
+`09-standar-pembuatan-konten.md` §1.S untuk syarat opt-out yang sah.

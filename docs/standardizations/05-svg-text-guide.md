@@ -184,6 +184,12 @@ Pakai warna semantik yang sesuai konteks (misal: elemen RAM selalu hijau,
 elemen error selalu merah) supaya audiens bisa asosiasi warna↔konsep
 lintas-topic tanpa perlu baca ulang label tiap kali.
 
+**Warna title intro (morph header):** lihat rule wajib split-warna
+title di `03-tutorial-buat-topic-baru.md` § "Langkah 2 — Bikin Intro" —
+default kombinasi hijau (`Green #34D399`) + biru (`Blue #38BDF8`) dari
+tabel di atas, kecuali topic punya pasangan warna semantik lain yang
+lebih relevan ke cerita.
+
 ## Formula Cek Overlap Antar-Elemen Horizontal (Center-Anchor)
 
 Komponen box/badge/card yang digambar dari titik lokal `x=0` sampai
@@ -249,6 +255,229 @@ width sejajar — bug overlap kadang baru kelihatan jelas di ukuran layar
 tertentu atau kelewat kalau elemen lain di dekatnya menutupi sebagian
 tabrakan. Hitung dulu pakai formula di atas, baru verifikasi visual di
 preview sebagai konfirmasi akhir (bukan pengganti perhitungan).
+
+## Layout System for Animated SVG (Safe-Zone & Bounding Box)
+
+Section ini melengkapi formula overlap horizontal di atas dengan sistem
+zona VERTIKAL penuh — dipakai untuk topic bertingkat (header + badge +
+browser/content + transit + service dalam satu canvas). Lihat juga
+`09-standar-pembuatan-konten.md` §1.R Safe-Zone Layout Contract untuk
+kontrak wajibnya; bagian ini fokus ke IMPLEMENTASI teknis SVG-nya.
+
+### Safe-Zone dan Coordinate Constants
+
+Definisikan konstanta zona di `data.js`, JANGAN hardcode angka `y` lepas
+di `Animation.jsx`:
+
+```js
+// data.js
+export const HEADER_ZONE   = { yStart: 0,    yEnd: 90 }   // title/subtitle saja
+export const BADGE_ZONE    = { yStart: 90,   yEnd: 140 }  // phase badge/dot nav
+export const CONTENT_ZONE  = { yStart: 140,  yEnd: 560 }  // actor utama (browser/card)
+export const TRANSIT_ZONE  = { yStart: 560,  yEnd: 760 }  // moving packet/ticket
+export const SERVICE_ZONE  = { yStart: 760,  yEnd: 1180 } // processor/response
+export const CLOSING_ZONE  = { yStart: 1180, yEnd: 1340 } // progress bar, tease badge
+```
+
+| Zona | Elemen yang boleh | Elemen yang dilarang |
+|---|---|---|
+| Header | title/subtitle | panel konten |
+| Navigation/Badge | badge/dot | resource card |
+| Content | actor utama | header |
+| Transit | moving packet | text panjang |
+| Service/result | proses/response | header |
+| Closing | progress bar, tease | actor utama |
+
+### Bounding Box untuk Panel/Asset yang Berubah Ukuran
+
+Panel yang tingginya berubah tergantung isi (jumlah baris teks, jumlah
+field card) HARUS dihitung top/bottom-nya dari **center + height**, bukan
+cuma `y` tetap:
+
+```js
+// ✅ GOOD — top/bottom dihitung dari center, ikut height dinamis
+const panelTop = centerY - height / 2
+const panelBottom = centerY + height / 2
+
+// Cek terhadap batas zona SEBELUM render
+if (panelBottom > CONTENT_ZONE.yEnd) {
+  // panel akan menabrak TRANSIT_ZONE — perkecil height atau geser centerY
+}
+```
+
+```js
+// ❌ BAD — y tetap tanpa memeriksa height aktual panel
+<rect y={500} height={panelHeightThatVaries} /> // bisa nabrak zona bawah kalau height membesar
+```
+
+### Formula Gap Minimum Antar Zona
+
+Sama seperti formula overlap horizontal di atas, tapi untuk vertikal:
+
+```
+gap_actual = zonaB.yStart - zonaA.yEnd
+gap_actual >= gap_minimal (disarankan >= 20px)
+```
+
+Kalau sebuah elemen besar (mis. browser window) berpotensi melebihi
+`CONTENT_ZONE.yEnd`, JANGAN perkecil zona secara diam-diam — perkecil
+elemen atau pindahkan sebagian kontennya, lalu verifikasi ulang gap ke
+`TRANSIT_ZONE.yStart`.
+
+### Teks Menempel pada Actor/Path
+
+Label yang merujuk objek bergerak (`methodBadge`, `addressLabel`, dsb.)
+WAJIB dihitung relatif terhadap posisi objek acuan saat itu — lihat
+`09-standar-pembuatan-konten.md` §1.K:
+
+```jsx
+// ✅ GOOD — posisi label ikut posisi objek acuan (ticketPos), bukan hardcode
+<text x={ticketPos.x} y={ticketPos.y - 24} textAnchor="middle">{methodLabel}</text>
+```
+
+### Checklist Anti-Collision per Phase
+
+- [ ] Hero/intro (t=0): title & subtitle tidak menabrak elemen `CONTENT_ZONE` yang sudah muncul lebih awal
+- [ ] Tiap Act: panel/card terbesar yang mungkin tampil bersamaan sudah dihitung bounding box-nya, bukan dieyeball
+- [ ] Closing: progress bar/tease badge tidak menabrak actor utama yang masih persist (lihat `04-referensi-gsap.md` § "Persistent Anchor Object")
+- [ ] Cek dilakukan pada UKURAN CANVAS EXPORT SEBENARNYA (mis. `820x1340`), bukan cuma di preview browser yang mungkin ter-scale
+
+### Contoh: Title Hero Menjadi Compact Header Tanpa Mengganti Elemen
+
+Pola lerp morph (lihat `03-tutorial-buat-topic-baru.md` Langkah 2) sudah
+menerapkan prinsip "satu elemen yang berubah posisi/ukuran", bukan
+crossfade dua elemen berbeda — ini juga aturan safe-zone: title hero
+harus morph JADI header compact di `HEADER_ZONE`, bukan title hero
+di-unmount lalu header baru di-mount terpisah (yang berisiko keduanya
+sempat tumpang tindih di zona yang salah selama transisi).
+
+**✅ DO:**
+- Gunakan konstanta seperti `HEADER_ZONE`, `BADGE_ZONE`, `CONTENT_ZONE` — jangan angka `y` lepas
+- Ukur top/bottom panel berdasarkan `centerY` dan `height`, bukan `y` tetap yang diasumsikan aman
+- Cek collision pada ukuran canvas export sebenarnya
+
+**❌ DON'T:**
+- Jangan letakkan panel besar pada `y` tetap tanpa memeriksa tinggi panel aktual
+- Jangan pakai nested `translate` berkali-kali tanpa satu coordinate reference yang jelas — ini bikin debug posisi susah saat panel membesar
+- Jangan tempatkan caption global (`say()`) di zona header — header cuma untuk title/subtitle (lihat `03-tutorial-buat-topic-baru.md` § 3.7 soal satu-kanal-per-kalimat)
+
+## Scene Zones V1 dan Local Coordinates (scene-ui V1)
+
+Section ini adalah versi TERVERIFIKASI (langsung dari source
+`src/shared/scene-ui/v1/PortraitSceneLayoutV1.js`) dari sistem zona di
+atas, khusus untuk topic yang memakai scene-ui V1 (lihat
+`09-standar-pembuatan-konten.md` §1.S untuk kapan wajib pakai). Kalau
+topic tidak pakai V1 (opt-out custom), tetap pakai konstanta manual
+seperti contoh `HEADER_ZONE`/`BADGE_ZONE`/dst di atas.
+
+### Token `DEFAULT_LAYOUT_V1`
+
+Canvas `820 × 1340`. Semua angka dalam px, coordinate space SVG:
+
+| Zona | Token | Nilai |
+|---|---|---:|
+| Canvas | `canvas.width` / `canvas.height` | 820 / 1340 |
+| Header | `header.x` | 44 |
+| Header | `header.taglineY` | 50 |
+| Header | `header.titleY` | 100 |
+| Header | `header.subtitleY` | 130 |
+| Navigator | `navigator.x` / `navigator.y` | 44 / 155 |
+| Navigator | `navigator.width` / `navigator.height` | 500 / 40 |
+| Navigator | `navigator.dotsX` / `navigator.dotsY` | 620 / 175 |
+| Navigator | `navigator.dotSpacing` | 24 |
+| Navigator | `navigator.activeRadius` / `inactiveRadius` | 7 / 4 |
+| Body | `body.x` / `body.y` | 44 / 235 |
+| Body | `body.width` / `body.height` | 732 / 965 |
+| Transit (sub-zona di dalam body, canvas coordinate) | `transit.yStart` | 476 |
+| Service (sub-zona di dalam body, canvas coordinate) | `service.yStart` | 610 |
+| Closing (sub-zona di dalam body, canvas coordinate) | `closing.yStart` | 1020 |
+
+Zona turunan (dihitung, bukan di-hardcode kedua kali — lihat
+`getZones()` di `PortraitSceneLayoutV1.js`):
+
+```
+header    : yStart 0                → yEnd navigator.y (155)
+navigator : yStart navigator.y (155) → yEnd body.y (235)
+body      : yStart body.y (235)      → yEnd body.y + body.height (1200)
+transit   : yStart transit.yStart (476) → yEnd service.yStart (610)
+service   : yStart service.yStart (610) → yEnd closing.yStart (1020)
+closing   : yStart closing.yStart (1020) → yEnd canvas.height (1340)
+```
+
+| Zona | Elemen yang boleh | Elemen yang dilarang |
+|---|---|---|
+| Header | title/subtitle (`IntroHeaderMorphV1`) | panel konten |
+| Navigator | badge/dot (`ActBadgeNavigatorV1`) | resource card |
+| Body | actor utama (children `ContentBodyV1`) | header |
+| Transit (dalam body) | moving packet | text panjang |
+| Service (dalam body) | proses/response | header |
+| Closing (dalam body) | progress bar, tease | actor utama |
+
+### Origin `ContentBodyV1` dan Local Coordinate
+
+`ContentBodyV1` membungkus children dengan
+`transform="translate(body.x, body.y)"` (default `44, 235`) — jadi
+`(0,0)` di dalam children SUDAH berarti `(44, 235)` di canvas. Rumus
+bounding box untuk panel di dalam body:
+
+```
+top    = centerY - height / 2   // centerY dalam LOCAL coordinate
+bottom = centerY + height / 2
+
+// Cek terhadap body.height (965), BUKAN canvas.height (1340):
+if (bottom > layout.body.height) {
+  // panel akan overflow keluar body — perkecil height atau geser centerY
+}
+```
+
+Kalau perlu konversi eksplisit ke canvas coordinate (mis. untuk
+FlowchartSpine/waypoint yang dipakai bareng elemen canvas-level lain),
+pakai helper murni yang sudah tersedia — jangan hitung manual:
+
+```js
+import { toCanvasX, toCanvasY, toLocalX, toLocalY } from '../../shared/scene-ui/v1'
+```
+
+### Contoh: Panel Pakai Ukuran Body, Bukan Magic Number Global
+
+```jsx
+// ✅ GOOD — lebar panel dari body.width via render prop, bukan angka lepas
+<ContentBodyV1
+  render={(w, h) => (
+    <rect width={w} height={52} rx={14} fill={COLORS.PANEL} />
+  )}
+/>
+
+// ❌ BAD — angka 732 di-hardcode ulang, akan basi kalau body.width topic ini
+// pernah di-override lewat prop `layout` custom
+<ContentBodyV1>
+  <rect width={732} height={52} rx={14} fill={COLORS.PANEL} />
+</ContentBodyV1>
+```
+
+### Larangan: Local Y Negatif untuk "Mendorong" Body ke Header
+
+Semua children `ContentBodyV1` WAJIB pakai local `y >= 0`. Local `y`
+negatif berarti elemen didorong balik ke atas `body.y` (masuk zona
+navigator/header) — ini pelanggaran safe-zone yang sama persis dengan
+"panel besar di koordinat global header" yang dilarang §1.S
+`09-standar-pembuatan-konten.md`, hanya beda cara nulisnya (offset
+negatif vs koordinat absolut). **Pengecualian satu-satunya:** topic yang
+sudah punya opt-out layout tertulis (lihat §1.S) dan preview manual
+collision-nya sudah direview eksplisit.
+
+### Checklist Collision (scene-ui V1)
+
+- [ ] Subtitle (`header.subtitleY=130`) tidak tertabrak elemen body
+      manapun di frame hero (progress rendah) maupun compact (progress=1)
+- [ ] Badge (`navigator.y=155` s/d `+height`) tidak tertabrak elemen body
+      di Act manapun
+- [ ] Panel/card terbesar di body sudah dihitung top/bottom-nya (rumus di
+      atas), bukan dieyeball
+- [ ] Ticket/packet yang transit melewati sub-zona `transit`/`service`
+      tidak menembus balik ke `header`/`navigator`
+- [ ] Cek dilakukan di ukuran canvas export sebenarnya (820×1340), sama
+      seperti aturan checklist non-V1 di atas
 
 ## Alternatif: HTML Overlay / `foreignObject`
 

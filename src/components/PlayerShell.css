@@ -98,6 +98,24 @@
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
 }
 
+.control-btn.copy-caption-btn {
+  border-color: #A78BFA;
+  color: #C4B5FD;
+}
+
+.control-btn.copy-caption-btn:hover {
+  border-color: #8B5CF6;
+  color: #DDD6FE;
+  background: #1e1b4b;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+}
+
+.control-btn.copy-caption-btn.copied {
+  border-color: #34D399;
+  color: #34D399;
+  background: #064e3b;
+}
+
 .duration-control {
   display: flex;
   align-items: center;

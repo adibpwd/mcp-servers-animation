@@ -1,0 +1,1166 @@
+# REST API — Visual Animation Content Plan
+
+## 0. Tujuan Content
+
+Topic: `17-rest-api`
+
+Tujuan utama:
+- Menjelaskan REST API secara visual, bukan lewat definisi panjang.
+- Audiens memahami alur: **client → request → endpoint → server → response → client**.
+- Menunjukkan bahwa REST API adalah pola komunikasi antara client dan resource/server melalui HTTP.
+- Fokus pada motion dan continuity, dengan text seminimal mungkin.
+
+Target durasi:
+- ±45–55 detik
+- Maksimal 4 Act
+
+Canvas:
+- 820 × 1340 px
+- CLIENT: y 0–400
+- NETWORK: y 400–800
+- SERVER: y 800–1200
+- Reserved: y 1200–1340
+
+---
+
+# 1. Prinsip Visual Utama
+
+## 1.1 Satu Alur Utama
+
+Jangan membuat setiap Act seperti scene baru.
+
+Objek utama harus tetap memiliki identitas dan posisi yang konsisten:
+
+```text
+CLIENT
+  Browser / App
+       │
+       │ Request
+       ▼
+NETWORK
+       │
+       ▼
+SERVER
+  API / Resource
+       │
+       │ Response
+       ▼
+CLIENT
+```
+
+Request dan response harus merupakan **objek motion yang sama secara konseptual**:
+- Request berangkat dari client.
+- Request melewati network.
+- Request masuk ke API/server.
+- Server memproses request.
+- Response kembali melalui jalur yang sama.
+- Client menerima hasil.
+
+Jangan membuat request menghilang lalu response tiba-tiba muncul dari tempat lain.
+
+---
+
+# 2. Analogi yang Dipakai
+
+## Analogi: "Order ke Counter"
+
+REST API dianalogikan sebagai proses client meminta sesuatu melalui counter layanan.
+
+Mapping:
+
+| Konsep | Visual |
+|---|---|
+| Client | Customer / app |
+| API endpoint | Counter layanan |
+| Request | Order card |
+| HTTP method | Action pada order |
+| Resource | Barang/data di storage |
+| Server | Area dapur/storage |
+| Response | Paket hasil |
+| Status code | Stamp hasil |
+
+### Validasi analogi
+
+Analogi tidak boleh menggantikan konsep teknis.
+
+Yang dipertahankan:
+- Client meminta sesuatu.
+- Request masuk ke titik layanan.
+- Server memproses.
+- Hasil dikirim kembali.
+
+Yang tidak perlu divisualisasikan:
+- Percakapan manusia.
+- Wajah karakter.
+- Dialog panjang.
+- Detail restoran/dapur yang tidak membantu memahami API.
+
+Prioritas tetap pada alur teknis.
+
+---
+
+# 3. Storyboard Besar
+
+## ACT 1 — Client Membuat Request
+
+Durasi: ±10–12 detik
+
+### Tujuan
+
+Memperkenalkan kebutuhan komunikasi:
+client ingin mendapatkan sebuah resource dari server.
+
+### Starting State
+
+Canvas kosong.
+
+Hanya Client/Browser/App muncul sebagai aktor utama.
+
+Tidak boleh langsung menampilkan server, database, endpoint, method, status code, dan berbagai icon sekaligus.
+
+### Visual
+
+1. Browser/App `popIn`.
+2. Di dalam client muncul sebuah request card kecil.
+3. Request card mendapatkan penanda method:
+   - `GET`
+4. Request card diarahkan ke endpoint:
+   - `/users`
+5. Card mulai bergerak keluar dari client menuju network.
+
+### Motion
+
+```text
+CLIENT
+  [App]
+    │
+    │ GET /users
+    ▼
+  Request Card ─────────→
+```
+
+Request card harus menjadi **aktor utama yang dibawa terus ke Act berikutnya**.
+
+### Caption
+
+Gunakan maksimal satu caption pendek:
+
+**"Client meminta data"**
+
+Caption muncul setelah request card sudah terlihat.
+
+### Transition ke Act 2
+
+Jangan reset canvas.
+
+Request card yang sedang bergerak menjadi titik awal Act 2.
+
+---
+
+# ACT 2 — Request Menuju API
+
+Durasi: ±10–12 detik
+
+### Tujuan
+
+Menunjukkan bahwa request tidak langsung "teleport" ke server.
+
+Request melewati network dan menuju endpoint API.
+
+### Visual Continuity
+
+Elemen dari Act 1 tetap ada:
+
+- Client tetap di atas.
+- Request card tetap bergerak.
+- Endpoint/API muncul sebagai tujuan yang mulai aktif ketika request mendekat.
+
+Network path sudah terlihat sejak request mulai bergerak di Act 1, tetapi detail endpoint baru diberi emphasis di Act 2.
+
+### Visual
+
+1. Request card masuk ke NETWORK zone.
+2. Path menyala mengikuti arah gerak.
+3. Endpoint node muncul melalui `popIn` ketika request mendekat.
+4. Endpoint menampilkan:
+   - `/users`
+5. Request berhenti sebentar di endpoint.
+6. Endpoint memberi visual "routing/accept" sederhana:
+   - node highlight
+   - pulse
+   - request card diteruskan ke server.
+
+### Jangan lakukan
+
+- Jangan menampilkan banyak endpoint.
+- Jangan membuat DNS/load balancer jika tidak diperlukan untuk menjelaskan REST API.
+- Jangan membuat endpoint hanya sebagai teks statis.
+
+Endpoint harus terlihat sebagai **tujuan yang menerima request**.
+
+### Caption
+
+**"Menuju endpoint"**
+
+### Transition ke Act 3
+
+Request card tidak hilang.
+
+Request card diteruskan dari endpoint menuju server.
+
+Endpoint tetap sebentar sebagai bagian dari jalur, lalu bisa redup.
+
+---
+
+# ACT 3 — Server Memproses Resource
+
+Durasi: ±12–15 detik
+
+### Tujuan
+
+Menjelaskan inti REST API:
+server menerima request, memahami method + resource, lalu mengambil/memproses data.
+
+### Visual Continuity
+
+Request card dari Act 2 masuk langsung ke SERVER.
+
+Server sudah berada di posisi yang sama sejak Act 2 atau mulai terlihat samar sebelumnya.
+
+Tidak boleh server tiba-tiba muncul besar setelah request sampai.
+
+### Visual
+
+1. Request card masuk ke server.
+2. Server highlight.
+3. Method `GET` dipisahkan secara visual dari resource `/users`.
+4. Server melakukan processing motion.
+5. Resource/data collection muncul di dalam server.
+6. Satu data item dipilih/extract.
+7. Data dibungkus menjadi response card.
+
+### Representasi
+
+```text
+GET /users
+     │
+     ▼
+┌───────────────┐
+│     SERVER    │
+│               │
+│   [users]     │
+│    ● ● ●      │
+│      ↓        │
+│   selected    │
+└───────────────┘
+```
+
+Jangan membuat database sebagai scene terpisah jika tidak diperlukan.
+
+Resource cukup divisualisasikan sebagai kumpulan data di dalam server.
+
+### Motion
+
+Processing harus terlihat sebagai cause → effect:
+
+```text
+Request masuk
+    ↓
+Server membaca
+    ↓
+Resource ditemukan
+    ↓
+Data dipilih
+    ↓
+Response dibuat
+```
+
+### Caption
+
+**"Server memproses data"**
+
+### Response Continuity
+
+Response card dibuat dari hasil processing.
+
+Response harus lahir dari resource yang dipilih, bukan muncul dari luar server.
+
+Contoh visual:
+
+```text
+[users data]
+     ↓
+[User #42]
+     ↓
+[Response]
+```
+
+Response card kemudian mulai bergerak kembali menuju client.
+
+---
+
+# ACT 4 — Response Kembali ke Client
+
+Durasi: ±10–12 detik
+
+### Tujuan
+
+Menutup loop komunikasi.
+
+Audiens harus melihat bahwa REST API bukan hanya "request masuk", tetapi komunikasi request → response.
+
+### Visual Continuity
+
+Response card adalah hasil langsung dari Act 3.
+
+Tidak ada cut/reset.
+
+```text
+SERVER
+  [Response]
+      │
+      │
+      ▼
+NETWORK
+      │
+      │
+      ▼
+CLIENT
+```
+
+### Motion
+
+1. Response keluar dari server.
+2. Bergerak mengikuti path yang sama secara arah balik.
+3. Network path menyala saat response melewati jalur.
+4. Response masuk ke client.
+5. Client menampilkan data hasil.
+6. Request dan response bisa ditampilkan berdampingan sebentar sebagai final state.
+
+### Final State
+
+Client menampilkan hasil sederhana:
+
+```text
+GET /users
+      ↓
+[ User 42 ]
+```
+
+Tidak perlu menampilkan JSON panjang.
+
+Jika JSON ingin divisualisasikan, cukup beberapa key-value besar:
+
+```text
+{
+  id: 42
+}
+```
+
+Tetap prioritaskan motion daripada text.
+
+### Caption
+
+**"Response kembali"**
+
+### Ending Motion
+
+Setelah response diterima:
+
+1. Data masuk ke client.
+2. Client melakukan subtle highlight.
+3. Request + response path terlihat sebentar.
+4. Semua elemen melakukan `popOut` secara teratur.
+5. Jangan meninggalkan icon/element menggantung.
+
+Final visual dapat kembali ke keadaan awal agar loop animation terasa natural.
+
+---
+
+# 4. Continuity Map Antar Act
+
+Ini adalah bagian WAJIB diperhatikan saat implementasi.
+
+| Elemen | Act 1 | Act 2 | Act 3 | Act 4 |
+|---|---|---|---|---|
+| Client | muncul | tetap | tetap | menerima response |
+| Request Card | dibuat | bergerak | masuk server | selesai |
+| Network Path | mulai aktif | aktif | aktif | aktif balik |
+| Endpoint | mulai dituju | aktif | redup | tetap sebagai context |
+| Server | mulai dikenalkan | tujuan | processing | menghasilkan response |
+| Resource | belum terlihat | belum | muncul | hasil sudah dibungkus |
+| Response Card | belum ada | belum ada | dibuat | bergerak ke client |
+
+## Aturan penting
+
+**Tidak boleh ada objek utama yang di-reset antar Act.**
+
+Contoh buruk:
+
+```text
+ACT 1:
+request bergerak → hilang
+
+ACT 2:
+request baru muncul
+```
+
+Contoh benar:
+
+```text
+ACT 1:
+request dibuat
+       ↓
+ACT 2:
+request yang sama bergerak ke endpoint
+       ↓
+ACT 3:
+request yang sama masuk server
+       ↓
+ACT 4:
+hasil dari request menjadi response
+```
+
+---
+
+# 5. FlowchartSpine
+
+Gunakan satu spine utama sejak Act 1.
+
+Contoh waypoint:
+
+```text
+P0 Client
+   ↓
+P1 Request Exit
+   ↓
+P2 Network Midpoint
+   ↓
+P3 API Endpoint
+   ↓
+P4 Server Entry
+   ↓
+P5 Server Resource
+   ↓
+P6 Response Exit
+   ↓
+P7 Network Return
+   ↓
+P8 Client Entry
+```
+
+Arah request:
+
+```text
+P0 → P1 → P2 → P3 → P4 → P5
+```
+
+Arah response:
+
+```text
+P5 → P6 → P7 → P8
+```
+
+Jangan membuat path baru di tengah animation hanya karena masuk Act berikutnya.
+
+---
+
+# 6. Actor & Element Inventory
+
+Semua elemen harus direncanakan sebelum coding.
+
+## Primary Actors
+
+1. Client / Browser
+2. Request Card
+3. API Endpoint
+4. Server
+5. Resource/Data
+6. Response Card
+
+## Secondary Visuals
+
+1. Network path
+2. Direction arrow
+3. Processing pulse
+4. Data selection highlight
+5. Status indicator
+
+## Yang sengaja tidak digunakan
+
+- Karakter manusia dengan wajah.
+- Emoji.
+- Decorative particles berlebihan.
+- Database icon besar jika tidak diperlukan.
+- DNS.
+- Load balancer.
+- Proxy.
+- Banyak endpoint.
+- JSON penuh.
+- Text paragraph.
+
+Alasannya: elemen tersebut berpotensi menjadi visual noise dan tidak diperlukan untuk memahami konsep dasar REST API.
+
+---
+
+# 7. HTTP Method Visual
+
+Method perlu dikenalkan tanpa membuat layar penuh teks.
+
+Fokus utama cukup:
+
+**GET**
+
+Karena GET paling mudah menjelaskan konsep request resource.
+
+Visual:
+
+```text
+┌─────────────┐
+│ GET         │
+│ /users      │
+└─────────────┘
+```
+
+Method menjadi badge kecil pada request card.
+
+Jangan membuat semua method:
+
+```text
+GET
+POST
+PUT
+PATCH
+DELETE
+```
+
+sekaligus pada awal video.
+
+Jika ingin memperkenalkan REST lebih luas, method lain cukup muncul sebagai teaser singkat setelah konsep utama selesai, tetapi hanya jika durasi masih memungkinkan.
+
+---
+
+# 8. Resource Visual
+
+REST berpusat pada resource.
+
+Resource `/users` harus divisualisasikan sebagai objek yang benar-benar bisa diproses.
+
+Contoh:
+
+```text
+/users
+
+● User 01
+● User 02
+● User 03
+```
+
+Ketika GET masuk:
+
+```text
+GET /users
+       ↓
+[users collection]
+       ↓
+response
+```
+
+Jangan hanya menampilkan tulisan `/users` tanpa menunjukkan adanya resource.
+
+---
+
+# 9. Response Visual
+
+Response harus memiliki hubungan sebab-akibat dengan request.
+
+Request:
+
+```text
+GET /users
+```
+
+Server:
+
+```text
+users
+```
+
+Response:
+
+```text
+200
+User data
+```
+
+Status `200` boleh digunakan sebagai visual reinforcement.
+
+Tidak perlu menjelaskan HTTP status code secara mendalam di topic ini.
+
+Visual hierarchy:
+
+```text
+[200]
+  ↓
+[User data]
+```
+
+Status harus muncul setelah server selesai processing, bukan sejak awal.
+
+---
+
+# 10. Caption / Text Rules
+
+Total text harus minim.
+
+Target:
+- 3–5 caption utama.
+- Caption maksimal 5 kata.
+- Declarative.
+- Tidak menggunakan tanda tanya.
+- Tidak menggunakan emoji.
+
+Recommended captions:
+
+1. **"Client meminta data"**
+2. **"Menuju endpoint"**
+3. **"Server memproses data"**
+4. **"Response kembali"**
+
+Text teknis yang boleh muncul sebagai bagian dari object:
+
+- `GET`
+- `/users`
+- `200`
+
+Jangan membuat subtitle panjang yang menjelaskan definisi REST API.
+
+Visual harus menjawab pertanyaan audiens melalui motion.
+
+---
+
+# 11. Motion Language
+
+Gunakan bahasa motion yang konsisten.
+
+## Request
+
+Gerak:
+**Client → Server**
+
+Style:
+- steady
+- directional
+- sedikit glow saat melewati path
+
+## Processing
+
+Gerak:
+**request masuk → resource aktif → data dipilih**
+
+Style:
+- pulse
+- highlight
+- short processing loop
+
+## Response
+
+Gerak:
+**Server → Client**
+
+Style:
+- arah berlawanan dari request
+- menggunakan path yang sama
+- warna/visual treatment tetap konsisten dengan response
+
+---
+
+# 12. PopIn / PopOut Contract
+
+Setiap elemen harus memiliki lifecycle.
+
+Contoh:
+
+```text
+Client
+  popIn → persistent → popOut
+
+Request
+  popIn → move → process → response transition → popOut
+
+Endpoint
+  popIn → highlight → dim → popOut
+
+Server
+  popIn → process → response → popOut
+
+Resource
+  popIn → selected → response → popOut
+
+Response
+  popIn → move → client received → popOut
+```
+
+Tidak boleh ada element yang:
+- tiba-tiba muncul.
+- tiba-tiba hilang.
+- tetap menggantung sampai loop berikutnya.
+- muncul hanya karena Act berganti.
+
+---
+
+# 13. Visual Hierarchy
+
+Prioritas perhatian audiens:
+
+```text
+1. Request / Response motion
+2. Client ↔ Server direction
+3. Endpoint
+4. Server processing
+5. Resource
+6. HTTP method
+7. Status code
+8. Supporting labels
+```
+
+Jika canvas terasa terlalu ramai:
+- hapus dekorasi dulu.
+- jangan menghapus request/response path.
+- jangan menghapus server/client.
+- jangan menghapus cause → effect processing.
+
+---
+
+# 14. Warna Konseptual
+
+Gunakan palette topic yang konsisten dengan standar project.
+
+Suggested semantic roles:
+
+```text
+CLIENT   → COLORS.CLIENT
+NETWORK  → COLORS.NETWORK
+SERVER   → COLORS.SERVER
+
+REQUEST  → accent request
+RESPONSE → accent response
+SUCCESS  → success accent
+```
+
+Jangan menggunakan warna hanya sebagai dekorasi.
+
+Perubahan warna harus memiliki arti:
+- request aktif
+- endpoint menerima
+- server processing
+- response berhasil
+
+---
+
+# 15. Layout Planning
+
+Canvas:
+
+```text
+820 × 1340
+
+┌──────────────────────────────────┐
+│ CLIENT                           │
+│                                  │
+│          [ Browser/App ]         │
+│                │                 │
+├──────────────────────────────────┤
+│ NETWORK                          │
+│                │                 │
+│        ────────●────────         │
+│              API                 │
+│                │                 │
+├──────────────────────────────────┤
+│ SERVER                           │
+│                                  │
+│          [ API SERVER ]          │
+│             [data]               │
+│                                  │
+├──────────────────────────────────┤
+│ RESERVED                         │
+└──────────────────────────────────┘
+```
+
+Posisi aktor harus stabil sepanjang animation.
+
+Perubahan terjadi melalui:
+- motion
+- scale
+- opacity
+- highlight
+- path tracing
+
+bukan melalui perpindahan layout antar Act.
+
+---
+
+# 16. Timeline Rough
+
+Target ±50 detik.
+
+```text
+00–04s   Client muncul
+04–08s   Request GET /users dibuat
+08–12s   Request mulai bergerak
+
+12–16s   Request masuk network
+16–20s   Endpoint aktif
+20–23s   Request diteruskan ke server
+
+23–28s   Server menerima request
+28–34s   Resource diproses
+34–37s   Response dibuat
+
+37–42s   Response bergerak kembali
+42–47s   Response masuk client
+47–50s   Final highlight + clean exit
+```
+
+Timing adalah baseline, bukan angka final.
+
+Motion harus terasa natural dan tidak terlalu cepat.
+
+---
+
+# 17. Transition Rules
+
+## Act 1 → Act 2
+
+Request tetap bergerak.
+
+Tidak ada fade-to-black.
+
+Tidak ada scene reset.
+
+## Act 2 → Act 3
+
+Request melewati endpoint dan langsung menuju server.
+
+Endpoint tidak menghilang sebelum request meninggalkannya.
+
+## Act 3 → Act 4
+
+Response lahir dari hasil processing server.
+
+Response langsung bergerak kembali.
+
+## Act 4 → Loop
+
+Client menerima data.
+
+Semua elemen melakukan controlled `popOut`.
+
+Loop kembali ke starting state dengan transisi yang bersih.
+
+---
+
+# 18. Anti-Pattern yang Harus Dihindari
+
+## 18.1 Icon Muncul Mendadak
+
+Buruk:
+
+```text
+Act 3:
+DATABASE muncul tiba-tiba
+```
+
+Benar:
+
+```text
+Act 3:
+Server sudah ada
+↓
+resource muncul dari dalam server
+```
+
+## 18. Request Teleport
+
+Buruk:
+
+```text
+Client → fade
+Server → request sudah ada
+```
+
+Benar:
+
+```text
+Client → network → endpoint → server
+```
+
+## 18. Response Muncul dari Nol
+
+Buruk:
+
+```text
+Server selesai
+↓
+response card tiba-tiba muncul di network
+```
+
+Benar:
+
+```text
+data dipilih
+↓
+response card dibuat
+↓
+response keluar server
+```
+
+## 18. Terlalu Banyak Text
+
+Buruk:
+
+```text
+REST API adalah architectural style...
+HTTP digunakan untuk...
+Client mengirim...
+Server menerima...
+```
+
+Benar:
+
+```text
+GET /users
+↓
+motion
+↓
+200
+```
+
+## 18. Visual Noise
+
+Hindari:
+- wajah.
+- ekspresi karakter.
+- particle berlebihan.
+- decorative network nodes.
+- icon yang tidak punya fungsi naratif.
+
+---
+
+# 19. Icon Plan Awal
+
+Icon yang benar-benar dibutuhkan:
+
+1. `client-browser`
+   - Browser/app window sederhana.
+
+2. `api-endpoint`
+   - Endpoint/service node sederhana.
+
+3. `server`
+   - Server building atau server rack sederhana.
+
+4. `resource-users`
+   - Data/resource collection sederhana.
+
+5. `request`
+   - Request card/envelope-like data packet.
+
+6. `response`
+   - Response card/data packet.
+
+Semua icon:
+- bold
+- chunky
+- recognizable
+- minimal detail
+- cyan-teal outline
+- cocok untuk ukuran kecil
+- tidak mengandung text baked-in
+
+Jika elemen bisa dibuat dengan inline SVG dan perlu dianimasikan secara internal, prioritaskan SVG daripada PNG.
+
+---
+
+# 20. Data Flow yang Harus Terlihat
+
+Final audience harus bisa mengikuti alur ini tanpa membaca paragraph:
+
+```text
+CLIENT
+  │
+  │ GET /users
+  ▼
+NETWORK
+  │
+  ▼
+API ENDPOINT
+  │
+  ▼
+SERVER
+  │
+  │ find resource
+  ▼
+USERS DATA
+  │
+  ▼
+RESPONSE 200
+  │
+  ▼
+CLIENT
+```
+
+Jika alur ini tidak bisa dipahami hanya dengan melihat motion, berarti visual masih perlu diperbaiki.
+
+---
+
+# 21. Pre-Coding Validation Checklist
+
+## Narrative
+
+- [ ] Story dapat dijelaskan dalam satu kalimat.
+- [ ] Maksimal 4 Act.
+- [ ] Setiap Act merupakan kelanjutan Act sebelumnya.
+- [ ] Tidak ada scene reset.
+- [ ] Request menjadi actor utama sejak Act 1.
+- [ ] Response lahir dari processing request.
+- [ ] Response kembali ke client melalui jalur yang jelas.
+
+## Analogy
+
+- [ ] Analogi "counter/order" hanya digunakan sebagai bantuan visual.
+- [ ] Analogi tidak mengubah sifat request/response.
+- [ ] Analogi tidak membuat browser terlihat seperti karakter manusia.
+- [ ] Tidak ada detail analogi yang tidak membantu konsep teknis.
+
+## Visual
+
+- [ ] Semua primary actor sudah direncanakan.
+- [ ] Tidak ada icon penting yang baru dipikirkan di Act 3/4.
+- [ ] FlowchartSpine ditentukan dari Act 1.
+- [ ] Setiap element punya popIn.
+- [ ] Setiap element punya popOut.
+- [ ] Semua motion memiliki arah yang masuk akal.
+- [ ] Endpoint terlihat menerima/meneruskan request.
+- [ ] Server terlihat memproses resource.
+- [ ] Response terlihat berasal dari hasil processing.
+
+## Text
+
+- [ ] Caption ≤5 kata.
+- [ ] Caption declarative.
+- [ ] Tidak ada emoji.
+- [ ] Tidak ada tanda tanya.
+- [ ] Text hanya membantu motion.
+- [ ] Tidak ada definisi panjang di layar.
+
+## Visual Noise
+
+- [ ] Tidak ada wajah dekoratif.
+- [ ] Tidak ada particle berlebihan.
+- [ ] Tidak ada icon yang hanya untuk mempercantik.
+- [ ] Tidak ada overlay yang mengaburkan icon utama.
+
+---
+
+# 22. Dead Field Planning
+
+Semua field yang nantinya dibuat di `data.js` harus benar-benar dipakai oleh `Animation.jsx`.
+
+Minimal data structure yang direncanakan:
+
+```js
+VW
+VH
+
+COLORS
+
+PHASES
+
+CLIENT
+REQUEST
+ENDPOINT
+SERVER
+RESOURCE
+RESPONSE
+
+FLOW_WAYPOINTS
+
+CAPTIONS
+LABELS
+```
+
+Jangan membuat:
+
+```js
+PHASES[].caption
+```
+
+atau field lain yang tidak benar-benar dirender.
+
+Jika field belum digunakan tetapi sengaja disiapkan:
+
+```js
+// TODO: belum dirender
+```
+
+---
+
+# 23. Final Experience yang Diinginkan
+
+Audiens tidak perlu membaca penjelasan panjang.
+
+Mereka cukup melihat:
+
+```text
+"GET /users"
+      ↓
+request bergerak
+      ↓
+endpoint menerima
+      ↓
+server memproses
+      ↓
+data ditemukan
+      ↓
+"200"
+      ↓
+response kembali
+      ↓
+client menerima data
+```
+
+Keseluruhan video harus terasa seperti **satu continuous motion**, bukan empat ilustrasi terpisah.
+
+Prinsip paling penting:
+
+> **Jangan membuat Act baru. Lanjutkan motion yang sudah terjadi.**
+
+Setiap Act hanya mengungkap tahap berikutnya dari alur yang sama.
+
+---
+
+# 24. Definition of Done — Visual Plan
+
+Topic siap masuk tahap coding apabila:
+
+- [ ] Storyboard 4 Act selesai.
+- [ ] Semua actor sudah punya lifecycle.
+- [ ] FlowchartSpine sudah lengkap dari Act 1.
+- [ ] Request continuity sudah tervalidasi.
+- [ ] Response continuity sudah tervalidasi.
+- [ ] Endpoint memiliki visual action, bukan hanya label.
+- [ ] Server memiliki visual processing.
+- [ ] Resource memiliki hubungan sebab-akibat dengan request.
+- [ ] Semua caption sudah dipetakan ke visual.
+- [ ] Icon inventory sudah lengkap.
+- [ ] Tidak ada visual noise yang tidak perlu.
+- [ ] Tidak ada scene reset antar Act.
+- [ ] Tidak ada element yang tiba-tiba muncul di Act berikutnya.
+- [ ] Semua field yang direncanakan di `data.js` memiliki penggunaan yang jelas.
+
+## Core Rule
+
+**One canvas. One flow. One request. One response.**
+
+REST API harus terasa sebagai satu perjalanan visual dari client sampai kembali lagi ke client.

@@ -46,20 +46,25 @@ async function launchBrowser(onLog) {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
   }
 
-  if (!usingBundledChrome) {
-    const possiblePaths = [
-      process.env.PUPPETEER_EXECUTABLE_PATH,
-      process.env.CHROME_EXECUTABLE_PATH,
-      '/usr/bin/google-chrome',
-      '/usr/bin/google-chrome-stable',
-      '/usr/bin/chromium-browser',
-      '/usr/bin/chromium',
-      '/opt/google/chrome/google-chrome'
-    ]
-    const chromePath = possiblePaths.find(p => p && fs.existsSync(p))
-    if (!chromePath) throw new Error('Chrome/Chromium tidak ditemukan. Set PUPPETEER_EXECUTABLE_PATH.')
-    launchOptions.executablePath = chromePath
-    onLog(`Using system Chrome: ${chromePath}`)
+  // Selalu cek system Chrome dulu — bundled Puppeteer Chrome sering tidak ada
+  // di Docker karena PUPPETEER_SKIP_DOWNLOAD atau cache /root/.cache hilang.
+  const possiblePaths = [
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    process.env.CHROME_EXECUTABLE_PATH,
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/opt/google/chrome/google-chrome',
+    '/opt/google/chrome/chrome',
+  ]
+  const systemChromePath = possiblePaths.find(p => p && fs.existsSync(p))
+
+  if (systemChromePath) {
+    launchOptions.executablePath = systemChromePath
+    onLog(`Using system Chrome: ${systemChromePath}`)
+  } else if (!usingBundledChrome) {
+    throw new Error('Chrome/Chromium tidak ditemukan. Set PUPPETEER_EXECUTABLE_PATH.')
   } else {
     onLog('Using bundled Chrome dari puppeteer')
   }

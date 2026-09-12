@@ -9,9 +9,39 @@
 // hardcode literal di sini. Topic lama TIDAK wajib ikut pola ini.
 // ─────────────────────────────────────────────────────────────
 
-import linuxVsUnixManifest from './linux-vs-unix/manifest.js'
-import tailscaleManifest from './tailscale/manifest.js'
-import containerDockerManifest from './container-docker/manifest.js'
+import linuxVsUnixManifest from './12-linux-vs-unix/manifest.js'
+import tailscaleManifest from './11-tailscale/manifest.js'
+import containerDockerManifest from './10-container-docker/manifest.js'
+import httpRequestResponseManifest from './14-http-request-response/manifest.js'
+import dnsExplainedManifest from './13-dns-explained/manifest.js'
+import asyncEventLoopManifest from './15-async-event-loop/manifest.js'
+// import envVariablesManifest from './16-env-variables/manifest.js'  // DI-BACKUP (16-env-variables, lihat registry backup/2026-09-12-fix-16)
+import restApiManifest from './17-rest-api/manifest.js'
+import authManifest from './18-auth/manifest.js'
+import httpsTlsManifest from './23-https-tls/manifest.js'
+import oauth2DelegatedLoginManifest from './22-oauth2-delegated-login/manifest.js'
+import registerManifest            from './19-register/manifest.js'
+import emailVerificationManifest   from './20-email-verification/manifest.js'
+import forgotPasswordManifest     from './21-forgot-password/manifest.js'
+
+// ═══════════════════════════════════════════════════════════════
+// ✅ FIRST PASS SELESAI — 19/20/21/24 rebuild penuh (timeline 4 Act,
+// render JSX, scene-ui V1, pure inline SVG — tidak pakai icons/ folder,
+// ala 17/18/22/23). 24-cors = 4 Act primer CORS (#FB923C). Ketiganya
+// status coming-soon sampai preview manual & export MP4 lolos (lihat
+// *_PLAN.md § Checklist Eksekusi).
+// ═══════════════════════════════════════════════════════════════
+import corsManifest                from './24-cors/manifest.js'
+// ↑ 22-oauth2-delegated-login: first pass selesai (timeline 4 Act + render
+// JSX, pure inline SVG — tidak pakai icons/ folder, sama seperti 17/18/23),
+// belum preview manual & export MP4 (lihat
+// 22-oauth2-delegated-login/_docs/OAUTH2_DELEGATED_LOGIN_PLAN.md §7).
+// ↑ 18-auth: diaktifkan kembali (2026-09-12) — rebuild selesai first pass
+// penuh (timeline 4 Act + render JSX). Status coming-soon sampai preview
+// manual & export MP4 lolos (lihat 18-auth/_docs/AUTH_PLAN.md §13).
+// ↑ 23-https-tls: first pass selesai (timeline 4 Act + render JSX), status
+// coming-soon sampai preview manual & export MP4 lolos
+// (lihat 23-https-tls/_docs/HTTPS_TLS_PLAN.md).
 
 export const CONTENT_REGISTRY = [
   // ═══════════════════════════════════════════════════════════
@@ -26,7 +56,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['MCP', 'Protocol', 'Tools', 'AI'],
     color:     '#4ADE80',
     status:    'ready',
-    component: () => import('./mcp-servers/Animation'),
+    component: () => import('./01-mcp-servers/Animation'),
   },
 
   // ═══════════════════════════════════════════════════════════
@@ -41,7 +71,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['Desktop', 'GUI', 'Comparison', 'Beginner'],
     color:     '#60A5FA',
     status:    'ready',
-    component: () => import('./desktop-environment/Animation'),
+    component: () => import('./02-desktop-environment/Animation'),
   },
 
   {
@@ -52,7 +82,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['OS', 'Comparison', 'Beginner', 'Cross-platform'],
     color:     '#F472B6',
     status:    'ready',
-    component: () => import('./linux-vs-windows/Animation'),
+    component: () => import('./03-linux-vs-windows/Animation'),
   },
 
   {
@@ -63,7 +93,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['Permission', 'chmod', 'Security', 'Beginner'],
     color:     '#FBBF24',
     status:    'ready',
-    component: () => import('./file-permission/Animation'),
+    component: () => import('./04-file-permission/Animation'),
   },
 
   // ═════════════════════════════════════════════════════════════
@@ -78,7 +108,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['Shell', 'Pipe', 'STDIN', 'STDOUT'],
     color:     '#34D399',
     status:    'coming-soon',
-    component: () => import('./shell-pipeline/Animation'),
+    component: () => import('./05-shell-pipeline/Animation'),
   },
 
   {
@@ -89,7 +119,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['Kernel', 'Core', 'System', 'Beginner'],
     color:     '#A78BFA',
     status:    'coming-soon',
-    component: () => import('./what-is-kernel/Animation'),
+    component: () => import('./06-what-is-kernel/Animation'),
   },
 
   {
@@ -100,7 +130,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['Process', 'Thread', 'Memory', 'Concurrency'],
     color:     '#FB923C',
     status:    'coming-soon',
-    component: () => import('./process-vs-thread/Animation'),
+    component: () => import('./07-process-vs-thread/Animation'),
   },
 
   // ═════════════════════════════════════════════════════════════
@@ -115,7 +145,7 @@ export const CONTENT_REGISTRY = [
     tags:      ['Kernel', 'Architecture', 'System', 'Intermediate'],
     color:     '#06B6D4',
     status:    'coming-soon',
-    component: () => import('./linux-kernel-architecture/Animation'),
+    component: () => import('./08-linux-kernel-architecture/Animation'),
   },
 
   {
@@ -126,13 +156,13 @@ export const CONTENT_REGISTRY = [
     tags:      ['Memory', 'Virtual', 'Paging', 'Advanced'],
     color:     '#EC4899',
     status:    'ready',
-    component: () => import('./virtual-memory/Animation'),
+    component: () => import('./09-virtual-memory/Animation'),
   },
 
   {
     ...containerDockerManifest,
     status:    'ready',
-    component: () => import('./container-docker/Animation'),
+    component: () => import('./10-container-docker/Animation'),
   },
 
   // ═════════════════════════════════════════════════════════════
@@ -184,12 +214,144 @@ export const CONTENT_REGISTRY = [
   {
     ...tailscaleManifest,
     status:    'ready',
-    component: () => import('./tailscale/Animation'),
+    component: () => import('./11-tailscale/Animation'),
   },
 
   {
     ...linuxVsUnixManifest,
     status:    'ready',
-    component: () => import('./linux-vs-unix/Animation'),
+    component: () => import('./12-linux-vs-unix/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — status coming-soon sampai preview & export MP4
+  // dicoba manual (lihat dns-explained/_docs/DNS_PLAN.md § Checklist)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...dnsExplainedManifest,
+    status:    'coming-soon',
+    component: () => import('./13-dns-explained/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — Intro + Act 1 baru, Act 2–6 nyusul (lihat
+  // http-request-response/_docs/HTTP_REQUEST_RESPONSE_PLAN.md)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...httpRequestResponseManifest,
+    status:    'coming-soon',
+    component: () => import('./14-http-request-response/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — Intro + Act 1..5 first pass selesai, belum
+  // preview manual & export MP4 (lihat
+  // async-event-loop/_docs/PLAN-ASYNC-EVENT-LOOP.md §10 Checklist)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...asyncEventLoopManifest,
+    status:    'coming-soon',
+    component: () => import('./15-async-event-loop/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 DI-BACKUP (16-env-variables) — tidak ditampilkan di registry
+  // ═══════════════════════════════════════════════════════════
+
+  // {
+  //   ...envVariablesManifest,
+  //   status:    'coming-soon',
+  //   component: () => import('./16-env-variables/Animation'),
+  // },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — Intro + Act 1..5 first pass selesai (pure SVG,
+  // icon PNG belum di-generate), belum preview manual & export MP4
+  // (lihat rest-api/_docs/REST_API_PLAN.md § Checklist Eksekusi)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...restApiManifest,
+    status:    'coming-soon',
+    component: () => import('./17-rest-api/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — rebuild 18-auth selesai first pass (timeline 4 Act
+  // + render JSX), belum preview manual & export MP4 (lihat
+  // auth/_docs/AUTH_PLAN.md § Checklist Eksekusi)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...authManifest,
+    status:    'coming-soon',
+    component: () => import('./18-auth/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — rebuild 23-https-tls selesai first pass (timeline
+  // 4 Act + render JSX), belum preview manual & export MP4 (lihat
+  // 23-https-tls/_docs/HTTPS_TLS_PLAN.md Checklist Eksekusi)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...httpsTlsManifest,
+    status:    'coming-soon',
+    component: () => import('./23-https-tls/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — 22-oauth2-delegated-login first pass selesai
+  // (timeline 4 Act + render JSX), belum preview manual & export MP4
+  // (lihat 22-oauth2-delegated-login/_docs/OAUTH2_DELEGATED_LOGIN_PLAN.md
+  // §7 Checklist Eksekusi)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...oauth2DelegatedLoginManifest,
+    status:    'coming-soon',
+    component: () => import('./22-oauth2-delegated-login/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // ✅ FIRST PASS SELESAI — 19/20/21 rebuild penuh (timeline 4 Act +
+  // render JSX, scene-ui V1), ≥ manifest.js utuh. Belum preview manual
+  // & export MP4 (lihat *_PLAN.md § Checklist Eksekusi).
+  // 19-register: datang/logo + detail, AXIS, warna pribadi.
+  // 20-email-verification: email konfirmasi huruf lebar.
+  // 21-forgot-password: reset pakai token one-time.
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...registerManifest,
+    status:    'coming-soon',
+    component: () => import('./19-register/Animation'),
+  },
+
+  {
+    ...emailVerificationManifest,
+    status:    'coming-soon',
+    component: () => import('./20-email-verification/Animation'),
+  },
+
+  {
+    ...forgotPasswordManifest,
+    status:    'coming-soon',
+    component: () => import('./21-forgot-password/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // ✅ FIRST PASS SELESAI — 24-cors 4 Act (preflight OPTIONS → policy
+  // → request → respons), scene-ui V1, warna #FB923C. Belum preview
+  // manual & export MP4 (lihat 24-cors/_docs/CORS_PLAN.md § Checklist)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...corsManifest,
+    status:    'coming-soon',
+    component: () => import('./24-cors/Animation'),
   },
 ]

@@ -57,7 +57,7 @@ opsi yang dipertimbangkan). Tidak wajib dipakai untuk topic yang tidak
 butuh — kalau perbaikan cukup dicatat singkat di commit message, tidak
 perlu bikin folder ini.
 
-Contoh topic yang sudah mengikuti kontrak ini: `src/content/linux-vs-unix/`.
+Contoh topic yang sudah mengikuti kontrak ini: `src/content/12-linux-vs-unix/`.
 8 topic lain (mcp-servers, file-permission, virtual-memory, dst) masih
 struktur lama — itu OK, TIDAK wajib dimigrasi kecuali benar-benar error
 blocking. Jangan sentuh folder topic lama saat kerjakan topic baru.
@@ -69,7 +69,7 @@ gaya penulisannya pendek, hook-driven, boleh pakai emoji (beda dari
 kebijakan no-emoji untuk visual in-video, lihat
 `03-tutorial-buat-topic-baru.md` bagian "Wording Ringkas & Tanpa Emoji").
 Belum standar wajib (baru dipakai di sebagian topic) — kalau mau dibuat,
-ikuti pola & contoh nyata di `src/content/linux-vs-unix/caption.md`.
+ikuti pola & contoh nyata di `src/content/12-linux-vs-unix/caption.md`.
 
 ## 4. Kontrak Props `Animation.jsx`
 
@@ -184,3 +184,55 @@ copy lokalnya karena termasuk topic lama yang tidak disentuh.
 - Konsolidasi `content-db.json` vs `manifest.js` untuk dashboard
   ContentManagement — untuk sekarang semua topic (termasuk yang sudah
   migrasi) tetap pakai jalur `content-db.json` lama.
+
+## 10. Kontrak Minimal Plan & Revision Traceability (Topic Kompleks)
+
+Aturan tambahan ini berlaku untuk topic kompleks — punya request/response,
+mutasi data, atau layout bertingkat (lihat kriteria di
+`09-standar-pembuatan-konten.md` §1.M–§1.R).
+
+**File plan (`_docs/*_PLAN.md`, lihat `03-tutorial-buat-topic-baru.md`
+Langkah -1 & Langkah -0.5) WAJIB menyebut eksplisit:**
+- identity series topic (seri, kategori, palette, header reference);
+- state contract (tabel client awal → request → service → response → client akhir);
+- asset matrix (state-pair asset, kalau topic punya transformasi visual);
+- layout map (safe-zone, bounding box objek terbesar);
+- **scene shell** — lihat sub-bagian di bawah;
+- validation gate (compile, static audit, preview manual, export test).
+
+### 10.1 Scene Shell (Wajib Dicatat di Plan, Topic Kompleks)
+
+Lengkap dengan §1.S `09-standar-pembuatan-konten.md`, plan topic kompleks
+WAJIB mencantumkan field berikut (isi salah satu jalur, V1 atau custom):
+
+| Field | Isi kalau pakai scene-ui V1 | Isi kalau custom |
+|---|---|---|
+| Scene shell | `scene-ui V1` | `custom` |
+| Layout preset | `DEFAULT_LAYOUT_V1` (atau override sebagian, sebutkan token mana) | layout map manual (lihat §1.R `09-standar-pembuatan-konten.md`) |
+| Intro component | `IntroHeaderMorphV1` | komponen intro topic sendiri |
+| Act navigator | `ActBadgeNavigatorV1` | mekanisme navigasi Act sendiri, atau "tidak ada" + alasan |
+| Content origin | `ContentBodyV1` (`body.x`/`body.y`, local coordinate) | origin/koordinat manual topic |
+| Alasan opt-out | — (tidak perlu diisi) | WAJIB diisi: alasan teknis/storytelling + layout map pengganti + safe-zone pengganti (lihat §1.S) |
+| Version migration | catat `V1` sebagai versi awal; kalau nanti pindah ke `v2/`, tulis alasan breaking change apa yang memicu migrasi (lihat aturan versioning `src/shared/scene-ui/README.md`) | tidak relevan sampai topic ini opt-in ke V1/V2 di kemudian hari |
+
+Data topik (PHASES, warna, teks) dan timeline GSAP TETAP tidak pindah ke
+shared component apa pun — field di atas hanya mendeskripsikan CHROME
+layout mana yang dipakai, bukan memindahkan kepemilikan data/cerita.
+
+**File revision (`revisi/*.md`, lihat bagian 3 di atas) WAJIB menyebut
+eksplisit:**
+- state apa yang berubah (kalau ada);
+- layout apa yang berubah (zona/koordinat yang terdampak);
+- asset apa yang berubah (state-pair yang perlu di-regenerate, kalau ada);
+- timeline apa yang berubah (durasi Act, hold budget yang bergeser);
+- status test setelah perbaikan (compile/preview/export sudah dicoba atau belum).
+
+**Verifikasi metadata:** sebelum topic dianggap selesai, cek `manifest.js`
+dan metadata pendamping lain (mis. `content-db.json`) TIDAK saling
+bertentangan — kategori, title, dan palette yang tercatat di manifest
+harus sama dengan yang benar-benar dipakai di intro/header animasi (lihat
+Series Identity Contract, `09-standar-pembuatan-konten.md` §1.Q).
+
+Topic sederhana (single concept, tanpa request-response, tanpa layout
+bertingkat) tidak wajib mengikuti kontrak tambahan ini — cukup ikuti
+bagian 1-9 seperti biasa.

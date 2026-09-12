@@ -198,9 +198,132 @@ master.to(anchorYObj, { home: 190, onUpdate: () => setAnchorY({ ...anchorYObj })
 ```
 
 Dipakai untuk: karakter/device yang muncul berulang di banyak Act. Contoh
-nyata: rumah & kantor di `tailscale/Animation.jsx` (lihat
-`src/content/tailscale/revision/PLAN-CONTINUOUS-ANCHOR-ICONS.md` untuk
+nyata: rumah & kantor di `11-tailscale/Animation.jsx` (lihat
+`src/content/11-tailscale/revision/PLAN-CONTINUOUS-ANCHOR-ICONS.md` untuk
 detail before/after lengkap).
+
+## Advanced Pattern: Request Lifecycle Helper
+
+Untuk topic dengan alur request/response (REST API, HTTP, dsb.), jangan
+tulis timing tiap fase perjalanan request secara terpisah-pisah di
+timeline utama — bungkus jadi satu helper dengan 8 tahap tetap, supaya
+continuity terjamin (lihat `09-standar-pembuatan-konten.md` §1.O
+Continuity and No-Teleport Contract) dan hold antar-tahap konsisten
+dengan hold budget default.
+
+8 tahap wajib:
+
+1. spawn dari UI source
+2. depart
+3. travel ke gate
+4. ingress ke processor
+5. process/mutate
+6. build response
+7. return ke UI
+8. resolve UI state
+
+```js
+const runRequestLifecycle = (tl, startTime, { id, gate, processor, origin, mutate, onResolve }) => {
+  let t = startTime
+
+  // 1. spawn dari UI source
+  tl.add(() => popIn(tl, t, id), t)
+  t += 0.25 // click → request berangkat (hold budget default)
+
+  // 2-3. depart + travel ke gate
+  tl.to(refs[id], { x: gate.x, y: gate.y, duration: 0.6, ease: 'power2.inOut' }, t)
+  t += 0.6
+
+  // 4. ingress ke processor
+  tl.to(refs[id], { x: processor.x, y: processor.y, duration: 0.35, ease: 'power2.in' }, t)
+  t += 0.35 // gate → processor (hold budget default)
+
+  // 5. process/mutate — akibat fisik yang bisa dilihat, bukan cuma badge (lihat 09 §1.N)
+  tl.add(() => mutate(), t)
+  t += 0.5
+
+  // 6. build response
+  tl.add(() => setResponseVisible(id, true), t)
+  t += 0.2
+
+  // 7. return ke UI
+  tl.to(refs[id], { x: origin.x, y: origin.y, duration: 0.6, ease: 'power2.out' }, t)
+  t += 0.6
+
+  // 8. resolve UI state
+  tl.add(() => onResolve(), t)
+  t += 0.4 // response tiba → request berikutnya (hold budget default)
+
+  return t // WAJIB dipakai sebagai startTime request berikutnya
+}
+```
+
+**Kenapa harus return waktu selesai:** kalau request berikutnya dimulai
+dari angka `PHASE duration` yang sudah ditentukan lebih dulu (bukan dari
+`t` hasil helper ini), ada risiko sisa hold dari request sebelumnya belum
+selesai tapi request baru sudah dipaksa mulai — menyebabkan dua request
+numpuk di layar atau gap kosong yang tidak perlu. Selalu chain:
+
+```js
+let t = actStartTime
+t = runRequestLifecycle(tl, t, { id: 'req1', gate, processor, origin, mutate: mutatePostUser, onResolve: showConfirm1 })
+t = runRequestLifecycle(tl, t, { id: 'req2', gate, processor, origin, mutate: mutatePatchUser, onResolve: showConfirm2 })
+```
+
+## Advanced Pattern: Handoff Transform
+
+Saat ticket/request berubah bentuk jadi resource atau response (misal:
+amplop yang sampai di processor "menjadi" data card, atau response yang
+kembali "menjadi" update di UI), transisi ini WAJIB pakai handoff, bukan
+unmount-lalu-mount di posisi jauh — lihat `09-standar-pembuatan-konten.md`
+§1.O.
+
+Syarat handoff yang valid:
+
+- kedua visual (bentuk lama & bentuk baru) overlap minimal satu frame;
+- state target sudah aktif SAAT source mulai keluar, bukan sesudahnya;
+- tidak boleh ada gap `opacity: 0` di antara source hilang dan target
+  muncul — walau cuma satu frame;
+- gunakan `scale`/`glow`/`position` short tween untuk transisi, bukan
+  `setState(null)` diikuti `setState(newObject)` di waktu berbeda.
+
+```js
+// ❌ BAD — source di-unmount, target muncul 0.3s kemudian di posisi lain
+tl.add(() => setTicket(null), t)
+tl.add(() => setResourceCard({ visible: true }), t + 0.3)
+
+// ✅ GOOD — overlap eksplisit, target aktif SEBELUM source selesai keluar
+tl.add(() => setResourceCard({ visible: true, scale: 0, x: ticketX, y: ticketY }), t)
+tl.to(resourceCardObj, { scale: 1, x: cardX, y: cardY, duration: 0.4 }, t)
+tl.to(ticketObj, { scale: 0, opacity: 0, duration: 0.25 }, t) // source keluar BERSAMAAN, bukan sebelum
+tl.add(() => setTicket(null), t + 0.25) // baru dibersihkan setelah overlap selesai
+```
+
+Dipakai untuk: momen ticket → resource, resource → response, atau card
+lama → card baru (PUT full replacement). Lihat juga Method Visualization
+Contract di `09-standar-pembuatan-konten.md` §1.N untuk menentukan bentuk
+target yang benar per method.
+
+## Timeline Audit Sebelum Preview (Topic Request/Response)
+
+Sebelum preview manual atau export test (lihat `09-standar-pembuatan-konten.md`
+§2 poin 7 "Continuity & Act Design Audit"), jalankan audit berikut di
+timeline:
+
+- [ ] Cari SETIAP `popOut`/`setState(null)` dan pastikan ada destination
+      object atau transisi handoff yang menyertainya — tidak ada elemen
+      yang hilang tanpa penerus visual
+- [ ] Cari SETIAP `PHASE duration` yang di-hardcode dan bandingkan dengan
+      waktu event terakhir yang benar-benar terjadi di fase itu — kalau
+      durasi PHASE lebih panjang dari event terakhir + hold budget,
+      berarti ada waktu nganggur yang tidak disengaja
+- [ ] Tandai gap mana pun yang lebih besar dari hold budget default
+      (lihat `09-standar-pembuatan-konten.md` §1.O) — kalau memang
+      disengaja untuk keterbacaan, tulis alasannya di plan topic
+- [ ] Cek `repeat: -1` mengembalikan SEMUA state data ke kondisi awal
+      (posisi objek, isi card, status request) — bukan cuma `phaseIdx`
+      yang di-reset, karena state request/response biasanya lebih banyak
+      daripada state fase biasa
 
 ## Advanced Pattern: Multi-step Sequence dengan State
 
@@ -252,6 +375,90 @@ Dipakai untuk: intro yang ingin kesan "hacker typing" sebelum morph ke
 header. Contoh nyata: `linux-vs-unix/Animation.jsx` (asal pola) & port-nya
 ke `tailscale/Animation.jsx`.
 
+## Driving Pure Scene Components from Topic Timeline (scene-ui V1)
+
+Kalau topic memakai scene-ui V1 (`IntroHeaderMorphV1`, `ActBadgeNavigatorV1`,
+`ContentBodyV1`, atau composer `SceneChromeV1` — lihat
+`09-standar-pembuatan-konten.md` §1.S), aturan pemisahan tanggung jawab
+berikut WAJIB dipegang, karena component V1 sengaja ditulis **pure
+presentational** (tidak ada GSAP/state/SFX di dalamnya, lihat
+`src/shared/scene-ui/README.md` § "Prinsip inti"):
+
+**Aturan:**
+
+- `progress` morph (0..1) dan `activeIndex` Act **dimiliki topic**, bukan
+  component V1 — sama seperti pola `morphP`/`phaseIdx` yang sudah dipakai
+  di Langkah 1-3 `03-tutorial-buat-topic-baru.md`.
+- GSAP tween object mengubah state itu secara deterministik lewat
+  `onUpdate`/`tl.add()` — pola yang PERSIS sama dengan tween object biasa
+  (lihat § "Tween Object untuk Animasi Halus" di atas), component V1 cuma
+  menerima angka hasil akhir tiap frame.
+- Component V1 TIDAK pernah membuat timeline sendiri
+  (`gsap.timeline()`/`tl.add()`), tidak punya `repeat`/cleanup sendiri, dan
+  tidak memanggil `sfxLoader`/`playSfx` — semua itu tetap tanggung jawab
+  `Animation.jsx` topic.
+- Gating render (`showNavigator`/`showContent` di `SceneChromeV1`, atau
+  prop `visible` di tiap primitive) tetap DIPUTUSKAN oleh topic (state
+  `showIntro`/`contentStarted` dsb, pola yang sama dengan §3.1
+  `03-tutorial-buat-topic-baru.md`), bukan oleh component V1 sendiri.
+- `window.__animationTimeline`/`window.__flushSync` (lihat § "Export
+  Safety" di atas) tetap dipasang topic — component V1 tidak tahu-menahu
+  soal export hooks.
+
+**Wiring `progress` (contoh nyata, pola dari migrasi PLAN-14):**
+
+```jsx
+const [morphP, setMorphP] = useState(0)
+const mo = { p: 0 }
+
+master.to(mo, {
+  p: 1, duration: 0.8, ease: 'power3.inOut',
+  onUpdate: () => setMorphP(mo.p),
+}, time)
+time += 0.8
+
+// Render — progress diteruskan apa adanya, IntroHeaderMorphV1 yang
+// menghitung interpolasi posisi/ukuran hero→compact secara internal
+<g opacity={headerOpacity}>
+  <IntroHeaderMorphV1
+    progress={morphP}
+    categorySegments={[{ label: 'NETWORKING · ', color: COLORS.MUTED },
+                        { label: 'ADIB-DEV.COM', color: COLORS.NETWORKING_SKY }]}
+    titleSegments={[{ label: 'REST ', color: COLORS.MINT },
+                     { label: 'API', color: COLORS.SKY }]}
+    subtitle={INTRO_SUBTITLE}
+  />
+</g>
+```
+
+**Wiring `activeIndex`:**
+
+```jsx
+const [phaseIdx, setPhaseIdx] = useState(0)
+
+master.add(() => setPhaseIdx(1), t) // GSAP naikkan activeIndex seperti biasa
+t += PHASES[1].duration
+
+{contentStarted && (
+  <ActBadgeNavigatorV1 phases={PHASES} activeIndex={phaseIdx} />
+)}
+```
+
+**Do:**
+- Test render component V1 di `progress = 0`, `0.5`, dan `1` secara manual
+  (preview atau screenshot) — sama seperti checklist screenshot intro di
+  `09-standar-pembuatan-konten.md` §2 poin 9.
+- Test perubahan `activeIndex` di setiap Act, bukan cuma Act pertama.
+
+**Don't:**
+- Jangan pass timeline GSAP (`tl`/`master`) sebagai prop ke component V1
+  — component V1 tidak menerima maupun mengharapkan prop semacam itu.
+- Jangan buat component V1 memanggil `gsap.timeline()` sendiri saat
+  mount — kalau ada kebutuhan animasi internal yang benar-benar generic
+  lintas topic, itu perubahan breaking yang wajib masuk `v2/` baru
+  (lihat README scene-ui § aturan versioning), bukan ditambahkan diam-diam
+  ke `v1/`.
+
 ## Performance
 
 ```jsx
@@ -283,7 +490,7 @@ kalau ada beberapa `popIn()`/`tl.add()` yang timing-nya berdekatan (<0.2s
 antar elemen). Efeknya: elemen tampil normal di preview, tapi **hilang atau
 telat muncul di video hasil export** (pernah terjadi di `virtual-memory`
 dan `tailscale`, lihat
-`src/content/tailscale/revision/PLAN-FIX-EXPORT-MESHLINE-MISSING.md`).
+`src/content/11-tailscale/revision/PLAN-FIX-EXPORT-MESHLINE-MISSING.md`).
 
 Kedua script export sudah dirancang memakai `window.__flushSync` untuk
 memaksa commit sinkron **kalau tersedia** — tapi diam-diam fallback ke seek

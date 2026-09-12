@@ -312,31 +312,47 @@ async function captureFrames(topicId, { baseUrl = 'http://localhost:8081', frame
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage']
   }
 
-  // If using puppeteer-core (no bundled Chrome), detect system Chrome
-  if (!usingBundledChrome) {
-    const possiblePaths = [
-      process.env.PUPPETEER_EXECUTABLE_PATH,
-      process.env.CHROME_EXECUTABLE_PATH,
-      '/usr/bin/google-chrome',
-      '/usr/bin/google-chrome-stable',
-      '/usr/bin/chromium-browser',
-      '/usr/bin/chromium',
-      '/opt/google/chrome/google-chrome'
-    ]
-    
-    const chromePath = possiblePaths.find(path => path && fs.existsSync(path))
-    
-    if (!chromePath) {
-      throw new Error(
-        'Chrome/Chromium not found. Please install Chrome or set PUPPETEER_EXECUTABLE_PATH environment variable.\n' +
-        'Tried paths: ' + possiblePaths.filter(p => p).join(', ')
-      )
-    }
-    
-    launchOptions.executablePath = chromePath
-    onLog(`Using system Chrome at: ${chromePath}`)
-  } else {
+  // Selalu cek system Chrome dulu — bundled Puppeteer Chrome sering tidak ada
+  // di lingkungan Docker/server karena PUPPETEER_SKIP_DOWNLOAD atau cache hilang.
+  // Jika system Chrome ketemu, selalu pakai itu (lebih reliable dari bundled).
+  const possiblePaths = [
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    process.env.CHROME_EXECUTABLE_PATH,
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/opt/google/chrome/google-chrome',
+    '/opt/google/chrome/chrome',
+  ]
+  const systemChromePath = possiblePaths.find(p => p && fs.existsSync(p))
+
+  if (systemChromePath) {
+    launchOptions.executablePath = systemChromePath
+    onLog(`Using system Chrome at: ${systemChromePath}`)
+  } else if (usingBundledChrome) {
     onLog(`Using bundled Chrome from puppeteer`)
+    // Validasi bundled Chrome ada sebelum launch — beri pesan jelas kalau tidak ada
+    try {
+      const { executablePath } = await import('puppeteer')
+      const bundledPath = typeof executablePath === 'function' ? executablePath() : null
+      if (bundledPath && !fs.existsSync(bundledPath)) {
+        throw new Error(
+          `Bundled Chrome tidak ditemukan di: ${bundledPath}\n` +
+          `Jalankan: npx puppeteer browsers install chrome\n` +
+          `Atau install system Chrome dan pastikan ada di salah satu path: ${possiblePaths.filter(p=>p).join(', ')}`
+        )
+      }
+    } catch (e) {
+      if (e.message.includes('Bundled Chrome')) throw e
+      // import error — skip check, biarkan puppeteer.launch() yang handle
+    }
+  } else {
+    throw new Error(
+      'Chrome/Chromium tidak ditemukan.\n' +
+      'Install Chrome atau set env PUPPETEER_EXECUTABLE_PATH.\n' +
+      'Path yang dicek: ' + possiblePaths.filter(p => p).join(', ')
+    )
   }
 
   onLog(`Launching Chrome for topic: ${topicId}...`)

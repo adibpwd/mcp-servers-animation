@@ -1,0 +1,11 @@
+# Revisi — 23-https-tls (HTTPS · TLS)
+
+Index ringkas perubahan yang terjadi SETELAH topic dianggap selesai
+(first pass). Konvensi: `docs/standardizations/02-standar-konten.md`
+§3 — nama file `YYYY-MM-DD-revisi-NN.md`, WAJIB menyebut
+state/layout/asset/timeline/status test yang berubah (§222-228).
+
+| File | Tanggal | Ringkasan | Status |
+|---|---|---|---|
+| `2026-09-12-revisi-01.md` | 2026-09-12 | Audit SFX coverage penuh (metodologi `08-audio-sfx-generation.md` §7): 10 motion signifikan yang tadinya total silent (entrance Act1 browser/server/eaves, reveal privasi bocor, domain-OK, reject impostor & fake-key, mirror ingredient B, travel kapsul Act4) dikasih SFX baru — 7 entry `SFX_MAP` baru (`MATERIALIZE`, `PLINK`, `CHIME`, `ERROR`, `ERROR_BEEP`, `BOUNCE`, `WHOOSH_LOW`), semua reuse asset existing di `public/audio/*` (0 download baru). Sekalian fix dead config `POP2` (di-wire ke ingredient B) dan upgrade helper `popOut()` agar sejajar `popIn()` (opsi `sfx`/`sfxCategory`/`sfxName`). `setEavesSeesOuter` (low-priority) sengaja dibiarkan silent, ditinjau ulang saat preview manual. | ✅ esbuild + vite build PASS, semua 17 `SFX_MAP` entry ter-wire — preview manual `npm run dev` masih pending |
+| `2026-09-12-revisi-02.md` | 2026-09-12 | User lapor Act1 (Browser/Server muncul) masih kerasa gak ada audio meski revisi-01 sudah wiring `MATERIALIZE`. Audit turun 1 level pakai `ffprobe`/`ffmpeg -af volumedetect` (bukan cuma cek wiring) — ketemu 3 asset baru revisi-01 yang bermasalah: `MATERIALIZE` (-27.2dB, ≈9dB terlalu pelan), `ERROR` (-39.3dB, ≈21dB terlalu pelan, JAUH lebih parah tapi belum dilaporkan karena user baru sampai Act1), `ERROR_BEEP` (5.5s, outlier kepanjangan vs asset `warnings/` lain 0.05–1.0s). Solusi: ganti referensi asset (bukan trim/normalize) ke 3 file lain yang sudah ada di tier loudness baseline aman (`success/shimmer`, `impacts/connector-snap`, `warnings/critical-alert` — key di-rename `ERROR_BEEP`→`CRITICAL_ALERT`), plus naikkan `volumeMult` eaves-`PLINK` 0.6→0.8. Sekalian tutup 2 motion low-priority yang di-defer revisi-01 (`setRequestPack`→reuse `TICK`, `setEavesSeesOuter`→key baru `SHIFT`). | ✅ `vite build` PASS (exit 0), 18/18 `SFX_MAP` entry ter-wire, `ffmpeg volumedetect` re-konfirmasi angka asset pengganti — preview manual `npm run dev` masih pending |

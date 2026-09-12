@@ -1,0 +1,43 @@
+{
+  "name": "rest-api",
+  "description": "12 icon untuk topic REST API (analogi restoran, revisi-02) — 2 batch. Batch-1: objek inti (gedung restoran, kunci, formulir, papan nama, pelanggan). Batch-2: method badge (GET/POST/PUT/PATCH/DELETE) + stempel status 200/201, reuse 100% dari revisi-01 (analogi kantor pos), tidak berubah karena generic lintas-analogi. Warna dicocokkan ke pemakaian aktual di Animation.jsx (lihat revisi/2026-09-11-1241-revisi-02.md § Audit Icon). Semua AI-generate via ChatGPT.",
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "Objek Inti (Batch 1/2) — Restoran",
+      "status": "done",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "post-building", "name": "Restaurant Building", "label": "Restaurant", "description": "Gedung restoran kecil, atap khas restoran (bukan atap kantor pos), jendela dengan tirai, papan menu kecil di depan pintu, gaya flat minimalis, warna oranye (#FB923C)" },
+        { "id": "envelope-locked", "name": "Lock Badge", "label": "Locked Resource", "description": "Ikon gembok/kunci sederhana berdiri sendiri (bukan lagi menempel di amplop), melambangkan resource/menu yang aksesnya dibatasi, warna kuning/amber (#FBBF24)" },
+        { "id": "structured-form", "name": "Structured Form", "label": "Order Form", "description": "Formulir kertas dengan baris-baris label:value berbaris rapi seperti kolom data (dipakai ulang apa adanya sebagai formulir pesanan terstruktur), warna ungu (#A78BFA)" },
+        { "id": "gate-signage", "name": "Restaurant Signage", "label": "Restaurant Sign", "description": "Papan nama restoran bergaya starburst/badge bergerigi, permukaan kosong untuk label singkat, warna ungu (#A78BFA)" },
+        { "id": "customer", "name": "Customer Character", "label": "Customer", "description": "Karakter pelanggan sederhana, kepala lingkaran + badan simpel bergaya flat minimalis konsisten dengan icon lain di set ini, warna biru (#38BDF8) — anchor utama sepanjang Act 1-5" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Small restaurant building icon, restaurant-style roof (not post-office style), windows with curtains, a small menu board near the entrance, simple flat outline, orange color (#FB923C)\n2. Simple standalone padlock/key icon (not attached to an envelope), conveying a locked/restricted resource, amber/yellow color (#FBBF24)\n3. Paper form icon with several neat horizontal label:value rows (like structured order-form fields), purple color (#A78BFA)\n4. Starburst/jagged-edge badge shape with a signpost feel, blank surface for a short label, purple color (#A78BFA)\n5. Simple cartoon customer character, circular head + simple body, flat minimalist style consistent with the other icons, blue color (#38BDF8)\n6. [EMPTY - leave this slot blank/transparent]\n7. [EMPTY - leave this slot blank/transparent]\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "Method & Stempel (Batch 2/2) — Perlu Generate Ulang",
+      "status": "failed",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "method-get", "name": "GET Icon", "label": "GET — Lihat", "description": "Kaca pembesar sederhana, gaya flat minimalis, warna ungu (#A78BFA) — melambangkan aksi melihat/GET" },
+        { "id": "method-post", "name": "POST Icon", "label": "POST — Buat Baru", "description": "Tanda plus tebal dalam kotak/lingkaran, gaya flat minimalis, warna ungu (#A78BFA) — melambangkan aksi membuat baru/POST" },
+        { "id": "method-put", "name": "PUT Icon", "label": "PUT — Ganti Total", "description": "Panah melingkar penuh (ikon refresh/replace), gaya flat minimalis, warna kuning/amber (#FBBF24) — melambangkan ganti total/PUT, SENGAJA beda warna dari GET/POST/DELETE (menandai pasangan idempotent dengan PATCH)" },
+        { "id": "method-patch", "name": "PATCH Icon", "label": "PATCH — Ubah Sebagian", "description": "Pensil sederhana, gaya flat minimalis, warna kuning/amber (#FBBF24) — melambangkan ubah sebagian/PATCH, pasangan warna dengan PUT" },
+        { "id": "method-delete", "name": "DELETE Icon", "label": "DELETE — Hapus", "description": "Tempat sampah sederhana, gaya flat minimalis, warna ungu (#A78BFA) — melambangkan aksi hapus/DELETE" },
+        { "id": "stamp-200", "name": "Stamp 200", "label": "200 OK", "description": "Stempel lingkaran tebal dengan checkmark besar di tengah, kesan fisik/mechanical ink stamp, warna hijau (#34D399)" },
+        { "id": "stamp-201", "name": "Stamp 201", "label": "201 Created", "description": "Stempel lingkaran tebal dengan checkmark+bintang kecil di tengah (varian 'berkas baru dibuat', JELAS beda dari stamp-200 walau warna sama), kesan fisik/mechanical ink stamp, warna hijau (#34D399)" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Magnifying glass icon (GET — view/read action), purple color (#A78BFA)\n2. Plus sign inside a circle or square (POST — create new), purple color (#A78BFA)\n3. Full circular refresh/replace arrow (PUT — replace all), amber/yellow color (#FBBF24)\n4. Simple pencil icon (PATCH — partial edit), amber/yellow color (#FBBF24)\n5. Trash can / delete bin icon (DELETE — remove), purple color (#A78BFA)\n6. Circular stamp with large checkmark in the center, mechanical ink-stamp feel (200 OK), green color (#34D399)\n7. Circular stamp with checkmark + small star, clearly distinct from slot 6 (201 Created), green color (#34D399)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    }
+  ],
+  "generation": {
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/17-rest-api/icons",
+    "note": "Batch-1 (5 icon: post-building, envelope-locked, structured-form, gate-signage, customer) — DONE, sudah digenerate via ChatGPT. Batch-2 (7 icon: 5 method + 2 stamp) — FAILED, generate ulang pakai prompt di atas (bukan reuse revisi-01 karena gagal). Setelah batch-2 berhasil: uncomment import 'customer' di loader.js jika belum, dan pastikan semua 12 PNG ada di folder icons/. 3 file PNG lama yang di-REMOVE (envelope-closed, officer-neutral, officer-confused) boleh dibiarkan di folder tanpa dipakai."
+  }
+}

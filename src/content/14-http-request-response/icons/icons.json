@@ -1,0 +1,78 @@
+{
+  "name": "http-request-response",
+  "description": "21 icon untuk topic HTTP Request-Response — 3 batch. Batch-1 (done): element konseptual. Batch-2: karakter officer + stamp + bangunan. Batch-3: payload data + network journey. Semua AI-generate via ChatGPT.",
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "Core Concepts (Batch 1/3)",
+      "status": "generated",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "envelope-closed", "name": "Envelope Closed", "label": "Sealed Letter", "description": "Amplop tertutup, flap segitiga rapat, garis outline sederhana, warna netral/abu-abu" },
+        { "id": "envelope-open", "name": "Envelope Open", "label": "Open Letter", "description": "Amplop terbuka, flap naik ke atas seperti pintu terbuka, terlihat 2 garis horizontal isi surat di dalam" },
+        { "id": "address-book", "name": "Address Book", "label": "DNS Directory", "description": "Buku alamat terbuka membentang, garis-garis entri horizontal di kedua halaman kiri-kanan" },
+        { "id": "checkmark-icon", "name": "Checkmark", "label": "Confirmed", "description": "Centang/checkmark sederhana minimalis, garis tebal, sudut membulat" },
+        { "id": "question-icon", "name": "Question Mark", "label": "Question", "description": "Tanda tanya bulat sederhana, gaya flat minimalis" },
+        { "id": "insight-icon", "name": "Insight Bulb", "label": "Insight", "description": "Bohlam lampu sederhana (lightbulb), gaya flat minimalis, melambangkan insight/aha-moment" },
+        { "id": "tease-icon", "name": "Next Arrow", "label": "Continue", "description": "Panah melengkung ke kanan/anak panah lanjut, gaya flat minimalis, melambangkan lanjut ke topic berikutnya" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Closed envelope/letter, triangular flap sealed shut, simple outline style, neutral gray color\n2. Open envelope/letter, flap open upward like a door, two horizontal lines visible inside representing letter content, neutral gray color\n3. Open address book spanning two pages, horizontal entry lines on both pages, neutral gray color\n4. Simple minimalist checkmark, bold rounded stroke, green color (#34D399)\n5. Simple round question mark icon, flat minimalist style, purple color (#A78BFA)\n6. Simple lightbulb icon, flat minimalist style, amber/gold color (#FBBF24)\n7. Curved arrow pointing right, flat minimalist style, sky-blue color (#38BDF8)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "Characters & Status Stamps (Batch 2/3)",
+      "status": "generated",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "officer-neutral", "name": "Officer Neutral", "label": "Server Officer", "description": "Karakter wajah petugas server — ekspresi netral/siap kerja, lingkaran kepala, badan sederhana di bawah, warna oranye/amber (#FB923C)" },
+        { "id": "officer-thinking", "name": "Officer Thinking", "label": "Processing...", "description": "Karakter wajah petugas — ekspresi mikir/bingung, alis naik ke atas, mulut sedikit terbuka, tanda tanya kecil mengambang di atas kepala, warna oranye (#FB923C)" },
+        { "id": "officer-happy", "name": "Officer Happy", "label": "Data Found!", "description": "Karakter wajah petugas — ekspresi senang/lega, senyum lebar, bintang kecil di samping kepala, warna oranye (#FB923C)" },
+        { "id": "stamp-approved", "name": "Stamp Approved", "label": "200 OK", "description": "Stempel lingkaran tebal bertulisan APPROVED, centang besar di tengah, warna hijau (#34D399), kesan fisik/mechanical ink stamp" },
+        { "id": "stamp-rejected", "name": "Stamp Rejected", "label": "4xx Error", "description": "Stempel lingkaran tebal bertulisan REJECTED, tanda X besar di tengah, warna merah (#F43F5E), kesan fisik/mechanical ink stamp" },
+        { "id": "server-building", "name": "Server Building", "label": "Server", "description": "Gedung server simpel — kotak bangunan dengan panel rak server di depan, antena kecil di atas, warna oranye (#FB923C)" },
+        { "id": "browser-frame", "name": "Browser Window", "label": "Browser", "description": "Frame browser simpel — tab strip di atas, URL address bar, 3 tombol navigasi kecil, warna biru (#38BDF8)" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Simple cartoon face character with neutral/ready expression — circle head with dot eyes and straight line mouth, simple body outline below, amber/orange color (#FB923C)\n2. Simple cartoon face character with thinking/confused expression — circle head with raised arched eyebrows, slightly open mouth, tiny question mark floating above head, amber/orange color (#FB923C)\n3. Simple cartoon face character with happy/excited expression — circle head with big smile, sparkling eyes, small star beside it, amber/orange color (#FB923C)\n4. Round rubber stamp labeled APPROVED — thick circular border with bold text around rim, large bold checkmark in center, green color (#34D399), mechanical ink-stamp aesthetic\n5. Round rubber stamp labeled REJECTED — thick circular border with bold text around rim, large bold X mark in center, red color (#F43F5E), mechanical ink-stamp aesthetic\n6. Server building icon — box-shaped building with server rack panel on front, small antenna on top, orange color (#FB923C)\n7. Browser window frame icon — rectangular frame with tab strip on top, URL address bar below tabs, three small navigation buttons, sky-blue color (#38BDF8)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    },
+    {
+      "batch_id": "batch-3",
+      "name": "Data Payload & Network Journey (Batch 3/3)",
+      "status": "generated",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "method-get", "name": "GET Badge", "label": "HTTP GET", "description": "Badge kotak membulat bertulisan GET tebal, latar ungu (#A78BFA), teks putih, gaya badge/pill API request" },
+        { "id": "html-document", "name": "HTML Document", "label": "HTML", "description": "Dokumen/file HTML — halaman kertas dengan simbol </> atau tulisan HTML, aksen oranye-merah (#FB923C)" },
+        { "id": "css-document", "name": "CSS Document", "label": "CSS", "description": "Dokumen/file CSS — halaman kertas dengan garis-garis horizontal styling/cascade, aksen biru (#38BDF8)" },
+        { "id": "js-document", "name": "JS Document", "label": "JavaScript", "description": "Badge atau file bertulisan JS tebal, latar kuning (#FBBF24), teks hitam, gaya icon JavaScript" },
+        { "id": "dns-magnify", "name": "DNS Magnify", "label": "DNS Search", "description": "Kaca pembesar mengambang di atas buku/daftar dengan baris-baris entri, menandakan proses DNS lookup, warna cyan (#06B6D4)" },
+        { "id": "tcp-handshake", "name": "TCP Handshake", "label": "Connected", "description": "Dua tangan berjabat atau dua konektor kabel yang tersambung, menandakan TCP connection established, warna cyan (#06B6D4)" },
+        { "id": "packet-fly", "name": "Data Packet", "label": "Flying Packet", "description": "Amplop kecil atau paket data dengan garis motion lines di belakangnya menandakan sedang terbang melewati network, warna biru-ke-hijau" }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Rounded pill/badge shape with bold text GET, purple background (#A78BFA), white text, API method badge style\n2. Document/page icon with </> HTML tag symbol visible on it, light page shape, orange-red accent color (#FB923C)\n3. Document/page icon with horizontal wavy or stepped lines suggesting CSS cascade styling, light page shape, blue accent (#38BDF8)\n4. Square document or badge with bold JS text, yellow background (#FBBF24), black text, JavaScript icon style\n5. Magnifying glass hovering over a small open book or list with horizontal entry lines, representing DNS lookup search, cyan color (#06B6D4)\n6. Two hands shaking (handshake) or two cable connectors plugging together, representing TCP connection established, cyan color (#06B6D4)\n7. Small envelope or data packet shape with speed/motion lines trailing behind it, representing flying network data, blue-to-green color (#38BDF8 to #34D399)\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    },
+    {
+      "batch_id": "batch-4",
+      "name": "Flowchart States & Spine (Batch 4/4)",
+      "status": "generated",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "browser-filled", "name": "Browser Filled", "label": "Page Loaded", "description": "Browser frame dengan halaman/konten terlihat di dalam — miniatur halaman web (bar judul + beberapa baris teks/blok kecil), warna biru (#38BDF8). Beda dari browser-frame yang kosong." },
+        { "id": "browser-loading", "name": "Browser Loading", "label": "Loading...", "description": "Browser frame dengan area konten menampilkan spinner/loading indicator besar di tengah halaman, warna biru (#38BDF8)." },
+        { "id": "dns-resolved", "name": "DNS Resolved", "label": "DNS Confirmed", "description": "Buku alamat terbuka dengan checkmark hijau besar di atas buku — visual 'alamat ketemu'. Warna cyan (#06B6D4) dengan aksen hijau (#34D399)." },
+        { "id": "server-active", "name": "Server Active", "label": "Processing", "description": "Gedung server dengan lampu indikator menyala di panel depan atau antena bersinar/pulse — visual 'server sedang kerja'. Warna oranye (#FB923C)." },
+        { "id": "path-forward-arrow", "name": "Forward Arrow", "label": "Request →", "description": "Panah tebal mengarah ke kanan, gaya flat bold minimalis, melambangkan arah forward request. Warna biru (#38BDF8)." },
+        { "id": "path-return-arrow", "name": "Return Arrow", "label": "← Response", "description": "Panah melengkung mengarah ke kiri/balik, melambangkan arah return response. Warna hijau (#34D399)." }
+      ],
+      "prompt": "Generate a 2x4 grid of 8 minimalist flat-design icons on transparent background (PNG). Icons are numbered top-left to bottom-right, left-to-right, row by row:\n\n1. Browser window frame with visible page content inside — show a miniature webpage layout inside the frame (a title bar area, 2-3 horizontal text lines, one small image block), sky-blue color (#38BDF8). Clearly different from an empty browser frame.\n2. Browser window frame with a large loading spinner/circle in the center of the content area, indicating page is loading, sky-blue color (#38BDF8).\n3. Open address book with a large bold green checkmark overlaid on top/front of the book — representing DNS lookup confirmed/resolved. Cyan base color (#06B6D4) with green accent (#34D399) for the checkmark.\n4. Server building with glowing indicator lights on its front panel or a pulsing antenna on top — representing active/processing state. Orange color (#FB923C), clearly different from a dormant server.\n5. Bold thick arrow pointing right, flat minimalist style, representing forward request direction in a flowchart path. Sky-blue color (#38BDF8).\n6. Bold curved arrow pointing left or looping back, flat minimalist style, representing return/response direction. Green color (#34D399).\n7. [EMPTY - leave this slot blank/transparent]\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle requirements:\n- Flat design, minimalist, consistent visual weight across all icons\n- Use ONLY the exact color specified per icon, no gradients\n- Each icon same overall size, clearly distinct silhouette\n- High contrast against transparent background\n- Transparent background (PNG)\n- Grid layout: 2 rows x 4 columns\n- Recommended total size: 2048x1024 pixels (512x512 per icon)"
+    }
+  ],
+  "generation": {
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/14-http-request-response/icons",
+    "note": "Semua icon konseptual/generik, tidak ada brand logo — source: ChatGPT image-gen via extension vm-icon-generator, dijalankan manual oleh user di tab chatgpt.com."
+  }
+}
