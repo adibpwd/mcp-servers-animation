@@ -327,7 +327,7 @@ Kategori ini melengkapi §1.E khusus untuk topic dengan alur request/response.
 
 ---
 
-### Q. Series Identity Contract
+### Q. Series Identity Contract & Title Header Color Standards
 
 Identitas seri (kategori, palet, header format, referensi visual) harus
 dikunci SEBELUM title/intro dibuat — bukan setelah timeline selesai.
@@ -339,11 +339,18 @@ Preflight wajib:
 - reference topic yang dipakai sebagai acuan format;
 - alasan tertulis jika menyimpang dari format seri.
 
+**Aturan Baku Warna Header Title (`titleSegments`):**
+- **Title A (Kata Pertama / Subjek Utama):** **Biru / Cyan** (`#38BDF8` / `#22D3EE`).
+- **Title B (Kata Kedua / Payoff / Result):** **Hijau Emerald** (`#34D399`).
+- **Standardisasi:** Kombinasi **Biru/Cyan + Hijau** adalah standar identitas seri resmi. Dilarang menukar urutan warna (mis. Hijau duluan lalu Biru) atau menggunakan warna gelap/mati pada Title A.
+
 **✅ DO:**
 - Catat referensi yang ditiru secara spesifik (mis. "hero-to-header lerp ala Tailscale, tanpa typing effect")
-- Kunci kategori, palette, dan header reference sebelum menyentuh code
+- Kunci kategori, palette (Title A Biru/Cyan, Title B Hijau), dan header reference sebelum menyentuh code
+- Terapkan `titleSegments` resmi: Title A (Biru/Cyan) + Title B (Hijau)
 
 **❌ DON'T:**
+- Jangan menukar urutan warna title header (mis. Hijau duluan baru Biru) — selalu Title A (Biru/Cyan) + Title B (Hijau)
 - Jangan menyalin efek visual secara parsial tanpa menyalin struktur layout/hierarki yang membuat efek itu berhasil di referensinya
 - Jangan mengubah identitas seri, kategori, atau palette setelah timeline hampir selesai tanpa mereview dampaknya ke topic lain di seri yang sama
 
@@ -435,7 +442,7 @@ Langkah yang WAJIB selesai sebelum menyentuh `Animation.jsx`:
 ```
 [ ] 0. CONTENT STATE & SERIES IDENTITY (WAJIB sebelum storyboard — khusus topic request/response atau bertingkat)
     [ ] 0.1. Isi tabel Content State Contract (client awal → transit → service → client akhir) — lihat §1.M
-    [ ] 0.2. Isi preflight Series Identity Contract (seri, kategori, palette, header reference) — lihat §1.Q
+    [ ] 0.2. Isi preflight Series Identity Contract (seri, kategori, palette Title A Biru/Cyan + Title B Hijau, header reference) — lihat §1.Q
     [ ] 0.3. Untuk tiap method/aksi, jawab 4 pertanyaan Method Visualization Contract sebelum lanjut — lihat §1.N
 
 [ ] 1. STORYBOARD NARATIF

@@ -295,22 +295,23 @@ Untuk switch alignment di tengah morph tanpa jump:
 </text>
 ```
 
-**Warna title (WAJIB, bukan opsional):** title intro TIDAK BOLEH pakai
-1 warna flat — split jadi ≥2 `tspan` warna semantik dari `COLORS` topic
-ini sendiri (lihat `05-svg-text-guide.md` § "Color Palette Project"),
-titik split ikut kata/suku kata yang bermakna (bukan asal tengah
-string). Default kombinasi kalau topic tidak punya pasangan warna
-kontras yang lebih relevan ke cerita: hijau (`COLORS.SUCCESS`) untuk
-bagian awal + biru (`COLORS.CLIENT`, sky blue) untuk bagian akhir — ini
-kombinasi yang sudah dipakai di `tailscale` & `http-request-response`.
-Kalau topic punya 2 konsep kontras yang lebih pas (mis. `container-docker`
-pakai hijau `CONTAINER` vs oranye `KERNEL` untuk "Container vs VM"),
-boleh pakai pasangan itu sebagai gantinya. Cursor blok (`█`) ikut warna
-segmen title yang sedang diketik; cursor di baris subtitle pakai warna
-segmen title TERAKHIR. Subtitle sendiri tetap `COLORS.MUTED` (netral),
-tidak ikut split. Contoh lengkap: lihat blok render header di
-`src/content/11-tailscale/Animation.jsx` atau
-`src/content/17-rest-api/Animation.jsx`.
+**Warna title (WAJIB, bukan opsional — STANDAR RESMI SERI):** title intro TIDAK BOLEH pakai
+1 warna flat — wajib di-split menjadi ≥2 segmen `titleSegments` dengan kombinasi warna semantik berikut:
+- **Title A (Kata Pertama / Subjek / Aktor Utama):** **Biru / Sky / Cyan** (`COLORS.CLIENT` `#38BDF8` atau `#22D3EE`).
+- **Title B (Kata Kedua / Status / Result / Payoff):** **Hijau Emerald** (`COLORS.SUCCESS` `#34D399`).
+
+*Contoh nyata:*
+- `19-register`: `INTRO_TITLE_A = 'RECORD'` (`#38BDF8` Biru) + `INTRO_TITLE_B = ' SUCCESS'` (`#34D399` Hijau).
+- `20-email-verification`: `INTRO_TITLE_A = 'EMAIL'` (`#22D3EE` Cyan) + `INTRO_TITLE_B = ' VERIFICATION'` (`#34D399` Hijau).
+- `22-oauth2-delegated-login`: `INTRO_TITLE_A = 'APP'` (`#38BDF8` Biru) + `INTRO_TITLE_B = ' TOKEN'` (`#34D399` Hijau).
+- `23-https-tls`: `INTRO_TITLE_A = 'HTTPS'` (`#38BDF8` Biru) + `INTRO_TITLE_B = ' SECURE'` (`#34D399` Hijau).
+
+**Aturan Keras Warna Header:**
+1. **JANGAN PERNAH MENUKAR URUTAN:** Jangan gunakan Hijau duluan lalu Biru untuk Title A/B. Kata/konsep utama di awal SELALU Biru/Cyan, kata status/hasil di akhir SELALU Hijau.
+2. **JANGAN PAKAI WARNA GELAP/MATI:** Judul hero wajib kontras tinggi dan cerah di atas canvas gelap (`#070913`).
+3. Subtitle tetap `COLORS.MUTED` (`#94A3B8` netral).
+4. Titik split harus pada batas kata/suku kata yang bermakna (misal `RECORD` + ` SUCCESS`, bukan `RECO` + `RD SUCCESS`).
+5. Cursor typing (`█`) mengikuti warna segmen title yang sedang diketik; saat subtitle diketik, cursor memakai warna segmen title TERAKHIR (`COLORS.SUCCESS`).
 
 ## Langkah 3 — Bikin Act 1 sampai Act Akhir
 
