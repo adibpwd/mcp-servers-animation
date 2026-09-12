@@ -1,12 +1,16 @@
 # PLAN — Shared Playful Audio Pack
 
-> **Status:** 📝 PLAN ONLY / Draft
+> **Status:** 🟡 SEBAGIAN DIEKSEKUSI (2026-09-13) — sourcing, normalisasi,
+> dan manifest §5-§7 selesai untuk 8/8 kandidat; wiring baru 1/5 topic
+> (19-register, hanya paper-send). Preview manual & topic 20/21/22/24
+> masih belum dikerjakan. Non-Goals asli di §9 (tidak download/wiring)
+> **sudah tidak berlaku** — lihat §7 untuk status real per-item.
 >
-> **Tanggal:** 2026-09-13
+> **Tanggal awal:** 2026-09-13
 >
 > Tujuan plan ini adalah menambah variasi SFX reusable untuk seri content
-> Developer Tools tanpa mengubah topic, mengunduh, atau membuat file audio
-> pada tahap ini.
+> Developer Tools. Rencana awal menunda unduh/wiring; keputusan lanjut
+> eksekusi diambil user pada hari yang sama (lihat §7 untuk detail).
 
 ## 1. Latar Belakang
 
@@ -95,15 +99,24 @@ Setelah sumber dipilih:
 
 ## 7. Tahap Implementasi Kelak
 
-- [ ] **Draft** — Scan ulang public/audio untuk kandidat pengganti existing.
-- [ ] **Draft** — Pilih sumber/lisensi legal per candidate dan catat provenance.
-- [ ] **Draft** — Download/generate hanya asset yang lolos keputusan §3.
-- [ ] **Draft** — Convert, trim, normalisasi, dan ukur loudness.
-- [ ] **Draft** — Uji di speaker desktop dan speaker HP pada volume normal.
-- [ ] **Draft** — Tambahkan manifest asset bersama dan update standard audio bila
-      pola baru perlu jadi kontrak.
-- [ ] **Draft** — Terapkan bertahap ke revision plan 19, 20, 21, 22, 24.
-- [ ] **Draft** — Preview/export tiap topic dan hapus cue yang terasa berisik.
+- [x] Scan ulang public/audio untuk kandidat pengganti existing — dilakukan,
+      tidak ada pengganti existing yang cocok untuk 8 kandidat (lihat manifest).
+- [x] Pilih sumber/lisensi legal per candidate dan catat provenance — lihat
+      `docs/audio/shared-playful-audio-pack.md` (Mixkit License, per-file URL).
+- [x] Download/generate hanya asset yang lolos keputusan §3 — 8/8 selesai.
+- [x] Convert, trim, normalisasi, dan ukur loudness — 8/8 diukur ffprobe/
+      ffmpeg volumedetect, 6/8 pas baseline -18dB, soft-deny sengaja -20dB
+      (by design), paper-open -20.1dB (maksimal aman tanpa clipping, sumber
+      awal terlalu peaky — didokumentasikan di manifest).
+- [ ] **Draft** — Uji di speaker desktop dan speaker HP pada volume normal
+      (belum bisa dilakukan tanpa telinga manusia).
+- [x] Tambahkan manifest asset bersama — `docs/audio/shared-playful-audio-pack.md`
+      dibuat. Update ke 08-audio-sfx-generation.md masih Draft (lihat §8).
+- [ ] **Draft** — Terapkan bertahap ke revision plan 19, 20, 21, 22, 24 —
+      **19-register: 1/1 asset scope (paper-send) sudah wired** (revisi-02).
+      20, 21, 22, 24 belum disentuh.
+- [ ] **Draft** — Preview/export tiap topic dan hapus cue yang terasa berisik
+      (npm run dev manual pending untuk 19-register; topic lain belum wiring).
 
 ## 8. Rencana Update Standar Dokumentasi
 

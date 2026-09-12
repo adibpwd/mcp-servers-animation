@@ -218,7 +218,7 @@ export default function RegisterAnimation({
     popIn(tl, act3End + 0.1, 'inboxCard', {})
     say(tl, act3End + 0.15, CAPTIONS.VERIFY_SENT)
     const envDone = travel(tl, act3End + 0.4, setEnvY, RECORD_Y + 24, INBOX_Y - 22, 1.4, 'power1.inOut')
-    sfxOn(tl, act3End + 0.4, () => sfxLoader.transition(SFX_MAP.SWOOSH.name, { volume: volumeRef.current, speed: speedRef.current }))
+    sfxOn(tl, act3End + 0.4, () => sfxLoader.transition(SFX_MAP.PAPER_SEND.name, { volume: volumeRef.current, speed: speedRef.current }))
     say(tl, envDone - 0.5, CAPTIONS.MAIL_TO_INBOX)
     tl.add(() => setEnvArrived(true), envDone)
     sfxOn(tl, envDone, () => sfxLoader.success(SFX_MAP.DING.name, { volume: volumeRef.current, speed: speedRef.current }))

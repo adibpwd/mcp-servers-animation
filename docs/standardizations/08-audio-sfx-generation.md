@@ -37,6 +37,25 @@ download/generate yang sebenarnya sudah tersedia.
 Cuma kalau memang tidak ada yang cocok secara konsep (bukan cuma soal
 "belum pernah dipakai di topic ini"), lanjut ke §4 (sourcing SFX baru).
 
+**Scan bukan cuma "file ada atau tidak" — wajib audit semantik +
+loudness.** Ditemukan di audit shared-playful-audio-pack (2026-09-13):
+7 file kandidat sudah ada fisik di `public/audio/` tapi (a) tidak ada
+satupun catatan sumber/lisensi, dan (b) 4 dari 7 loudness-nya jauh di
+bawah baseline audibel (-21 s.d. -29dB vs baseline -18dB, lihat §5) —
+file "ada" tapi nyaris tidak akan terdengar kalau langsung dipakai.
+Sebelum menganggap sebuah asset existing "siap pakai", cek dua hal:
+
+1. **Semantik** — apakah karakternya benar-benar cocok dengan momen yang
+   dituju, bukan sekadar nama filenya mirip.
+2. **Loudness** — ukur dengan `ffmpeg -af volumedetect` (§5), bandingkan
+   dengan baseline. Asset yang lolos scan tapi belum pernah diukur belum
+   boleh dianggap "siap pakai".
+
+Kalau sebuah asset shared dipakai lintas topic dan sumbernya belum
+tercatat di manapun, catat provenance-nya dulu (sumber, URL, lisensi)
+sebelum dipakai — lihat contoh format di
+`docs/audio/shared-playful-audio-pack.md`.
+
 ## 3. Skema Config `SFX_MAP` (di `data.js`)
 
 Tiap topic simpan daftar SFX yang dipakai di `data.js`, format konsisten:
@@ -61,7 +80,22 @@ didefinisikan harus benar-benar dipanggil di `Animation.jsx`. Entry yang
 didefinisikan tapi tidak pernah dipanggil adalah sinyal config sudah
 basi — SFX yang direncanakan tapi lupa di-wire, atau sisa eksperimen
 yang sudah tidak relevan. Hapus entry yang memang tidak jadi dipakai,
-atau segera wire kalau memang masih direncanakan.
+atau segera wire kalau memang masih direncanakan. Contoh nyata:
+revisi-02 shared-pack 19-register (2026-09-13) memindah satu-satunya
+pemanggilan `SWOOSH` ke `PAPER_SEND` — begitu ketahuan `SWOOSH` tidak
+punya pemanggilan lain, entry-nya langsung dihapus di commit yang sama,
+bukan dibiarkan menggantung.
+
+**Wajib pakai object `{ category, name }` dari `SFX_MAP` saat memanggil
+`sfxLoader`/`popIn` — jangan kirim string nama lepas ke helper yang
+memaksa satu kategori tetap.** Bug nyata pernah ditemukan di topic
+24-cors: sebuah helper generik mengirim SEMUA nama SFX ke kategori
+`ui` tanpa peduli kategori aslinya (`sfxLoader.play('ui', someName)`
+untuk nama yang sebenarnya ada di folder `warnings/` atau `impacts/`).
+Playback gagal silent — tidak ada error, cuma tidak ada suara — karena
+file tidak ditemukan di path kategori yang salah. Selalu destructure
+`{ category, name }` dari entry `SFX_MAP` dan teruskan keduanya, jangan
+hardcode kategori di level helper.
 
 ## 4. Sourcing SFX Baru (Kalau §2 Tidak Ketemu yang Cocok)
 

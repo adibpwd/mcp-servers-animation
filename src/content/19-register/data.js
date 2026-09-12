@@ -112,7 +112,6 @@ export const SFX_MAP = {
   POP2: { category: 'ui', name: 'pop-2' },
   TICK: { category: 'ui', name: 'tick' },
   WHOOSH: { category: 'transitions', name: 'whoosh' },
-  SWOOSH: { category: 'transitions', name: 'swoosh' },
   TELEPORT: { category: 'transitions', name: 'teleport' },
   LOCK: { category: 'impacts', name: 'lock' },
   CONFIRM: { category: 'success', name: 'confirm' },
@@ -134,4 +133,10 @@ export const SFX_MAP = {
   CHIME: { category: 'ui', name: 'chime' },
   LIGHT_SWOOSH: { category: 'transitions', name: 'light-swoosh-quick' },
   RELIEF: { category: 'success', name: 'relief-settle' },
+
+  // Ditambahkan revisi-02 (2026-09-13) — shared pack sudah lolos sourcing +
+  // loudness (docs/audio/shared-playful-audio-pack.md), dipakai untuk momen
+  // "amplop menuju inbox" (Act 4) sesuai docs/plan/PLAN-SHARED-PLAYFUL-AUDIO-PACK.md
+  // §2/§3. approval-stamp TIDAK dipakai di topic ini (scope §2 pack: 20/22).
+  PAPER_SEND: { category: 'transitions', name: 'paper-send' },
 }
