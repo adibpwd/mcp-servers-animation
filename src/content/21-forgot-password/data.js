@@ -49,23 +49,22 @@ export const INTRO_TITLE_A = 'FORGOT'
 export const INTRO_TITLE_B = ' PASSWORD'
 export const INTRO_SUBTITLE = 'Pulihkan tanpa membocorkan yang lama'
 
-// ── Layout LOCAL (origin DEFAULT_LAYOUT_V1.body) ──
+// ── Layout LOCAL (origin DEFAULT_LAYOUT_V1.body = 44, 235) ──
 export const AXIS_X = 410 - DEFAULT_LAYOUT_V1.body.x           // local 366 — sumbu vertikal
 
-export const DOOR_Y = 100 - DEFAULT_LAYOUT_V1.body.y            // local 100 — pintu login (gagal)
-export const FORM_Y = 290 - DEFAULT_LAYOUT_V1.body.y            // local 290 — form recovery (email)
+export const DOOR_Y = 45                                        // local 45 — pintu login (gagal/siap)
+export const RECORD_Y = 170                                     // local 170 — kartu record (akun Raka)
+export const FORM_Y = 300                                       // local 300 — form recovery (email)
+export const INBOX_Y = 300                                      // local 300 (disamakan FORM_Y)
+export const TOKEN_Y = 435                                      // local 435 — token reset + jam
+export const GATE_Y = 565                                       // local 565 — gerbang verifikasi token
+export const CLOSING_Y = 685                                    // local 685 — cap payoff
 
-// ── kartu record akun Raka — hash + salt (rendered oleh recordCard) ──
-export const RECORD_Y   = 410 - DEFAULT_LAYOUT_V1.body.y            // local 410 — kartu record (akun Raka)
+export const CAPTION_Y = [760, 760, 760, 760]                 // local 760 — floating caption bar di bawah
+
 export const RECORD_LABEL = 'RECORD AKUN'
 export const RECORD_EMAIL = 'raka@devmail.id'
-export const TOKEN_CODE   = 'TOKEN-73F1'   // token reset pendek (1x pakai)            // local 290 — form recovery (email)
-export const INBOX_Y = 500 - DEFAULT_LAYOUT_V1.body.y           // local 500 — inbox Raka
-export const TOKEN_Y = 680 - DEFAULT_LAYOUT_V1.body.y           // local 680 — token reset + jam
-export const GATE_Y = 880 - DEFAULT_LAYOUT_V1.body.y            // local 880 — gerbang verifikasi token
-export const CLOSING_Y = 1080 - DEFAULT_LAYOUT_V1.body.y        // local 1080 — cap payoff
-
-export const CAPTION_Y = [170, 360, 800, 1150]                 // local per Act
+export const TOKEN_CODE   = 'TOKEN-73F1'   // token reset pendek (1x pakai)
 
 export const DOOR_LABEL = 'LOGIN'
 export const FORM_LABEL = 'FORM PEMULIHAN'
@@ -90,6 +89,7 @@ export const CAPTIONS = {
   // Act 3 — link reset sementara + sekali pakai
   LINK_SENT: 'Amplop tautan tiba',
   LINK_EXPIRY: 'Tautan ada batas waktu',
+  TOKEN_DEPARTS: 'Token menuju gerbang',
   TOKEN_ONCE: 'Token dipakai sekali',
   TOKEN_DENIED: 'Token sudah dipakai atau basi',
 
