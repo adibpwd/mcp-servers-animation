@@ -110,13 +110,13 @@ itu sejak plan awal.
 
 | Prioritas | File target | Perubahan yang direncanakan | Alasan |
 |---:|---|---|---|
-| 1 | docs/standardizations/09-standar-pembuatan-konten.md | Tambah kontrak pre-planning untuk state data, continuity, safe-zone, identity series, dan visual method | Ini file anti-pattern/pre-planning; paling tepat menjadi sumber aturan pencegahan revisi |
-| 2 | docs/standardizations/03-tutorial-buat-topic-baru.md | Ubah urutan kerja menjadi gate wajib sebelum coding dan sebelum asset generation | Tutorial adalah jalur praktis yang dibaca saat membuat topic |
-| 3 | docs/standardizations/04-referensi-gsap.md | Tambah pola request lifecycle, persistent anchor, handoff transform, dan timing anti-hold | Masalah REST API banyak terjadi pada timeline, bukan syntax GSAP |
-| 4 | docs/standardizations/05-svg-text-guide.md | Tambah safe-zone layout, bounding box, header/badge/content separation, dan label yang menempel objek | Collision browser dengan subtitle adalah masalah SVG layout |
-| 5 | docs/standardizations/06-icon-generation.md | Tambah state-pair asset planning, character consistency, dynamic text rule, dan visual mutation assets | Icon batch perlu mencakup transformasi dari awal |
-| 6 | docs/standardizations/02-standar-konten.md | Tambah kontrak minimal untuk plan/revision traceability dan metadata identity consistency | Folder/metadata harus menyimpan sumber kebenaran yang tidak saling bertentangan |
-| 7 | docs/standardizations/01-architecture.md | Tambah ringkasan hubungan timeline state, persistent objects, dan preview gates | Hanya tambahan ringan agar arsitektur menjelaskan mengapa state continuity penting |
+| 1 | docs/standardizations/03-planning-storytelling-quality-gate.md | Tambah kontrak pre-planning untuk state data, continuity, safe-zone, identity series, dan visual method | Ini file anti-pattern/pre-planning; paling tepat menjadi sumber aturan pencegahan revisi |
+| 2 | docs/standardizations/03-planning-storytelling-quality-gate.md | Ubah urutan kerja menjadi gate wajib sebelum coding dan sebelum asset generation | Tutorial adalah jalur praktis yang dibaca saat membuat topic |
+| 3 | docs/standardizations/04-motion-gsap-reference.md | Tambah pola request lifecycle, persistent anchor, handoff transform, dan timing anti-hold | Masalah REST API banyak terjadi pada timeline, bukan syntax GSAP |
+| 4 | docs/standardizations/05-svg-layout-asset-pipeline.md | Tambah safe-zone layout, bounding box, header/badge/content separation, dan label yang menempel objek | Collision browser dengan subtitle adalah masalah SVG layout |
+| 5 | docs/standardizations/05-svg-layout-asset-pipeline.md | Tambah state-pair asset planning, character consistency, dynamic text rule, dan visual mutation assets | Icon batch perlu mencakup transformasi dari awal |
+| 6 | docs/standardizations/02-topic-contract-scene-shell.md | Tambah kontrak minimal untuk plan/revision traceability dan metadata identity consistency | Folder/metadata harus menyimpan sumber kebenaran yang tidak saling bertentangan |
+| 7 | docs/standardizations/01-architecture-runtime.md | Tambah ringkasan hubungan timeline state, persistent objects, dan preview gates | Hanya tambahan ringan agar arsitektur menjelaskan mengapa state continuity penting |
 
 File yang tidak perlu diubah oleh plan ini:
 

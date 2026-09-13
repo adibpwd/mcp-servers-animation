@@ -1,10 +1,17 @@
 # CORS — Rencana Cerita Animasi
 
-> **Status:** 📝 PLAN ONLY / Draft
+> **Status:** ⚙️ Implemented (first pass, REBUILD) — sintaks & bundle PASS
+> (esbuild), menunggu audit visual dan preview manual/export sebelum `ready`.
 >
-> **Terakhir diperbarui:** 2026-09-12
+> **Terakhir diperbarui:** 2026-09-13
 >
-> Tidak ada perubahan backend, browser setting, registry entry, atau implementasi.
+> REBUILD dari nol pada 2026-09-13: `manifest.js`, `data.js`, `Animation.jsx`
+> ditulis ulang mengikuti storyboard di bawah, TIDAK berbasis kode lama.
+> Implementasi lama beserta `revisi/2026-09-13-revisi-01..04-*.md` diarsipkan
+> ke `_archive/backup-24-cors-20260913/` — catatan bug-fix di file-file revisi
+> tersebut (caption mismatch, body invisible, header fade, dsb.) berlaku untuk
+> kode lama dan **tidak otomatis berlaku** untuk kode rebuild ini. Registry
+> entry sudah diaktifkan kembali (`status: 'coming-soon'`).
 
 ## 1. Pesan Utama
 
@@ -103,11 +110,11 @@ authentication/authorization sendiri.
   actual request sebelum policy cocok pada jalur contoh.
 - Copy deklaratif ≤5 kata, dekat objek, tanpa caption bar/pertanyaan/emoji.
 
-- [ ] **Draft** — Approve CORS scope dan technical guardrail.
-- [ ] **Draft** — Buat folder contract, manifest, SceneChromeV1.
-- [ ] **Draft** — Implementasikan intro dan Act 1–4.
-- [ ] **Draft** — Audit preflight cause, browser enforcement, credentials/wildcard.
-- [ ] **Draft** — Audit asset/SFX, no teleport, collision, dead field.
-- [ ] **Draft** — Preview/export sebelum registry coming-soon.
+- [x] **Approve CORS scope dan technical guardrail** — scope & guardrail teknis (§4) tidak berubah dari plan awal, dipakai apa adanya sebagai basis rebuild.
+- [x] **Buat folder contract, manifest, SceneChromeV1 (REBUILD)** — `manifest.js`, `data.js` (`DEFAULT_LAYOUT_V1`), `Animation.jsx` (`IntroHeaderMorphV1`, `ActBadgeNavigatorV1`, `ContentBodyV1`) ditulis ulang dari nol 2026-09-13; sintaks tervalidasi (`node --check`, esbuild bundle) dan registry entry aktif kembali.
+- [x] **Implementasikan intro dan Act 1–4 (REBUILD)** — timeline GSAP 4 Act (popIn/popOut/travel, no-teleport pattern mengikuti referensi 17-rest-api) ditulis lengkap; **belum pernah dijalankan di browser**, jadi bug kelas revisi-03/04 pada kode lama (caption mismatch, body invisible, dsb.) belum bisa dipastikan tidak muncul lagi di kode baru ini.
+- [ ] **Audit preflight cause, browser enforcement, credentials/wildcard (REBUILD)** — narasi & guardrail sudah ditulis di data.js/Animation.jsx sesuai §3–4, tapi verifikasi visual di preview manual belum dilakukan.
+- [ ] **Audit asset/SFX, no teleport, collision, dead field (REBUILD)** — belum dilakukan sama sekali untuk kode rebuild ini (audit SFX/loudness revisi-01 berlaku untuk kode lama, bukan kode ini).
+- [ ] **Preview/export sebelum registry coming-soon** — registry sudah `coming-soon`; sintaks & bundle esbuild PASS, tapi preview manual `npm run dev` dan export MP4/audio **masih belum dilakukan** — build/bundle check bukan pengganti preview visual/audio manual.
 
 **Rujukan teknis:** MDN CORS Guide.

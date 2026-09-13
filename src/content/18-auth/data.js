@@ -11,7 +11,7 @@
 // KOORDINAT LAYOUT: semua konstanta posisi di bawah adalah LOCAL
 // (origin DEFAULT_LAYOUT_V1.body = 44,235 → 0,0). ContentBodyV1 yang
 // menerapkan translate(44,235), jadi angka di sini tidak pernah
-// koordinat canvas absolut (lihat docs/standardizations/05-svg-text-guide.md
+// koordinat canvas absolut (lihat docs/standardizations/05-svg-layout-asset-pipeline.md
 // § "Scene Zones V1 dan Local Coordinates" & 09 §1.S).
 // ─────────────────────────────────────────────────────────────
 
@@ -137,7 +137,7 @@ export const CAPTIONS = {
 
 // SFX — hanya nama yang sudah dipakai/terverifikasi tersedia di
 // public/audio/* lewat topic lain (17-rest-api), sesuai
-// docs/standardizations/08-audio-sfx-generation.md §2.
+// docs/standardizations/06-audio-sfx.md §2.
 export const SFX_MAP = {
   POP: { category: 'ui', name: 'pop' },
   POP2: { category: 'ui', name: 'pop-2' },

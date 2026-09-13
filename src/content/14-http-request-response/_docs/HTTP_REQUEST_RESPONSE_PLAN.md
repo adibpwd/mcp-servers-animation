@@ -339,11 +339,11 @@ kelihatan progress asli, bukan retrospektif.
 - [ ] Ubah `status` di `registry.js` dari `'coming-soon'` → `'ready'`
       setelah semua Act jadi.
 - [ ] Jalankan full **Checklist Sebelum Commit** di
-      `docs/standardizations/03-tutorial-buat-topic-baru.md` (13 item
+      `docs/standardizations/03-planning-storytelling-quality-gate.md` (13 item
       teknis + 10 item storytelling) — belum layak jalan sekarang karena
       topic belum lengkap, baru boleh dicentang serius setelah Act 2–6 jadi.
 - [ ] Jalankan **Checklist Verifikasi Topic Baru** di
-      `docs/standardizations/02-standar-konten.md` §7.
+      `docs/standardizations/02-topic-contract-scene-shell.md` §7.
 
 ---
 

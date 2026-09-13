@@ -88,7 +88,7 @@ export const CLOSING_LINE = 'Catatan itu rahasia — jangan sampai bocor.'
 // ═══════════════════════════════════════════════
 // SFX MAP — hanya nama yang sudah tersedia di public/audio/*
 // (dicek manual sebelum eksekusi, tidak perlu sourcing baru,
-// lihat docs/standardizations/08-audio-sfx-generation.md §2)
+// lihat docs/standardizations/06-audio-sfx.md §2)
 // ═══════════════════════════════════════════════
 export const SFX_MAP = {
   POP: { category: 'ui', name: 'pop' },

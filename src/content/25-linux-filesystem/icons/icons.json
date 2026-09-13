@@ -1,0 +1,11 @@
+{
+  "name": "linux-filesystem",
+  "description": "Topic memakai inline SVG karena setiap folder dan file memiliki state animasi sendiri. Tidak ada PNG yang perlu digenerate pada first pass.",
+  "icons": [],
+  "generation": {
+    "rows": 2,
+    "cols": 4,
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/25-linux-filesystem/icons"
+  }
+}

@@ -16,8 +16,8 @@ rahasia (password, API key) sehingga TIDAK BOLEH ikut ke-commit ke git.
 Target audiens: **anak IT / junior dev** — sudah pernah lihat file
 `.env` atau baca "jangan commit .env" di README project, tapi belum
 tentu ngerti KENAPA. Playful tone, BUKAN dokumentasi teknis dibacakan.
-Ikuti kontrak `docs/standardizations/02-standar-konten.md` +
-`docs/standardizations/03-tutorial-buat-topic-baru.md`.
+Ikuti kontrak `docs/standardizations/02-topic-contract-scene-shell.md` +
+`docs/standardizations/03-planning-storytelling-quality-gate.md`.
 
 **Canvas:** 820 × 1340 (portrait 9:16, standar reels mobile — sama
 seperti `tailscale`, `linux-vs-unix`, `virtual-memory`, `container-docker`)
@@ -52,7 +52,7 @@ GIT:      #FB923C  orange    - repository/git box (semantik: Process/Activity)
 
 Tidak perlu warna brand asli (Git/GitHub logo) — ini kotak generik
 "repository", bukan logo brand, jadi aman pakai palet project sendiri
-(lihat `docs/standardizations/06-icon-generation.md` §8, brand logo asli
+(lihat `docs/standardizations/05-svg-layout-asset-pipeline.md` §8, brand logo asli
 cuma perlu kalau benar-benar menampilkan logo, bukan ilustrasi konsep).
 
 ## Story Spine (4-Beat per Act, wajib per docs/03)
@@ -88,7 +88,7 @@ cuma perlu kalau benar-benar menampilkan logo, bukan ilustrasi konsep).
 sebagai objek persisten (1 `id` tetap masing-masing, popIn di Act 1,
 TIDAK di-popIn ulang di Act 2) — Act 2 akan menambahkan sticky note di
 device yang sama ini via `gsap.to()`, bukan bikin device baru. Lihat
-`docs/standardizations/04-referensi-gsap.md` § "Persistent Anchor
+`docs/standardizations/04-motion-gsap-reference.md` § "Persistent Anchor
 Object Lintas-Act".
 
 ## Act 2 — Hardcode vs Environment Variable (≈10.5s)
@@ -236,7 +236,7 @@ export const SFX_MAP = {
 Semua nama file di atas SUDAH ADA di
 `public/audio/{ui,transitions,sfx,warnings,success,impacts}/*.wav`
 (dicek via `Desktop Commander:list_directory` sebelum plan ini ditulis,
-sesuai `docs/standardizations/08-audio-sfx-generation.md` §2) — **tidak
+sesuai `docs/standardizations/06-audio-sfx.md` §2) — **tidak
 perlu sourcing SFX baru sama sekali** untuk topic ini, konsisten dengan
 scope "quick-win produksi" yang diminta user.
 
@@ -245,13 +245,13 @@ scope "quick-win produksi" yang diminta user.
 Semua visual topic ini (laptop, server, sticky note bertakuk sudut,
 kotak git/repo, lock, mata scanner) cukup digambar sebagai shape SVG
 manual (rect/path sederhana + variasi bentuk sesuai
-`docs/standardizations/03-tutorial-buat-topic-baru.md` § 3.6 "Visual
+`docs/standardizations/03-planning-storytelling-quality-gate.md` § 3.6 "Visual
 Jangan Monoton Kotak") — TIDAK perlu masuk pipeline
 `06-icon-generation.md` (AI-generate/download logo). Ini konsisten
 dengan sifat topic yang sengaja dibuat kecil & cepat.
 
 ## Checklist Sebelum Implementasi Kode (lihat juga
-`docs/standardizations/03-tutorial-buat-topic-baru.md` bagian Checklist)
+`docs/standardizations/03-planning-storytelling-quality-gate.md` bagian Checklist)
 
 - [ ] Plan ini direview/disetujui user
 - [ ] Folder `src/content/env-variables/{Animation.jsx,data.js,manifest.js}`
@@ -272,7 +272,7 @@ dengan sifat topic yang sengaja dibuat kecil & cepat.
       dilanggar — terutama poin 3 (env var tidak selalu lewat file
       `.env` fisik) dan poin 4 (alasan git history permanen)
 - [ ] Wording ringkas & tanpa emoji di teks produksi, tanpa kata ganti
-      orang (lihat `docs/standardizations/03-tutorial-buat-topic-baru.md`
+      orang (lihat `docs/standardizations/03-planning-storytelling-quality-gate.md`
       § "Wording Ringkas & Tanpa Emoji")
 - [ ] Laptop & Server di Act 1 dirender sebagai OBJEK ANCHOR persisten
       (1 `id` tetap per device, di luar blok conditional per-Act),
@@ -281,8 +281,8 @@ dengan sifat topic yang sengaja dibuat kecil & cepat.
 - [ ] Cek tidak ada kalimat identik yang tampil dobel di 2 kanal
       berbeda (caption `say()` vs card/badge `popIn()`) di waktu
       berdekatan — lihat "3.7 Satu Kanal per Kalimat" di
-      `docs/standardizations/02-standar-konten.md`
+      `docs/standardizations/02-topic-contract-scene-shell.md`
 - [ ] Formula cek overlap horizontal
-      (`docs/standardizations/05-svg-text-guide.md` § "Formula Cek
+      (`docs/standardizations/05-svg-layout-asset-pipeline.md` § "Formula Cek
       Overlap") diterapkan ke 2 sticky note yang berdampingan di Act 2
       (Laptop vs Server) — jangan cuma andalkan eyeball

@@ -3,7 +3,7 @@
 // Satu sumber kebenaran metadata untuk topic ini.
 // registry.js membaca field ini (import + spread) alih-alih
 // hardcode object literal, sesuai kontrak baru di
-// docs/standardizations/02-standar-konten.md (bagian 5).
+// docs/standardizations/02-topic-contract-scene-shell.md (bagian 5).
 // ─────────────────────────────────────────────────────────────
 
 export default {

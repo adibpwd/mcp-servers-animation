@@ -1,63 +1,62 @@
 # Standardizations — Index
 
-Dokumen di folder ini adalah standar wajib untuk membuat/mengubah topic
-animasi di project ini. Baca sesuai alur di bawah — tiap file
-mencantumkan juga "Alur baca lengkap" di headernya masing-masing supaya
-bisa dibuka dari file manapun tanpa nyasar.
+Enam dokumen di bawah adalah standar aktif untuk membuat atau merevisi topic
+animasi. Struktur ini menggantikan alur lama 01–09 yang tersebar. Isi detail
+lama tidak dihapus: redirect kompatibilitas terdahulu dipindahkan ke folder
+backup agar folder standar utama hanya memuat enam dokumen aktif.
 
-## Alur Baca Wajib (Topic Baru)
+## Alur Baca Wajib untuk Topic Baru
 
-```
-01-architecture
-   → 02-standar-konten
-      → 03-tutorial-buat-topic-baru
-         → 04-referensi-gsap
-            → 05-svg-text-guide
-               → 06-icon-generation
-                  → 08-audio-sfx-generation
-                     → 09-standar-pembuatan-konten
-```
+    01 Architecture & Runtime
+      → 02 Topic Contract & Scene Shell
+        → 03 Planning, Storytelling & Quality Gate
+          → 04 Motion & GSAP Reference
+            → 05 SVG Layout & Asset Pipeline
+              → 06 Audio & SFX
 
-`07-plan-single-service.md` dibaca terpisah, khusus saat menulis plan
-untuk topic bertema "single service" (lihat isi file itu sendiri).
+Baca dokumen 01–03 secara berurutan sebelum coding. Dokumen 04–06 adalah
+referensi produksi yang dibuka saat diperlukan, lalu tetap diaudit pada tahap
+validasi.
 
-## Daftar File
+## Enam Dokumen Aktif
 
-| File | Isi |
+| Dokumen | Peran |
 |---|---|
-| `01-architecture.md` | Bagaimana animasi bekerja: GSAP → React state → SVG → export, termasuk layer opsional scene-ui V1 (§8) |
-| `02-standar-konten.md` | Kontrak folder topic (`Animation.jsx`/`data.js`/`manifest.js`), plan & revision traceability untuk topic kompleks (§10, termasuk field scene shell §10.1) |
-| `03-tutorial-buat-topic-baru.md` | Tutorial step-by-step bikin topic baru, termasuk Langkah 0.5 "Pilih Scene Shell" |
-| `04-referensi-gsap.md` | Referensi pola GSAP: easing, tween object, persistent anchor, request lifecycle, driving pure scene components (scene-ui V1) |
-| `05-svg-text-guide.md` | Word wrap SVG, safe-zone/bounding box manual, dan Scene Zones V1 & local coordinate (scene-ui V1) |
-| `06-icon-generation.md` | Pipeline generate & crop icon (ChatGPT/DALL-E), cross-reference penempatan icon di `ContentBodyV1` |
-| `07-plan-single-service.md` | Template perencanaan topic single-service |
-| `08-audio-sfx-generation.md` | Sourcing & integrasi aset audio SFX |
-| `09-standar-pembuatan-konten.md` | Checklist pre-planning wajib & anti-pattern (§1.A–§1.S), termasuk kapan wajib pakai scene-ui V1 vs opt-out custom (§1.S) |
+| [01-architecture-runtime.md](01-architecture-runtime.md) | Runtime animasi: React, GSAP, state, export, dan arsitektur scene. |
+| [02-topic-contract-scene-shell.md](02-topic-contract-scene-shell.md) | Kontrak folder, manifest, registry, lifecycle, dan scene-ui V1. |
+| [03-planning-storytelling-quality-gate.md](03-planning-storytelling-quality-gate.md) | Tutorial topic baru, storytelling, pre-planning, continuity, layout contract, anti-pattern, dan checklist quality gate. |
+| [04-motion-gsap-reference.md](04-motion-gsap-reference.md) | Referensi teknis GSAP: timeline, state handoff, export safety, determinism, dan motion patterns. |
+| [05-svg-layout-asset-pipeline.md](05-svg-layout-asset-pipeline.md) | SVG text, warna, safe-zone, scene coordinate, icon/asset audit, generation, crop, dan loader. |
+| [06-audio-sfx.md](06-audio-sfx.md) | Sourcing, SFX_MAP, audio coverage, loudness, integrasi, dan validasi audio. |
 
-## Scene UI V1 — Kapan Baca yang Mana
+## Rute Cepat Berdasarkan Kebutuhan
 
-Scene UI V1 (`src/shared/scene-ui/v1/`) adalah chrome layout default
-(hero→header, Act badge + dot navigator, content boundary) untuk topic
-portrait standar. Dokumentasi tersebar sesuai jenisnya, bukan satu file
-besar:
-
-| Butuh tahu... | Baca |
+| Kebutuhan | Dokumen aktif |
 |---|---|
-| Kapan WAJIB pakai V1 vs boleh opt-out custom | `09-standar-pembuatan-konten.md` §1.S |
-| Langkah keputusan saat mulai topic baru | `03-tutorial-buat-topic-baru.md` Langkah 0.5 |
-| Token layout (`DEFAULT_LAYOUT_V1`), local coordinate `ContentBodyV1` | `05-svg-text-guide.md` § "Scene Zones V1 dan Local Coordinates" |
-| Cara topic men-drive `progress`/`activeIndex` dari GSAP | `04-referensi-gsap.md` § "Driving Pure Scene Components from Topic Timeline" |
-| Field wajib di plan topic kompleks (scene shell, layout preset, dst) | `02-standar-konten.md` §10.1 |
-| Diagram alur data → timeline → scene-ui V1 → SVG | `01-architecture.md` §8 |
-| API lengkap tiap component (props, quick-start, aturan versioning V1→V2) | `src/shared/scene-ui/README.md` |
-| Rationale & kontrak desain lengkap tiap component | `docs/plan/PLAN-12-SHARED-SCENE-COMPONENTS-V1.md` |
-| Keputusan default/opt-out & rencana rollout ke standar ini | `docs/plan/PLAN-13-INTEGRASI-SCENE-UI-V1-KE-STANDAR.md` |
-| Contoh migrasi topic existing ke V1 (pilot) | `docs/plan/PLAN-14-MIGRASI-PILOT-17-REST-API-KE-SCENE-UI-V1.md` |
+| Membuat folder topic / manifest / registry | 02 |
+| Menentukan cerita, Act, state contract, continuity, layout, scene shell | 03 |
+| Tween, repeat, seek, flushSync, atau export safety | 04 |
+| Text overflow, color, overlap, local coordinate, icon | 05 |
+| Asset SFX, Audio Beat Map, loudness, audio coverage | 06 |
+| Menjelaskan alur React/GSAP/export dari awal | 01 |
 
-## Referensi Lain
+## Arsip Redirect Dokumen Lama
 
-- `PROJECT_STRUCTURE.md` (root project) — struktur folder project & standar
-  penomoran task hierarki unlimited yang dipakai di planning.
-- `docs/plan/` — dokumen plan/keputusan (bukan standar final) yang jadi
-  sumber sebagian isi standardizations ini setelah disetujui.
+Nama lama 01-architecture.md sampai 09-standar-pembuatan-konten.md berada di
+[backup/standardizations/](../../backup/standardizations/). Isinya hanya redirect singkat untuk membantu menelusuri
+referensi historis; jangan menulis standar baru di sana.
+
+07-plan-single-service.md bukan standar pembuatan content. Plan itu sekarang
+berada di [docs/plan/PLAN-SINGLE-SERVICE.md](../plan/PLAN-SINGLE-SERVICE.md).
+
+## Aturan Pemeliharaan
+
+- Tambahkan aturan baru pada salah satu dari enam dokumen aktif, bukan membuat
+  nomor standar baru tanpa alasan kuat.
+- Jika suatu topik besar, buat bab baru dalam dokumen yang paling dekat
+  tanggung jawabnya; jangan memecah detail hanya demi nomor file.
+- Gunakan arsip redirect lama hanya untuk menelusuri referensi historis.
+- Jika perlu perubahan lintas dokumen, update cross-reference pada enam
+  dokumen aktif dan tambahkan contoh nyata bila aturan berasal dari revisi.
+
+**Konsolidasi terakhir:** 2026-09-13.

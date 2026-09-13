@@ -6,7 +6,7 @@
 
 ## 1. Peran di Seri
 
-Topic 21 menangani Raka yang lupa password. Sistem tidak “memberi tahu”
+Topic 21 menangani Adib yang lupa password. Sistem tidak “memberi tahu”
 password lama: ia memverifikasi kontrol inbox, mengirim token reset sementara,
 lalu menyimpan hash password baru. Token bekas dan session lama ditutup sesuai
 kebijakan keamanan.
@@ -19,17 +19,17 @@ membocorkan apakah email ada di sistem.
 |---|---|
 | Topic ID / folder | forgot-password / src/content/21-forgot-password/ |
 | Format | portrait 820 × 1340, scene-ui V1 |
-| Durasi | ±45 detik: intro + 4 Act |
+| Durasi | ~29-30 detik/loop: intro ~1s + 4 Act ~27.8s + repeatDelay 1.2s (revisi-04 §4.4: disamakan ke runtime aktual, target ±45s lama sudah tidak dipakai) |
 | Kategori | Developer Tools |
 | Warna rencana | #FBBF24 |
-| Prasyarat cerita | email Raka sudah Verified (topic 20) |
+| Prasyarat cerita | email Adib sudah Verified (topic 20) |
 | Closing | login menggunakan password baru, tanpa reveal password lama |
 
 ## 2. State Contract
 
 | State | Terlihat | Belum terlihat | Pemicu | Hasil |
 |---|---|---|---|---|
-| S0 | Raka lupa, record aman | password lama/token | pilih recovery | form terbuka |
+| S0 | Adib lupa, record aman | password lama/token | pilih recovery | form terbuka |
 | S1 | email + respons generik | email pasti terdaftar | submit | respons sama untuk semua input |
 | S2 | token reset ke inbox bila cocok | password baru aktif | inbox dikuasai | token tiba |
 | S3 | token valid + form baru | hash baru | token/expiry cocok | password masuk hash |
@@ -41,10 +41,10 @@ membocorkan apakah email ada di sistem.
 
 | Beat | Teks lokal | Visual |
 |---|---|---|
-| Setup | Password terlupa | Raka berhenti di login |
+| Setup | Password terlupa | Adib berhenti di login |
 | Tegangan | Password lama tidak disimpan | record hanya berisi hash |
 | Titik balik | Jalur pemulihan tersedia | papan recovery menyala |
-| Payoff | Bukti baru diperlukan | Raka ke form recovery |
+| Payoff | Bukti baru diperlukan | Adib ke form recovery |
 
 ### Act 2 — Permintaan Tidak Membocorkan Akun (±9 dtk)
 
@@ -88,17 +88,30 @@ tanpa menjanjikan semua produk selalu memakai UI yang identik.
 6. Rate limit, anti-abuse, dan notifikasi cukup badge kecil agar cerita fokus.
 
 - Wajib scene-ui V1 dan safe-area audit.
-- Aktor persistent: Raka, record, inbox, token, login. Hash lama morph ke baru.
+- Aktor persistent: Adib, record, inbox, token, login. Hash lama morph ke baru.
 - Inline SVG: hash, token/jam, amplop, jalur, mesin hash, lock/session.
 - Satu master GSAP time cursor; expose timeline + flushSync; kill ambient loop.
 - Uji manual: account exists/non-exists, expired, used-token, dan success
   tanpa password asli terlihat pada frame mana pun.
 
-- [ ] **Draft** — Approve state contract dan policy keamanan.
-- [ ] **Draft** — Buat Animation.jsx, data.js, manifest.js.
-- [ ] **Draft** — Terapkan scene-ui V1 dan Act 1–4.
-- [ ] **Draft** — Audit no teleport hash/token/session, copy, asset/SFX, collision.
-- [ ] **Draft** — Preview/export sebelum registry coming-soon.
+- [x] Approve state contract dan policy keamanan.
+- [x] Buat Animation.jsx, data.js, manifest.js.
+- [x] Terapkan scene-ui V1 dan Act 1–4 (revisi-03).
+- [x] Audit no teleport hash/token/session, copy, asset/SFX, collision
+      (revisi-04: identity parity Adib, token travel inbox→gerbang,
+      caption sessionClosed diperbaiki).
+- [ ] **Belum** — Preview manual & export MP4 sebelum registry coming-soon.
 
 **Non-goals:** MFA lengkap, support desk, pengiriman reset email, atau kode
 pada tahap plan ini.
+
+## 5. Catatan Implementasi — Intro/Header Scene UI V1 (revisi-03)
+
+Intro dan header sudah mengikuti kontrak Scene UI V1 secara penuh
+(`revisi/2026-09-13-revisi-03-intro-header-v1-standard.md`, dieksekusi
+2026-09-13): satu `IntroHeaderMorphV1` sebagai satu-satunya sumber header,
+dimount sejak `headerOpacity > 0` (bukan digate `contentStarted`), hero dua
+baris (`titleLines`: FORGOT / PASSWORD) yang crossfade ke compact header
+satu baris, dan warna judul mengikuti standar (FORGOT = `COLORS.RECORD`
+sky, PASSWORD = `COLORS.SUCCESS` emerald — bukan lagi amber/ungu token).
+Tidak ada lagi fallback header manual duplikat.

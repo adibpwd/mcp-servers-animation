@@ -64,7 +64,7 @@ lokal dibuat backward-compatible dengan default silent.
 
 Dengarkan khusus jarak hash selesai → Pending: satu payoff hangat lalu jeda minimal 0,35 dtk sebelum warning Pending. Pastikan tiga field tidak berbunyi seperti mesin ketik keras.
 
-- Ikuti docs/standardizations/08-audio-sfx-generation.md §2, §3, §7, dan §8.
+- Ikuti docs/standardizations/06-audio-sfx.md §2, §3, §7, dan §8.
 - Preview satu loop penuh dengan volume normal, lalu export audio. Catat cue
   terlalu pelan, bertumpuk, terlambat, atau terasa mengganggu di revisi ini.
 - Tidak ada asset baru yang di-download pada revisi topic ini; kandidat aset

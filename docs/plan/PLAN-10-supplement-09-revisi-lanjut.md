@@ -10,9 +10,9 @@ bersama PLAN-09.
 **Kaitannya dengan PLAN-09:**
 - PLAN-09: Fondasi utama (analisis revisi-01 s/d revisi-09), sudah sangat lengkap.
 - PLAN-10 ini: Supplement/tambahan dari revisi-10 s/d revisi-14 yang tidak tercakup.
-- Saat eksekusi, kedua plan ini digabung menjadi `docs/standardizations/09-standar-pembuatan-konten.md`.
+- Saat eksekusi, kedua plan ini digabung menjadi `docs/standardizations/03-planning-storytelling-quality-gate.md`.
 
-**Akan ditaruh di:** `docs/standardizations/09-standar-pembuatan-konten.md`
+**Akan ditaruh di:** `docs/standardizations/03-planning-storytelling-quality-gate.md`
 (digabung dengan isi PLAN-09 — bukan jadi doc terpisah)
 
 ---

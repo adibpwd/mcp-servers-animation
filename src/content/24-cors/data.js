@@ -1,127 +1,192 @@
-// src/content/24-cors/data.js (repo dobel — hidup)
+// src/content/24-cors/data.js
 // ─────────────────────────────────────────────────────────────
-// Eksekusi sesuai src/content/24-cors/_docs/CORS_PLAN.md (2026-09-12).
-// Empat Act, scene-ui V1, koordinat LOCAL, sumbu vertikal AXIS_X.
-// Cerita: JS di app.example meminta data api.example — browser menjadi
-// gate: request non-simple memicu OPTIONS preflight — API mengirim
-// policy izin (Allow-Methods/Headers/Origin) — browser membandingkan
-// — hanya bila cocok, browser membuka gate & JS boleh membaca respons.
-// Tanpa protagonis nama (fokus konsep) — port tradisi seri, brand
-// ADIB-DEV.COM tetap tampil di intro.
+// REVISI-05 2026-09-13 (lihat revisi/2026-09-13-revisi-05-browser-server-flow-layout.md):
+// layout dirombak dari satu sumbu vertikal jadi dua panel: BROWSER di
+// zona atas, SERVER di zona bawah, dipisah divider. Benang perjalanan
+// (request/response) dipisah jadi dua lane tetap (kanan = turun ke
+// server, kiri = naik ke browser) supaya tidak pernah bertumpuk dengan
+// kartu konten. Koordinat SEMUA local coordinate relatif body (0,0 =
+// body.x/body.y dari DEFAULT_LAYOUT_V1), bukan koordinat canvas absolut.
 //
-// STATUS: first pass (tunggu preview manual & export MP4 sebelum
-// `ready`, lihat plan § Checklist).
+// Cerita tidak berubah dari rebuild sebelumnya: app.example minta data
+// ke api.example. Origin beda → browser jadi gerbang. Request non-simple
+// (POST + Authorization) memicu preflight OPTIONS lebih dulu. API
+// menjawab lewat Allow-Origin/Allow-Methods/Allow-Headers. Kalau cocok,
+// browser baru mengizinkan request asli lanjut DAN membuka hasilnya
+// untuk JS — bukan API yang "menolak menerima", tapi browser yang
+// membatasi pembacaan respons.
 // ─────────────────────────────────────────────────────────────
 
-import { DEFAULT_LAYOUT_V1 } from '../../shared/scene-ui/v1'
+export const VW = 820
+export const VH = 1340
 
-export const VW = DEFAULT_LAYOUT_V1.canvas.width
-export const VH = DEFAULT_LAYOUT_V1.canvas.height
-
-// ── Palet — plan §1 warna #FB923C (CORS) ──
 export const COLORS = {
-  BG:      '#070913',
-  PANEL:   '#0F172A',
-  BORDER:  '#334155',
-  TEXT:    '#E2E8F0',
-  MUTED:   '#94A3B8',
+  BG: '#070913',
+  PANEL: '#0F172A',
+  BORDER: '#334155',
+  TEXT: '#E2E8F0',
+  MUTED: '#94A3B8',
 
-  CORS:     '#FB923C',   // browser gate — aktor utama
-  ORIGIN:   '#F472B6',   // app.example (origin pengirim)
-  API:      '#38BDF8',   // api.example (origin tujuan)
-  PREFLIGHT:'#FBBF24',   // OPTIONS preflight
-  POLICY:   '#A78BFA',   // policy shelf izin API
-  ALLOW:    '#34D399',   // izin cocok — gate buka
-  DENY:     '#F43F5E',   // izin tak cocok — tak terbaca
-  SYSTEM:   '#22D3EE',   // brand kontrak — ADIB-DEV.COM
+  CLIENT: '#38BDF8',   // Sky — app.example, request asli, response data
+  GATE: '#FB923C',     // Orange (warna rencana topic) — browser gate, preflight OPTIONS
+  SERVICE: '#FBBF24',  // Amber — api.example, policy shelf
+  SUCCESS: '#34D399',  // Green — izin cocok, response header, data tiba
+  DENY: '#F87171',     // Red — method/header ditolak, guardrail wildcard
 }
 
-// ── PHASES — 4 Act (±44 detik, intro 1,2s) ──
+// Budget durasi mengikuti storyboard 4 Act (±9 + ±11 + ±12 + ±12 = 44 detik).
+// Badge & warna per Act dipakai ActBadgeNavigatorV1.
 export const PHASES = [
-  { id: 'act1-origin',   badge: 'ACT 1 — ORIGIN BERBEDA, ATURAN BERBEDA',   badgeColor: COLORS.ORIGIN, duration: 9.0 },
-  { id: 'act2-preflight',badge: 'ACT 2 — BROWSER BERTANYA DULU PREFLIGHT',  badgeColor: COLORS.PREFLIGHT, duration: 11.0 },
-  { id: 'act3-policy',   badge: 'ACT 3 — API MENJAWAB BATAS IZIN',           badgeColor: COLORS.POLICY, duration: 12.0 },
-  { id: 'act4-read',     badge: 'ACT 4 — BROWSER YANG MEMBATASI BACA',       badgeColor: COLORS.ALLOW, duration: 11.5 },
+  { id: 'origin-gate', badge: 'ACT 1 — ORIGIN BEDA, BROWSER JADI GERBANG', badgeColor: COLORS.CLIENT, duration: 9.0 },
+  { id: 'preflight-ask', badge: 'ACT 2 — BROWSER BERTANYA LEBIH DULU', badgeColor: COLORS.GATE, duration: 11.0 },
+  { id: 'policy-check', badge: 'ACT 3 — API MENJAWAB BATAS IZIN', badgeColor: COLORS.SERVICE, duration: 12.0 },
+  { id: 'actual-response', badge: 'ACT 4 — BROWSER MEMBUKA GERBANG DATA', badgeColor: COLORS.SUCCESS, duration: 12.0 },
 ]
 
-// ── Intro — brand kontrak (scene-ui V1) ──
-export const INTRO_CATEGORY_LABEL = 'DEVELOPER TOOLS'
-export const INTRO_DOMAIN        = 'ADIB-DEV.COM'
-export const INTRO_TITLE_A       = 'CORS'
-export const INTRO_TITLE_B       = 'Explained'
-export const INTRO_SUBTITLE      = 'Browser penjaga izin lintas origin'
+export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
-// ── Koordinat LOCAL (origin DEFAULT_LAYOUT_V1.body) ──
-// AXIS_X = sumbu vertikal yang sama dengan 19–23 (local, bukan jarak).
+// ── Intro header — scene-ui V1 IntroHeaderMorphV1. ──
+export const INTRO_CATEGORY_LABEL = 'DEV TOOLS'
+export const INTRO_DOMAIN = 'APP.EXAMPLE'
+export const INTRO_CATEGORY = `${INTRO_CATEGORY_LABEL} · ${INTRO_DOMAIN}`
+export const INTRO_TITLE_A = 'CORS'
+export const INTRO_TITLE_B = ' CHECK'
+export const INTRO_SUBTITLE = 'Origin browser, izin server, jawaban aman'
+
+// ═══════════════════════════════════════════════
+// LAYOUT — REVISI-05: dua panel (browser atas, server bawah) di body
+// local coordinate (body 732 x 965, lihat PortraitSceneLayoutV1.js).
+// Divider menyisakan jarak aman ≥44px ke panel manapun (lihat aturan
+// jarak minimum di revisi-05 §"Kontrak visibilitas dan anti-overlay").
+// ═══════════════════════════════════════════════
 export const AXIS_X = 366
 
-export const APP_Y      = 120    // kartu app.example — origin pengirim
-export const GATE_Y     = 420    // browser gate — penjaga
-export const API_Y      = 640    // kartu api.example — origin tujuan
-export const PREFLIGHT_Y= 820    // preflight OPTIONS berangkat dari gate
-export const POLICY_Y   = 980    // policy shelf — API kirim izin
-export const ACTUAL_Y   = 1120   // actual request (bila cocok ide)
-export const RESPONS_Y  = 1240   // respons melewati gate ke app
-export const CLOSING_Y  = 1080   // caption closing / handoff
+// -- Panel browser (zona atas): app.example + browser gate --
+export const BROWSER_PANEL = { yTop: 20, yBottom: 360 }
+export const APP_Y = 108
+export const GATE_Y = 282
+export const CAPTION_SLOT_BROWSER_Y = 372 // REVISI: diturunkan dari 336 — dulu numpuk ke ring/label BROWSER GATE (gate visual ±218-346)
 
-export const CAPTION_Y  = 1320   // batas caption bawah
+// -- Divider + corridor (benang perjalanan), gap ≥88px total (44+44) --
+export const DIVIDER_Y = Math.round((BROWSER_PANEL.yBottom + 460) / 2) // ≈410, garis tengah gap
+export const CORRIDOR = { yTop: BROWSER_PANEL.yBottom, yBottom: 460 }
 
-// ── Label dekat objek ──
-export const APP_LABEL    = 'app.example'
-export const API_LABEL    = 'api.example'
-export const GATE_LABEL   = 'GATE BROWSER'
-export const PREFLIGHT_LABEL = 'preflight'
-export const POLICY_LABEL = 'policy izin'
-export const ACTUAL_LABEL = 'actual request'
-export const METHOD_POST  = 'POST'
-export const METHOD_OPT   = 'OPTIONS'
+// -- Panel server (zona bawah): api.example + policy shelf --
+export const SERVER_PANEL = { yTop: 460, yBottom: 940 }
+export const API_Y = 560
+export const POLICY_Y = 726
+export const CAPTION_SLOT_SERVER_Y = 900
 
-export const APP_URL    = 'https://app.example'
-export const API_URL    = 'https://api.example'
-export const ORIGIN_APP = 'Origin: app.example'
-export const AUTH_LABEL = 'Authorization: Bearer ...'
+// -- Guardrail aside — "kecil di kanan server", bukan di bawah policy
+// supaya tidak bertabrakan dengan ticket response/caption slot server --
+export const GUARDRAIL_X = AXIS_X + 196
+export const GUARDRAIL_Y = POLICY_Y
 
-// ── CAPTIONS — deklaratif ≤5 kata, dekat objek ──
-export const CAPTIONS = {
-  APP_FETCH:       'App meminta data',
-  ORIGIN_DIFF:     'Origin berbeda',
-  RULE_BEDA:       'Aturan beda',
-  GATE_APPEAR:     'Browser menjadi gate',
-  NEED_IZIN:       'Request perlu izin',
-  NON_SIMPLE:      'Request non-simple',
-  PREFLIGHT_OFF:   'Preflight berangkat',
-  OPTIONS_HEADER:  'OPTIONS + origin',
-  API_READ:        'API membaca preflight',
-  POLICY_TERBUKA:  'Policy izin dibuka',
-  BANDINGKAN:      'Browser membandingkan',
-  ALLOW_TERIMA:    'Allow cocok',
-  DENY_TOLAK:      'Tak cocok — tak terbaca',
-  ACTUAL_LANJUT:   'Request asli lanjut',
-  RESPONS_MASUK:   'Respons dibaca',
-  GATE_TERBUKA:    'Gate terbuka untuk JS',
-  BUKAN_AUTH:      'CORS bukan auth API',
+// -- Dua lane benang tetap: request selalu turun di kanan, response
+// selalu naik di kiri. Offset dihitung supaya tiket (lebar ramping
+// 160-170px) TIDAK PERNAH menyentuh kartu app/api/policy (lebar 260-300px,
+// setengah-lebar maks 150px) bahkan saat tiket berhenti sejajar node —
+// margin sisa ±20-35px. Tiket TIDAK PERNAH pindah lane atau teleport ke
+// sumbu tengah; node fisik (app/gate/api/policy) di AXIS_X yang menyala
+// sebagai tanda terima saat tiket tiba di sisi lane. --
+export const LANE_REQUEST_X = AXIS_X + 250  // browser -> server (turun)
+export const LANE_RESPONSE_X = AXIS_X - 250 // server -> browser (naik)
+
+export const FLOW_WAYPOINTS = {
+  P0_APP: APP_Y + 62,      // titik lahir tiket, di bawah app.example
+  P2_GATE: GATE_Y,         // level gate (kedua lane transit lewat sini)
+  P4_API_DOOR: API_Y - 58, // ambang pintu API (kedua lane transit lewat sini)
+  P5_POLICY: POLICY_Y,     // policy shelf / processor
 }
 
-// ── SFX_MAP — pemetaan efek suara (kontrak seri) ──
-// Revisi-01 (2026-09-13): loudness diukur via ffmpeg volumedetect sebelum
-// wiring (lihat revisi/2026-09-13-revisi-01-audio-playful.md §4-§5).
-// LIGHT_SWOOSH menggantikan WHOOSH lama sebagai cue travel utama karena
-// transitions/whoosh.wav terlalu pelan (mean -39.9dB) dibanding baseline
-// (~-21dB). POLICY_SCAN sengaja memakai ui/tick, bukan sfx/scan.wav —
-// sfx/scan.wav (mean -30.8dB) sama pelannya dengan sfx/materialize.wav
-// (-32.0dB) yang sudah ditolak plan; ui/tick (-21.1dB) sejalan baseline.
+export const APP_LABEL = 'APP.EXAMPLE'
+export const GATE_LABEL = 'BROWSER GATE'
+export const API_LABEL = 'API.EXAMPLE'
+export const POLICY_LABEL = 'POLICY SHELF'
+export const BROWSER_ZONE_LABEL = 'BROWSER / CLIENT'
+export const SERVER_ZONE_LABEL = 'SERVER / API'
+
+// ── Node flow bernomor 1-6 (revisi-05 §"Flow chart benang"). Direalisasikan
+// sebagai mini-stepper di strip aman atas body (bukan badge menempel di
+// app/gate/api) supaya TIDAK menambah risiko overlap baru di panel yang
+// sudah padat; stepper tetap menunjukkan jejak (node lewat meredup, node
+// aktif menyala) dan sinkron dengan node fisik lewat activeNodeIndex. ──
+export const FLOW_STEPPER_Y = 6
+export const FLOW_NODES = [
+  { n: 1, label: 'FETCH', physical: 'app' },
+  { n: 2, label: 'HOLD', physical: 'gate' },
+  { n: 3, label: 'PREFLIGHT', physical: 'api' },
+  { n: 4, label: 'MATCH', physical: 'gate' },
+  { n: 5, label: 'REQUEST', physical: 'api' },
+  { n: 6, label: 'OPEN', physical: 'app' },
+]
+
+// ═══════════════════════════════════════════════
+// REQUESTS — satu konfigurasi per jenis tiket. 'INITIAL' dan 'ACTUAL'
+// merepresentasikan REQUEST YANG SAMA (POST + Authorization) — INITIAL
+// berhenti di gate Act 1, ACTUAL melanjutkan perjalanan di Act 4 setelah
+// izin cocok. Semua tiket request lewat LANE_REQUEST_X, semua tiket
+// response lewat LANE_RESPONSE_X (lihat blok LAYOUT di atas).
+// ═══════════════════════════════════════════════
+export const REQUESTS = {
+  INITIAL: {
+    method: 'POST', path: '/data', tag: 'Authorization: Bearer token',
+    color: 'CLIENT', caption: 'Browser cek origin berbeda',
+  },
+  PREFLIGHT: {
+    method: 'OPTIONS', path: '/data',
+    lines: [
+      'Origin: app.example',
+      'Access-Control-Request-Method: POST',
+      'Access-Control-Request-Headers: authorization',
+    ],
+    color: 'GATE', caption: 'Browser tanya sebelum POST',
+  },
+  PREFLIGHT_RESPONSE: {
+    lines: [
+      'Access-Control-Allow-Origin: app.example',
+      'Access-Control-Allow-Methods: GET, POST',
+      'Access-Control-Allow-Headers: authorization',
+    ],
+    color: 'SUCCESS', caption: 'Server kirim header izin',
+  },
+  ACTUAL: {
+    method: 'POST', path: '/data', tag: 'Authorization: Bearer token',
+    color: 'CLIENT', caption: 'Browser cocokkan policy',
+  },
+  ACTUAL_RESPONSE: {
+    label: 'Data diterima aplikasi',
+    color: 'SUCCESS', caption: 'Browser buka data untuk JS',
+  },
+}
+
+// Guardrail aside (Act 3) — perbandingan singkat method diizinkan vs
+// ditolak, TIDAK memicu request sungguhan, cuma chip statis di sisi
+// kanan server (GUARDRAIL_X/GUARDRAIL_Y di atas), jauh dari lane response.
+export const GUARDRAIL_ALLOWED = { label: 'POST diizinkan', ok: true }
+export const GUARDRAIL_BLOCKED = { label: 'PUT tidak diizinkan', ok: false }
+export const WILDCARD_GUARD_TEXT = 'CORS bukan auth API'
+export const NOT_AUTH_TEXT = 'API tetap wajib autentikasi sendiri'
+
+// ═══════════════════════════════════════════════
+// SFX MAP — hanya nama yang sudah tersedia di public/audio/*
+// (sudah dipakai topic lain seperti 17-rest-api, tidak perlu sourcing baru)
+// ═══════════════════════════════════════════════
 export const SFX_MAP = {
-  LIGHT_SWOOSH: { category: 'transitions', name: 'light-swoosh-quick' }, // travel utama: preflight & actual request berangkat
-  SLIDE_IN:     { category: 'transitions', name: 'slide-in' },     // policy kembali ke browser
-  POP:          { category: 'ui', name: 'pop' },
-  POP2:         { category: 'ui', name: 'pop-2' },
-  TICK:         { category: 'ui', name: 'tick' },
-  POLICY_SCAN:  { category: 'ui', name: 'tick' },                  // API membaca preflight (alias TICK, loudness-matched)
-  LOCK:         { category: 'impacts', name: 'lock' },
-  UNLOCK:       { category: 'impacts', name: 'unlock' },           // gate browser membuka akses baca
-  DING:         { category: 'success', name: 'ding' },
-  ALLOW_CHIME:  { category: 'ui', name: 'chime' },                 // allowed headers cocok
-  RELIEF:       { category: 'success', name: 'relief-settle' },    // data siap dibaca JS
-  MATERIALIZE:  { category: 'success', name: 'shimmer' },          // intro morph selesai (bukan sfx/materialize.wav — terlalu pelan)
-  ERROR_BEEP:   { category: 'warnings', name: 'error-beep' },      // mismatch header — lebih terdengar dari alert-pulse lama
+  POP: { category: 'ui', name: 'pop' },
+  POP2: { category: 'ui', name: 'pop-2' },
+  CHIME: { category: 'ui', name: 'chime' },
+  TICK: { category: 'ui', name: 'tick' },
+
+  WHOOSH: { category: 'transitions', name: 'whoosh' },
+  WHOOSH_LOW: { category: 'transitions', name: 'whoosh-low' },
+
+  LOCK: { category: 'impacts', name: 'lock' },
+
+  CONFIRM: { category: 'success', name: 'confirm' },
+  DING: { category: 'success', name: 'ding' },
+
+  ALERT_PULSE: { category: 'warnings', name: 'alert-pulse' },
+
+  MATERIALIZE: { category: 'sfx', name: 'materialize' },
 }

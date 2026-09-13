@@ -145,7 +145,7 @@ export const ADIB_PROFILE = { name: 'Adib', age: 12, role: 'Student', hair: 'bla
 export const JOKOWO_PROFILE = { name: 'Raditya Dika', age: 24, role: 'Student', hair: 'black' }
 export const PRABOWO_PROFILE = { name: 'Deddy Corbuzier', age: 28, role: 'Engineer', hair: 'black' }
 
-export const NINA_NAME = 'Nina'
+export const NINA_NAME = 'Adib'
 export const SELECTED_SLOT = 1   // Adib tetap di slot 1
 export const JOKOWO_SLOT = 2     // REVISI-07: Jokowo di slot 2
 export const PRABOWO_SLOT = 3    // REVISI-07: Prabowo di slot 3
@@ -236,7 +236,7 @@ export const HEADER_MORPH = {
 // ═══════════════════════════════════════════════
 // SFX MAP — hanya nama yang sudah tersedia di public/audio/*
 // (dicek manual sebelum eksekusi, tidak perlu sourcing baru,
-// lihat docs/standardizations/08-audio-sfx-generation.md §2)
+// lihat docs/standardizations/06-audio-sfx.md §2)
 // ═══════════════════════════════════════════════
 export const SFX_MAP = {
   POP: { category: 'ui', name: 'pop' },

@@ -2,11 +2,11 @@
 
 > Checklist eksekusi teknis untuk topic 17. Storyboard lengkap ada di
 > `../../17-rest-api-TOPIC_PLAN.txt`. Referensi standar:
-> `docs/standardizations/02-standar-konten.md`,
-> `docs/standardizations/03-tutorial-buat-topic-baru.md`,
-> `docs/standardizations/04-referensi-gsap.md`,
-> `docs/standardizations/05-svg-text-guide.md`,
-> `docs/standardizations/08-audio-sfx-generation.md`.
+> `docs/standardizations/02-topic-contract-scene-shell.md`,
+> `docs/standardizations/03-planning-storytelling-quality-gate.md`,
+> `docs/standardizations/04-motion-gsap-reference.md`,
+> `docs/standardizations/05-svg-layout-asset-pipeline.md`,
+> `docs/standardizations/06-audio-sfx.md`.
 > Numbering pakai standar hierarki unlimited (`PROJECT_STRUCTURE.md`).
 
 ## 1. Phase 1: Setup & Data Layer

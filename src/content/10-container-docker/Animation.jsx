@@ -56,7 +56,7 @@ export default function ContainerDockerAnimation({
 
   // ── ANCHOR objects — persisten sepanjang Act 1..5, TIDAK unmount/remount
   // per-Act (lihat "Advanced Pattern: Persistent Anchor Object Lintas-Act",
-  // docs/standardizations/04-referensi-gsap.md). Cuma warna/label/posisi
+  // docs/standardizations/04-motion-gsap-reference.md). Cuma warna/label/posisi
   // yang di-tween/swap saat transisi Act 1 → Act 5.
   const [slotColor, setSlotColor] = useState([COLORS.VM, COLORS.VM, COLORS.VM])
   const [slotLabel, setSlotLabel] = useState(['OS SENDIRI', 'OS SENDIRI', 'OS SENDIRI'])
@@ -137,7 +137,7 @@ export default function ContainerDockerAnimation({
     // Export safety: expose flushSync supaya script export bisa memaksa
     // React 18 commit setState hasil seek (tl.totalTime()) secara SINKRON
     // sebelum screenshot frame diambil. Lihat pola tailscale/virtual-memory,
-    // docs/standardizations/04-referensi-gsap.md § Export Safety.
+    // docs/standardizations/04-motion-gsap-reference.md § Export Safety.
     window.__flushSync = flushSync
 
     let t = 0
@@ -407,7 +407,7 @@ export default function ContainerDockerAnimation({
   }
   const O = (id) => P(id).opacity
 
-  // manual word-wrap (bukan foreignObject — lihat docs/standardizations/05-svg-text-guide.md)
+  // manual word-wrap (bukan foreignObject — lihat docs/standardizations/05-svg-layout-asset-pipeline.md)
   const wrapText = (text, maxChars) => {
     const words = text.split(' ')
     const lines = []

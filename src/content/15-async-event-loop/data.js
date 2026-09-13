@@ -114,7 +114,7 @@ export const ACT4_CLIFFHANGER = 'Giliran callback akhirnya tiba.'
 export const ACT5_RUNNING_LABEL = 'Tampilkan nama user (dengan data asli)'
 export const ACT5_BEFORE_CARD = 'Kode lanjut. Data belum siap. Hasil: undefined.'
 export const ACT5_AFTER_CARD = 'Kode tunggu giliran. Data sudah siap.'
-export const ACT5_RESULT_GOOD = 'Hasil: Rani'
+export const ACT5_RESULT_GOOD = 'Hasil: Adib'
 export const ACT5_PAYOFF = 'Ternyata: kode tidak diam, hasil balik lewat antrian.'
 
 // ═══════════════════════════════════════════════════════════

@@ -76,7 +76,7 @@ export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 // ═══════════════════════════════════════════════
 // ACT 1 — Hook: ganti DNS, tiba-tiba lancar
 // ═══════════════════════════════════════════════
-export const DOMAIN_NAME = 'toko-online.com'
+export const DOMAIN_NAME = 'site.adib-dev.com'
 export const EXAMPLE_IP = '93.184.216.34'
 
 export const HOOK_LOADING = 'Loading lama, situs tidak kunjung terbuka.'

@@ -1,0 +1,11 @@
+{
+  "name": "terminal-navigation",
+  "description": "Topic memakai SVG terminal visualizer. Icons loader mengembalikan default icon.",
+  "icons": [],
+  "generation": {
+    "rows": 2,
+    "cols": 4,
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/26-terminal-navigation/icons"
+  }
+}

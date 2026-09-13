@@ -1,7 +1,7 @@
 // src/shared/scene-ui/v1/PortraitSceneLayoutV1.js
 //
 // Layout token tunggal untuk scene-ui V1 (lihat docs/plan/PLAN-12-SHARED-SCENE-COMPONENTS-V1.md §5
-// dan docs/standardizations/09-standar-pembuatan-konten.md §1.R Safe-Zone Layout Contract).
+// dan docs/standardizations/03-planning-storytelling-quality-gate.md §1.R Safe-Zone Layout Contract).
 //
 // Pure data + helper coordinate — TIDAK ada GSAP, TIDAK ada React state, TIDAK ada DOM
 // measurement, supaya aman dipanggil kapan saja termasuk saat export seek (lihat §3.1 plan).
@@ -114,7 +114,7 @@ export const warnIfOutsideZone = (label, top, bottom, zone) => {
     // eslint-disable-next-line no-console
     console.warn(
       `[scene-ui v1] "${label}" (y ${top}-${bottom}) keluar dari zona yang diizinkan (y ${zone.yStart}-${zone.yEnd}). ` +
-      `Lihat docs/standardizations/09-standar-pembuatan-konten.md §1.R Safe-Zone Layout Contract.`
+      `Lihat docs/standardizations/03-planning-storytelling-quality-gate.md §1.R Safe-Zone Layout Contract.`
     )
   }
 }

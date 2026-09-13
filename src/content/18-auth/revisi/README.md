@@ -1,7 +1,7 @@
 # Revisi — 18-auth (Authentication)
 
 Index ringkas perubahan yang terjadi SETELAH topic dianggap selesai (first
-pass). Konvensi: `docs/standardizations/02-standar-konten.md` §3 — nama file
+pass). Konvensi: `docs/standardizations/02-topic-contract-scene-shell.md` §3 — nama file
 `YYYY-MM-DD-revisi-NN.md`, WAJIB menyebut state/layout/asset/timeline/status
 test yang berubah (02-standar-konten.md §222-228).
 

@@ -377,7 +377,7 @@ export default function RegisterAnimation({
               <g key={f.id} transform={T('field_' + f.id, 0, -14 + i * 26)} opacity={O('field_' + f.id)}>
                 <rect x={-84} y={-10} width={168} height={20} rx={5} fill={COLORS.BG} stroke={fieldColor(f.id)} strokeWidth={1.5} />
                 <text x={-70} y={4} textAnchor="middle" fontSize={8} fontFamily="monospace" fill={f.id === 'password' && !validAll ? COLORS.MUTED : COLORS.TEXT}>
-                  {f.id === 'nama' ? 'Adib Pratama' : f.id === 'email' ? (emailInvalid || duplicateFound ? 'Adib@mail' : 'adib@adibdev.com') : '••••••••••'}
+                  {f.id === 'nama' ? 'Adib Pratama' : f.id === 'email' ? (emailInvalid || duplicateFound ? 'Adib@mail' : 'iammuslikhuladib@gmail.com') : '••••••••••'}
                 </text>
                 <text x={94} y={4} textAnchor="middle" fontSize={7} fontFamily="monospace" letterSpacing={1} fill={COLORS.MUTED}>{f.label.toUpperCase()}</text>
                 {f.id === 'email' && emailInvalid && (
@@ -408,7 +408,7 @@ export default function RegisterAnimation({
           <g transform={T('recordCard', AXIS_X, RECORD_Y)} opacity={O('recordCard')} filter="url(#shadow)">
             <rect x={-120} y={-40} width={240} height={80} rx={12} fill={COLORS.PANEL} stroke={pendingRecord ? COLORS.PENDING : COLORS.RECORD} strokeWidth={2} />
             <text x={0} y={-18} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" letterSpacing={1.5} fill={COLORS.RECORD}>{RECORD_LABEL}</text>
-            <text x={-96} y={4} fontSize={9} fontFamily="monospace" fill={COLORS.TEXT}>adib@adibdev.com</text>
+            <text x={-96} y={4} fontSize={9} fontFamily="monospace" fill={COLORS.TEXT}>iammuslikhuladib@gmail.com</text>
             <text x={-96} y={24} fontSize={9} fontFamily="monospace" fill={hashDone ? COLORS.CRYPTO : COLORS.MUTED}>{hashDone ? `${HASH_OUT.label} · ${SALT_CHIP.label}` : '— menunggu hash —'}</text>
             {pendingRecord && (
               <g transform="translate(96, 2)">

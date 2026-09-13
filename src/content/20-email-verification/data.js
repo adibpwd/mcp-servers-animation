@@ -65,7 +65,7 @@ export const INBOX_LABEL = 'INBOX ADIB'
 export const GATE_LABEL = 'VERIFICATION ENDPOINT'
 export const DOOR_LABEL = 'APP DOOR'
 
-export const RECORD_EMAIL = 'adib@adibdev.com'
+export const RECORD_EMAIL = 'iammuslikhuladib@gmail.com'
 export const MASKED_LINK = 'verify…7K9'
 export const TOKEN_TTL = '10m'
 

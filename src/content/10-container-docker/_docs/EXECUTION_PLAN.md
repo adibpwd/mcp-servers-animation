@@ -2,9 +2,9 @@
 
 > Turunan teknis dari `CONTAINER_DOCKER_PLAN.md`. Numbering pakai standar
 > hierarki unlimited (dot notation) sesuai `PROJECT_STRUCTURE.md`.
-> Referensi standar: `docs/standardizations/02-standar-konten.md`,
-> `docs/standardizations/03-tutorial-buat-topic-baru.md`,
-> `docs/standardizations/04-referensi-gsap.md`.
+> Referensi standar: `docs/standardizations/02-topic-contract-scene-shell.md`,
+> `docs/standardizations/03-planning-storytelling-quality-gate.md`,
+> `docs/standardizations/04-motion-gsap-reference.md`.
 
 ## 1. Phase 1: Setup & Scaffolding
 
@@ -64,7 +64,7 @@
 3.1. Act 1 — Hook: 3 App, 3 Rumah Penuh (~9s) @done(2026-09-06)
    3.1.1. Render laptop sebagai objek ANCHOR persisten (1 `id` tetap, di
           luar blok conditional per-Act — lihat § Konsep Anchor di
-          `docs/standardizations/04-referensi-gsap.md`)
+          `docs/standardizations/04-motion-gsap-reference.md`)
    3.1.2. Render 3 VM box entrance (animasi berat/lambat + SFX
           `loading-heavy`)
    3.1.3. Render meter RAM/CPU naik cepat ke merah
@@ -111,7 +111,7 @@
 4.1. Load `SFX_MAP` lewat `shared/audio/sfxLoader.js` @done(2026-09-06)
    4.1.1. Cek apakah ada SFX yang butuh lebih menonjol dari yang lain
           (kalau ya, terapkan pola `GainNode` boost — lihat "Audio
-          Boost" di `docs/standardizations/04-referensi-gsap.md`, wajib
+          Boost" di `docs/standardizations/04-motion-gsap-reference.md`, wajib
           diterapkan ke SEMUA clone di audio pool) — N/A, tidak
           diperlukan untuk topic ini
 4.2. Sinkronkan `SFX_SCHEDULES` di `scripts/export-lib.js` dengan timing
@@ -128,13 +128,13 @@
      lewat hook terpisah) @done(2026-09-06)
 5.2. Implementasi `window.__animationTimeline` (kontrak wajib export) @done(2026-09-06)
 5.3. Implementasi `window.__flushSync` (export safety, lihat
-     `docs/standardizations/04-referensi-gsap.md`) @done(2026-09-06)
+     `docs/standardizations/04-motion-gsap-reference.md`) @done(2026-09-06)
 5.4. Cleanup `tl.kill()` saat unmount @done(2026-09-06)
 5.5. Determinism check — pastikan TIDAK ada `Math.random()` yang
      mempengaruhi durasi/timing timeline; kalau ada elemen "acak" visual
      (misal timing efek kecil), pakai seeded random function (lihat
      "Determinism: Hindari Math.random() di Timeline" di
-     `docs/standardizations/04-referensi-gsap.md`) — dicek, tidak ada
+     `docs/standardizations/04-motion-gsap-reference.md`) — dicek, tidak ada
      `Math.random()` dipakai sama sekali di file ini @done(2026-09-06)
 
 ## 6. Phase 6: Registry Integration @done(2026-09-06)

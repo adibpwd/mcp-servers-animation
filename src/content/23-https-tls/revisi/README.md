@@ -1,7 +1,7 @@
 # Revisi — 23-https-tls (HTTPS · TLS)
 
 Index ringkas perubahan yang terjadi SETELAH topic dianggap selesai
-(first pass). Konvensi: `docs/standardizations/02-standar-konten.md`
+(first pass). Konvensi: `docs/standardizations/02-topic-contract-scene-shell.md`
 §3 — nama file `YYYY-MM-DD-revisi-NN.md`, WAJIB menyebut
 state/layout/asset/timeline/status test yang berubah (§222-228).
 

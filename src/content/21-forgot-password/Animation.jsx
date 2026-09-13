@@ -2,12 +2,13 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // Eksekusi sesuai src/content/21-forgot-password/_docs/
 // FORGOT_PASSWORD_PLAN.md (2026-09-12). Empat Act, scene-ui V1 penuh,
-// koordinat LOCAL, sumbu vertikal AXIS_X. Cerita: Raka lupa password —
+// koordinat LOCAL, sumbu vertikal AXIS_X. Cerita: Adib lupa password —
 // sistem TIDAK memberitahu password lama — form email dengan respons
 // generik sama (anti-enumeration) — tautan reset pendek umur + sekali
 // pakai — password baru di-hash + salt — hash lama diganti — session
 // lama ditutup → pintu login menyala (handoff 18-auth login only).
-// Protagonis Raka (kontrak seri, brand ADIB-DEV.COM).
+// Protagonis Adib (kontrak seri, brand ADIB-DEV.COM — revisi-04 §4.1:
+// disamakan dengan akun yang diverifikasi di 20-email-verification).
 //
 // STATUS: first pass (tunggu preview manual & export MP4 sebelum `ready`,
 // lihat plan §4 Checklist).
@@ -19,8 +20,9 @@ import gsap from 'gsap'
 import {
   VW, VH, COLORS, PHASES, SFX_MAP,
   INTRO_CATEGORY_LABEL, INTRO_DOMAIN, INTRO_TITLE_A, INTRO_TITLE_B, INTRO_SUBTITLE,
-  AXIS_X, RECORD_Y, INBOX_Y, TOKEN_Y, GATE_Y, DOOR_Y, CLOSING_Y, CAPTION_Y,
-  RECORD_LABEL, INBOX_LABEL, TOKEN_LABEL, GATE_LABEL, DOOR_LABEL,
+  AXIS_X, RECORD_Y, INBOX_Y, COMPARE_Y, TOKEN_Y, GATE_Y, DOOR_Y, CLOSING_Y, CAPTION_Y,
+  RECORD_LABEL, INBOX_LABEL, TOKEN_LABEL, GATE_LABEL, DOOR_LABEL, FORM_LABEL,
+  ATTEMPT_MATCH_LABEL, ATTEMPT_NOMATCH_LABEL,
   RECORD_EMAIL, TOKEN_CODE, CAPTIONS,
 } from './data'
 import sfxLoader from '../../shared/audio/sfxLoader'
@@ -51,11 +53,9 @@ export default function ForgotPasswordAnimation({
   const [doorBlocked, setDoorBlocked] = useState(false)
   const [recordExists, setRecordExists] = useState(false)
   // ── Act 2 — form recovery anti-enumeration ──
-  const [formOpened, setFormOpened] = useState(false)
   const [genericSeen, setGenericSeen] = useState(false)
   const [hashCardSeen, setHashCardSeen] = useState(false)
   // ── Act 3 — token reset sekali pakai + expiry ──
-  const [tokenSeen, setTokenSeen] = useState(false)
   const [expiredDemo, setExpiredDemo] = useState(false)
   const [tokenMatch, setTokenMatch] = useState(false)
   const [tokenConsumed, setTokenConsumed] = useState(false)
@@ -119,11 +119,11 @@ export default function ForgotPasswordAnimation({
     let t = 0
 
     tl.add(() => {
-      setMorphP(0); setHeaderOpacity(0); setContentStarted(false)
+      setMorphP(0); setHeaderOpacity(1); setContentStarted(false)
       setPhaseIdx(0)
       setDoorBlocked(false); setRecordExists(false)
-      setFormOpened(false); setGenericSeen(false); setHashCardSeen(false)
-      setTokenSeen(false); setExpiredDemo(false); setTokenMatch(false); setTokenConsumed(false)
+      setGenericSeen(false); setHashCardSeen(false)
+      setExpiredDemo(false); setTokenMatch(false); setTokenConsumed(false)
       setHashNew(false); setSessionClosed(false); setDoorLit(false)
       setTokenY(INBOX_Y)
       setPop({}); setCaption('')
@@ -161,6 +161,10 @@ export default function ForgotPasswordAnimation({
     tl.add(() => setGenericSeen(true), t2)
     sfxOn(tl, t2, () => sfxLoader.play('ui', SFX_MAP.PLINK.name, { volume: volumeRef.current, speed: speedRef.current }))
     say(tl, t2 + 0.1, CAPTIONS.GENERIC_REPLY)
+    // revisi-04 §4.6: dua percobaan email beda status (terdaftar vs
+    // tidak) muncul berdampingan, sama-sama dapat respons generik —
+    // hanya kartu ini yang sebelumnya belum divisualisasikan.
+    popIn(tl, t2 + 0.15, 'compareCard', { sfxName: SFX_MAP.POP2.name, sfx: false })
     t2 += 1.8
     tl.add(() => setHashCardSeen(true), t2)
     say(tl, t2 + 0.1, CAPTIONS.TOKEN_SILENT)
@@ -168,11 +172,16 @@ export default function ForgotPasswordAnimation({
     sfxOn(tl, t2, () => sfxLoader.play('ui', SFX_MAP.TICK.name, { volume: volumeRef.current, speed: speedRef.current }))
     say(tl, t2, CAPTIONS.INBOX_CHECK)
     let act2End = t2 + 1.7
+    popOut(tl, act2End - 0.3, 'compareCard', { duration: 0.25 })
 
     // ═══════════════ ACT 3 — Tautan Reset Sekali Pakai (±11s) ════
     tl.add(() => setPhaseIdx(2), act2End)
     popIn(tl, act2End + 0.1, 'tokenCard', { sfxName: SFX_MAP.LIGHT_SWOOSH.name, sfxCategory: 'transitions' })
     say(tl, act2End + 0.15, CAPTIONS.LINK_SENT)
+    // gerbang verifikasi muncul menyusul token (revisi-02 §2.3 —
+    // sebelumnya tidak pernah popIn sehingga selalu invisible). sfx:false
+    // karena tokenCard di atas sudah memutar LIGHT_SWOOSH pada waktu dekat.
+    popIn(tl, act2End + 0.3, 'gateCard', { sfx: false })
     let t3 = act2End + 1.6
     tl.add(() => setExpiredDemo(true), t3)
     sfxOn(tl, t3, () => sfxLoader.play('warnings', SFX_MAP.ALERT_PULSE.name, { volume: volumeRef.current, speed: speedRef.current }))
@@ -182,6 +191,14 @@ export default function ForgotPasswordAnimation({
     tl.add(() => setTokenMatch(true), t3 + 0.25)
     sfxOn(tl, t3 + 0.25, () => sfxLoader.play('ui', SFX_MAP.CHIME.name, { volume: volumeRef.current, speed: speedRef.current }))
     say(tl, t3 + 0.35, CAPTIONS.TOKEN_DEPARTS)
+    // revisi-04 §4.2: amplop kecil benar-benar travel() dari inbox
+    // (INBOX_Y) ke gerbang (GATE_Y) mengikuti garis dashed, dipicu
+    // tepat setelah tokenMatch — sebelumnya garis dashed ada tapi tidak
+    // ada elemen yang berjalan di sepanjangnya.
+    tl.add(() => setTokenY(INBOX_Y + 40), t3 + 0.3)
+    popIn(tl, t3 + 0.3, 'travelToken', { duration: 0.25, sfx: false })
+    travel(tl, t3 + 0.4, setTokenY, INBOX_Y + 40, GATE_Y - 56, 1.3, 'power1.inOut')
+    popOut(tl, t3 + 1.75, 'travelToken', { duration: 0.25 })
     t3 += 2.2
     tl.add(() => setTokenConsumed(true), t3)
     sfxOn(tl, t3, () => sfxLoader.play('impacts', SFX_MAP.SNAP.name, { volume: volumeRef.current * 0.7, speed: speedRef.current }))
@@ -198,7 +215,7 @@ export default function ForgotPasswordAnimation({
     let t4 = act3End + 1.7
     tl.add(() => setSessionClosed(true), t4)
     sfxOn(tl, t4, () => sfxLoader.play('impacts', SFX_MAP.LOCK.name, { volume: volumeRef.current * 0.85, speed: speedRef.current }))
-    say(tl, t4 + 0.1, CAPTIONS.HASH_NEW)
+    say(tl, t4 + 0.1, CAPTIONS.OLD_SESSION)
     t4 += 1.7
     tl.add(() => setDoorLit(true), t4)
     sfxOn(tl, t4, () => sfxLoader.play('success', SFX_MAP.RELIEF.name, { volume: volumeRef.current, speed: speedRef.current }))
@@ -271,8 +288,13 @@ export default function ForgotPasswordAnimation({
         {Array.from({ length: 34 }).map((_, i) => <line key={`h${i}`} x1={0} y1={i * 40} x2={VW} y2={i * 40} stroke={COLORS.TOKEN} strokeWidth={1} />)}
       </g>
 
-      {/* ── HEADER — FORGOT (amber) + PASSWORD (ungu token) ── */}
-      {contentStarted && headerOpacity > 0 ? (
+      {/* ── HEADER — scene-ui V1: FORGOT (RECORD sky) + PASSWORD (SUCCESS
+          emerald). Revisi-03: satu-satunya sumber header, mount sejak
+          headerOpacity>0 (BUKAN digate contentStarted) supaya hero-to-
+          compact morph benar-benar terlihat sejak detik pertama; fallback
+          header manual dihapus (dulu duplikat + selalu invisible karena
+          headerOpacity awalnya 0). ── */}
+      {headerOpacity > 0 && (
         <g opacity={headerOpacity}>
           <IntroHeaderMorphV1
             progress={morphP}
@@ -281,20 +303,17 @@ export default function ForgotPasswordAnimation({
               { label: INTRO_DOMAIN, color: COLORS.SYSTEM },
             ]}
             titleSegments={[
-              { label: INTRO_TITLE_A, color: COLORS.RESET },
-              { label: INTRO_TITLE_B, color: COLORS.TOKEN },
+              { label: INTRO_TITLE_A, color: COLORS.RECORD },
+              { label: INTRO_TITLE_B, color: COLORS.SUCCESS },
+            ]}
+            titleLines={[
+              [{ label: INTRO_TITLE_A, color: COLORS.RECORD }],
+              [{ label: INTRO_TITLE_B.trim(), color: COLORS.SUCCESS }],
             ]}
             subtitle={INTRO_SUBTITLE}
+            titleFilter="url(#glow)"
             testId="forgot-intro-header"
           />
-        </g>
-      ) : (
-        <g opacity={headerOpacity}>
-          <g transform="translate(410, 92)">
-            <text x={0} y={0} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="monospace" letterSpacing={2} fill={COLORS.MUTED}>{INTRO_CATEGORY_LABEL}</text>
-            <text x={0} y={28} textAnchor="middle" fontSize={26} fontWeight={900} fontFamily="monospace" fill={COLORS.TEXT}>{INTRO_TITLE_A}{INTRO_TITLE_B}</text>
-            <text x={0} y={56} textAnchor="middle" fontSize={9} fontWeight={600} fontFamily="sans-serif" fill={COLORS.MUTED}>{INTRO_SUBTITLE}</text>
-          </g>
         </g>
       )}
 
@@ -311,9 +330,9 @@ export default function ForgotPasswordAnimation({
             {/* jalur token: inbox → gerbang */}
             <path d={`M ${AXIS_X} ${INBOX_Y + 40} L ${AXIS_X} ${GATE_Y - 56}`} stroke={COLORS.BORDER} strokeWidth={1.5} strokeDasharray="4 6" opacity={0.4} />
 
-            {/* ── record akun Raka — hash + salt ── */}
+            {/* ── record akun Adib — hash + salt ── */}
             <g transform={T('recordCard', AXIS_X, RECORD_Y)} opacity={O('recordCard')} filter="url(#shadow)">
-              <rect x={-130} y={-46} width={260} height={92} rx={12} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={2} />
+              <rect x={-150} y={-46} width={300} height={92} rx={12} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={2} />
               <text x={0} y={-24} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" letterSpacing={1.5} fill={COLORS.MUTED}>{RECORD_LABEL}</text>
               <text x={0} y={0} textAnchor="middle" fontSize={10} fontFamily="monospace" fill={COLORS.TEXT}>{RECORD_EMAIL}</text>
               <g className="pulse-pill">
@@ -336,8 +355,30 @@ export default function ForgotPasswordAnimation({
               )}
             </g>
 
-            {/* ── kartu hash — bukti tidak boleh bocor ── */}
-            <g transform={T('hashCard', AXIS_X, TOKEN_Y)} opacity={O('tokenCard')} filter="url(#shadow)">
+            {/* ── dua percobaan email, respons identik (revisi-04 §4.6) ──
+                Row A cocok dengan RECORD_EMAIL (dapat token diam-diam saat
+                hashCardSeen), Row B tidak terdaftar — keduanya menampilkan
+                badge "RESPONS SAMA" yang identik; bedanya tidak terlihat
+                penonton, cuma indikator titik kecil di Row A. */}
+            <g transform={T('compareCard', AXIS_X, COMPARE_Y)} opacity={O('compareCard')} filter="url(#shadow)">
+              <rect x={-110} y={-28} width={220} height={56} rx={10} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={1.5} />
+              <g transform="translate(0, -10)">
+                <circle cx={-92} cy={0} r={3} fill={hashCardSeen ? COLORS.TOKEN : COLORS.MUTED} />
+                <text x={-82} y={3} fontSize={7.5} fontFamily="monospace" fill={COLORS.MUTED}>{ATTEMPT_MATCH_LABEL}</text>
+                <text x={92} y={3} textAnchor="end" fontSize={7.5} fontWeight={700} fontFamily="monospace" fill={COLORS.SUCCESS}>RESPONS SAMA</text>
+              </g>
+              <line x1={-102} y1={2} x2={102} y2={2} stroke={COLORS.BORDER} strokeWidth={1} opacity={0.6} />
+              <g transform="translate(0, 16)">
+                <circle cx={-92} cy={0} r={3} fill={COLORS.MUTED} />
+                <text x={-82} y={3} fontSize={7.5} fontFamily="monospace" fill={COLORS.MUTED}>{ATTEMPT_NOMATCH_LABEL}</text>
+                <text x={92} y={3} textAnchor="end" fontSize={7.5} fontWeight={700} fontFamily="monospace" fill={COLORS.SUCCESS}>RESPONS SAMA</text>
+              </g>
+            </g>
+
+            {/* ── kartu hash — bukti tidak boleh bocor ──
+                revisi-02 §2.4: id disamakan ke 'tokenCard' (dipakai popIn
+                di timeline) supaya T() ikut scale-in, bukan cuma opacity. */}
+            <g transform={T('tokenCard', AXIS_X, TOKEN_Y)} opacity={O('tokenCard')} filter="url(#shadow)">
               <rect x={-130} y={-46} width={260} height={92} rx={12} fill={COLORS.PANEL} stroke={tokenConsumed ? COLORS.DENY : COLORS.TOKEN} strokeWidth={2} />
               <text x={0} y={-24} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" letterSpacing={1.5} fill={COLORS.TOKEN}>{TOKEN_LABEL}</text>
               <text x={0} y={2} textAnchor="middle" fontSize={10} fontWeight={900} fontFamily="monospace" fill={COLORS.TEXT}>{TOKEN_CODE}</text>
@@ -356,6 +397,14 @@ export default function ForgotPasswordAnimation({
               <text x={0} y={-20} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" letterSpacing={1.5} fill={COLORS.MUTED}>{GATE_LABEL}</text>
               <rect x={-96} y={-2} width={192} height={30} rx={8} fill={COLORS.BG} stroke={tokenMatch ? COLORS.SUCCESS : COLORS.BORDER} strokeWidth={1.5} />
               <text x={0} y={20} textAnchor="middle" fontSize={9} fontWeight={700} fontFamily="monospace" fill={tokenMatch ? COLORS.SUCCESS : COLORS.MUTED}>{tokenMatch ? 'VALID — SEKALI PAKAI' : 'CEK COCOK + BELUM BEKAS'}</text>
+            </g>
+
+            {/* ── amplop token — benar-benar travel() inbox → gerbang
+                (revisi-04 §4.2), mengikuti garis dashed di atas ── */}
+            <g transform={T('travelToken', AXIS_X, tokenY)} opacity={O('travelToken')} filter="url(#shadow)">
+              <rect x={-30} y={-18} width={60} height={36} rx={6} fill={COLORS.PANEL} stroke={COLORS.TOKEN} strokeWidth={2} />
+              <path d="M -30 -18 L 0 2 L 30 -18" fill="none" stroke={COLORS.TOKEN} strokeWidth={1.5} strokeLinecap="round" />
+              <text x={0} y={30} textAnchor="middle" fontSize={7} fontWeight={700} fontFamily="monospace" fill={COLORS.MUTED}>{INBOX_LABEL}</text>
             </g>
 
             {/* ── pintu login — redup → menyala ── */}

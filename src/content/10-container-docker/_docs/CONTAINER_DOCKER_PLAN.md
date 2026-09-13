@@ -13,7 +13,7 @@ Ending = jawab hook Act 1 secara eksplisit + luruskan miskonsepsi umum
 Target audiens: **anak IT / junior dev** — sudah pernah dengar/pakai
 `docker run` tapi belum ngerti kenapa itu beda dari VM. Playful tone,
 BUKAN dokumentasi teknis dibacakan. Ikuti kontrak
-`docs/standardizations/02-standar-konten.md` + `docs/standardizations/03-tutorial-buat-topic-baru.md`.
+`docs/standardizations/02-topic-contract-scene-shell.md` + `docs/standardizations/03-planning-storytelling-quality-gate.md`.
 
 **Canvas:** 820 × 1340 (portrait 9:16, standar reels mobile — sama seperti
 `tailscale`, `linux-vs-unix`, `virtual-memory`, `file-permission`)
@@ -209,7 +209,7 @@ export const SFX_MAP = { /* loading-heavy (VM boot), snap-in (container
   trade-off beat) — map ke shared/audio/sfxLoader */ }
 ```
 
-## Checklist Sebelum Implementasi Kode (lihat juga docs/standardizations/03-tutorial-buat-topic-baru.md bagian Checklist)
+## Checklist Sebelum Implementasi Kode (lihat juga docs/standardizations/03-planning-storytelling-quality-gate.md bagian Checklist)
 
 - [ ] Plan ini direview/disetujui user
 - [ ] Keputusan final Tier di `registry.js` diambil (lihat § Overview
@@ -226,13 +226,13 @@ export const SFX_MAP = { /* loading-heavy (VM boot), snap-in (container
       — terutama poin 1 (bukan VM mini) dan poin 4-5 (trade-off keamanan
       & kapan VM masih perlu, JANGAN diskip di Act 5)
 - [ ] Wording ringkas & tanpa emoji di teks produksi (lihat
-      `docs/standardizations/03-tutorial-buat-topic-baru.md` § Wording Ringkas & Tanpa Emoji)
+      `docs/standardizations/03-planning-storytelling-quality-gate.md` § Wording Ringkas & Tanpa Emoji)
 - [ ] Laptop di Act 1 & Act 5 dirender jadi SATU objek anchor persisten
       (1 `id` tetap, di luar blok conditional per-Act, transisi pakai
       `gsap.to()`) — BUKAN dibuat ulang lewat `popIn()` di tiap Act,
       lihat "Advanced Pattern: Persistent Anchor Object Lintas-Act" di
-      `docs/standardizations/04-referensi-gsap.md`
+      `docs/standardizations/04-motion-gsap-reference.md`
 - [ ] Cek tidak ada kalimat identik yang tampil dobel di 2 kanal
       berbeda (caption `say()` vs card/badge `popIn()`) di waktu
       berdekatan — lihat "3.7 Satu Kanal per Kalimat" di
-      `docs/standardizations/02-standar-konten.md`
+      `docs/standardizations/02-topic-contract-scene-shell.md`

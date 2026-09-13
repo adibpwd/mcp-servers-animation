@@ -1,14 +1,16 @@
-Pernah pencet tombol "Login pakai Kampus" di sebuah aplikasi? Ternyata aplikasi itu nggak pernah pegang password kamu sama sekali. 🔐
+Pernah pencet tombol "Continue with Google/GitHub/Microsoft" atau "Sign in with Apple"? Aplikasi itu ternyata nggak pernah pegang password kamu sama sekali. 🔐
 
-Adib mau pakai Aplikasi Catatan buat baca profil dasarnya. Alih-alih masukin password Kampus ke aplikasi itu (yang bahaya banget), Adib malah di-redirect ke halaman Kampus sendiri buat login. Password cuma pernah ketik di situ — nggak pernah nyampe ke Aplikasi Catatan.
+Rani buka DevNotes dan pilih "Continue with GitHub". DevNotes cuma minta izin read:user — buat nampilin username dan avatar doang. Alih-alih masukin password GitHub ke DevNotes (yang bahaya banget), Rani malah di-redirect ke GitHub sendiri buat login. Password cuma pernah ketik di situ — nggak pernah nyampe ke DevNotes.
 
-Habis login, Adib lihat layar consent: aplikasi cuma minta izin profile.read, bukan akses penuh ke akun. Begitu di-Allow, Kampus kasih "authorization code" — bukan token asli, cuma tiket sementara sekali pakai.
+Habis login, Rani lihat layar consent GitHub: DevNotes cuma minta izin read:user, bukan akses penuh ke akun apalagi izin nulis repository. Begitu di-approve, GitHub balikin "authorization code" ke redirect URI DevNotes — bukan token asli, cuma tiket sementara sekali pakai.
 
-Nah ini bagian pentingnya: code itu ditukar jadi access token pakai PKCE verifier, biar nggak bisa dibajak orang lain di tengah jalan. Token yang jadi cuma punya izin profile.read — data lain kayak grades atau email tetap kekunci rapat.
+Nah ini bagian pentingnya: code itu ditukar jadi access token pakai PKCE verifier, biar nggak bisa dibajak orang lain di tengah jalan. Token yang jadi cuma punya izin read:user — akses ke repo (apalagi buat nulis) tetap kekunci rapat.
 
-Ini namanya OAuth2: delegasi izin, bukan berbagi password. 🔑
+Google, Microsoft, dan Apple sebenernya jalan dengan pola yang sama: redirect → login/session → consent → code → token. Cuma beda contoh scope dan resource-nya doang.
 
-Full alurnya — redirect, consent, code, PKCE, sampai token bergaris scope — ada lengkap di video. Tonton biar paham kenapa "Login pakai Google/Kampus/dll" itu aman dipakai.
+Ini namanya OAuth2: delegasi izin akses, bukan berbagi password. Kalau aplikasi butuh identitas login standar, biasanya itu OpenID Connect yang jalan bareng OAuth2. 🔑
+
+Full alurnya — pilih provider, redirect, consent, code, PKCE, sampai token bergaris scope — ada lengkap di video. Tonton biar paham kenapa "Continue with Google/GitHub/dll" itu aman dipakai.
 
 Save dulu buat yang lagi belajar auth/backend 📌
 

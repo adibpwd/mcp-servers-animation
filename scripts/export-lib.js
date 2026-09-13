@@ -169,6 +169,61 @@ const SFX_SCHEDULES = {
     { at: 36.2, category: 'ui', name: 'chime' },               // Chime
     { at: 36.8, category: 'warnings', name: 'alert-pulse' },   // Final alert
     { at: 37.4, category: 'success', name: 'complete' }        // Animation end
+  ],
+
+  'linux-filesystem': [
+    { at: 1.15, category: 'success', name: 'shimmer' },
+    { at: 1.30, category: 'ui', name: 'pop' },
+    { at: 1.65, category: 'impacts', name: 'connector-snap' },
+    { at: 3.00, category: 'ui', name: 'pop-2' },
+    { at: 3.20, category: 'ui', name: 'pop' },
+    { at: 3.40, category: 'ui', name: 'pop-2' },
+    { at: 3.60, category: 'ui', name: 'pop' },
+    { at: 4.60, category: 'ui', name: 'pop' },
+    { at: 4.90, category: 'ui', name: 'paper-arrive' },
+    { at: 5.80, category: 'ui', name: 'pop-2' },
+    { at: 6.25, category: 'ui', name: 'pop-2' },
+    { at: 6.55, category: 'ui', name: 'tick' },
+    { at: 7.05, category: 'ui', name: 'tick' },
+    { at: 12.30, category: 'ui', name: 'tick' },
+    { at: 12.80, category: 'ui', name: 'pop-2' },
+    { at: 13.60, category: 'impacts', name: 'lock' },
+    { at: 15.00, category: 'ui', name: 'pop' },
+    { at: 15.25, category: 'ui', name: 'tick' },
+    { at: 17.10, category: 'ui', name: 'beep-2' },
+    { at: 23.30, category: 'ui', name: 'pop-2' },
+    { at: 24.15, category: 'ui', name: 'beep-2' },
+    { at: 24.75, category: 'ui', name: 'beep-2' },
+    { at: 25.35, category: 'ui', name: 'beep-2' },
+    { at: 25.95, category: 'ui', name: 'pop-2' },
+    { at: 26.15, category: 'ui', name: 'pop' },
+    { at: 27.65, category: 'ui', name: 'paper-arrive' },
+    { at: 30.65, category: 'warnings', name: 'soft-deny' },
+    { at: 34.30, category: 'ui', name: 'pop' },
+    { at: 35.35, category: 'transitions', name: 'light-swoosh-quick' },
+    { at: 35.70, category: 'ui', name: 'pop-2' },
+    { at: 37.75, category: 'success', name: 'ding' },
+    { at: 40.65, category: 'success', name: 'ding' }
+  ],
+
+  'terminal-navigation': [
+    { at: 1.15, category: 'success', name: 'shimmer' },        // content start (header compact)
+    { at: 1.25, category: 'ui', name: 'pop' },                 // terminal window pop-in
+    { at: 1.30, category: 'ui', name: 'pop-2' },                // narration bubble pop-in
+    { at: 2.85, category: 'ui', name: 'tick' },                 // "pwd" mulai diketik
+    { at: 3.85, category: 'ui', name: 'pop' },                  // output /home/adib muncul
+    { at: 10.95, category: 'ui', name: 'tick' },                // "ls" mulai diketik
+    { at: 11.85, category: 'ui', name: 'pop' },                 // output ls muncul
+    { at: 12.45, category: 'ui', name: 'pop-2' },               // folder documents pop-in
+    { at: 12.60, category: 'ui', name: 'pop' },                 // folder projects pop-in
+    { at: 12.75, category: 'ui', name: 'pop-2' },               // folder downloads pop-in
+    { at: 20.85, category: 'ui', name: 'tick' },                // "cd projects" mulai diketik
+    { at: 21.75, category: 'transitions', name: 'light-swoosh-quick' }, // prompt berpindah lokasi
+    { at: 21.85, category: 'ui', name: 'pop' },                 // breadcrumb pop-in
+    { at: 29.15, category: 'ui', name: 'pop' },                 // relative path card pop-in
+    { at: 30.85, category: 'ui', name: 'pop-2' },               // absolute path card pop-in
+    { at: 32.65, category: 'success', name: 'ding' },           // target file ditemukan
+    { at: 34.85, category: 'success', name: 'ding' }            // takeaway
   ]
 }
 

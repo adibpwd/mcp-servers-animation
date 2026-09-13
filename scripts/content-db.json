@@ -325,7 +325,7 @@
         "Delegated Access",
         "Security"
       ],
-      "status": "draft",
+      "status": "ready",
       "priority": 22,
       "color": "#6366F1"
     },
@@ -342,7 +342,7 @@
         "Security",
         "Web"
       ],
-      "status": "ready",
+      "status": "posted",
       "priority": 23,
       "color": "#34D399"
     },
@@ -358,9 +358,41 @@
         "Security",
         "HTTP"
       ],
-      "status": "draft",
+      "status": "ready",
       "priority": 24,
       "color": "#FB923C"
+    },
+    {
+      "id": "linux-filesystem",
+      "title": "Linux Filesystem",
+      "subtitle": "Satu pohon, banyak ruang penting",
+      "category": "Linux Fundamentals",
+      "tags": [
+        "Linux",
+        "Filesystem",
+        "Terminal",
+        "Beginner",
+        "Folders"
+      ],
+      "status": "ready",
+      "priority": 25,
+      "color": "#22D3EE"
+    },
+    {
+      "id": "terminal-navigation",
+      "title": "Terminal Navigation",
+      "subtitle": "Tahu lokasi, lihat isi, lalu berpindah",
+      "category": "Linux Fundamentals",
+      "tags": [
+        "Linux",
+        "Terminal",
+        "Navigation",
+        "Beginner",
+        "CLI"
+      ],
+      "status": "ready",
+      "priority": 26,
+      "color": "#22D3EE"
     }
   ]
 }

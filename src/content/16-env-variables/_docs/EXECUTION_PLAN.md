@@ -2,11 +2,11 @@
 
 > Turunan teknis dari `ENV_VARIABLES_PLAN.md`. Numbering pakai standar
 > hierarki unlimited (dot notation) sesuai `PROJECT_STRUCTURE.md`.
-> Referensi standar: `docs/standardizations/02-standar-konten.md`,
-> `docs/standardizations/03-tutorial-buat-topic-baru.md`,
-> `docs/standardizations/04-referensi-gsap.md`,
-> `docs/standardizations/05-svg-text-guide.md`,
-> `docs/standardizations/08-audio-sfx-generation.md`.
+> Referensi standar: `docs/standardizations/02-topic-contract-scene-shell.md`,
+> `docs/standardizations/03-planning-storytelling-quality-gate.md`,
+> `docs/standardizations/04-motion-gsap-reference.md`,
+> `docs/standardizations/05-svg-layout-asset-pipeline.md`,
+> `docs/standardizations/06-audio-sfx.md`.
 >
 > **Status saat file ini ditulis: BELUM ADA KODE SAMA SEKALI** (sesuai
 > permintaan user — "plan md aja dulu tanpa eksekusi"). Semua langkah di

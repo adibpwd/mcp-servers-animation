@@ -1,12 +1,12 @@
 # PLAN: Standardization Doc 09 — Standar Pembuatan Konten Animasi
 
 **Tujuan plan ini:** Mendokumentasikan rencana isi untuk dokumen baru
-`docs/standardizations/09-standar-pembuatan-konten.md` — disusun langsung
+`docs/standardizations/03-planning-storytelling-quality-gate.md` — disusun langsung
 dari pola masalah nyata yang ditemukan di 14 revisi topic `14-http-request-response`.
 
 **Status:** 📋 PLAN SAJA — belum eksekusi penulisan doc finalnya.
 
-**Akan ditaruh di:** `docs/standardizations/09-standar-pembuatan-konten.md`
+**Akan ditaruh di:** `docs/standardizations/03-planning-storytelling-quality-gate.md`
 
 ---
 
@@ -366,7 +366,7 @@ FlowchartSpine nodes (titik referensi, bisa disesuaikan per topic):
 
 ## Catatan untuk Penulisan Doc Final
 
-Saat doc ini dieksekusi (ditulis ke `docs/standardizations/09-standar-pembuatan-konten.md`),
+Saat doc ini dieksekusi (ditulis ke `docs/standardizations/03-planning-storytelling-quality-gate.md`),
 beberapa hal yang perlu diperhatikan:
 
 1. **Numbering doc:** Akan jadi `09-standar-pembuatan-konten.md` —

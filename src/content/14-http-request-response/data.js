@@ -80,7 +80,7 @@ export const INTRO_SUBTITLE = 'Ngirim surat, nunggu balasan'
 // ═══════════════════════════════════════════════
 // ACT 1 — Kok Nyuruh Nunggu? (hook, bukan jawaban)
 // ═══════════════════════════════════════════════
-export const HOOK_URL = 'situs-favorit.com'
+export const HOOK_URL = 'store.adib-dev.com'
 export const HOOK_QUESTION = 'Browser tidak langsung ambil halaman.' // revisi-10: declarative
 export const HOOK_REVEAL = 'Browser kirim surat, bukan comot langsung.' // revisi-11: fix analogi (browser=pengirim, bukan kurir)
 export const HOOK_CLIFFHANGER = 'Isi surat itu belum terungkap.' // revisi-10: declarative, emoji dibuang

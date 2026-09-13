@@ -74,14 +74,14 @@ Copy-paste implementasi lama bukan alasan opt-out.
 
 | Prioritas | File | Update yang direncanakan |
 |---:|---|---|
-| 1 | docs/standardizations/03-tutorial-buat-topic-baru.md | decision gate, quick-start, dan urutan pemakaian Scene UI V1 |
-| 2 | docs/standardizations/09-standar-pembuatan-konten.md | policy default/opt-out, do/dont, checklist layout V1 |
-| 3 | docs/standardizations/05-svg-text-guide.md | zone contract, local ContentBody coordinate, anti-overlay |
-| 4 | docs/standardizations/04-referensi-gsap.md | cara topic memberi progress/state kepada pure components |
-| 5 | docs/standardizations/02-standar-konten.md | plan topic wajib mencatat scene shell version atau custom opt-out |
-| 6 | docs/standardizations/01-architecture.md | diagram timeline topic → scene component V1 → SVG |
+| 1 | docs/standardizations/03-planning-storytelling-quality-gate.md | decision gate, quick-start, dan urutan pemakaian Scene UI V1 |
+| 2 | docs/standardizations/03-planning-storytelling-quality-gate.md | policy default/opt-out, do/dont, checklist layout V1 |
+| 3 | docs/standardizations/05-svg-layout-asset-pipeline.md | zone contract, local ContentBody coordinate, anti-overlay |
+| 4 | docs/standardizations/04-motion-gsap-reference.md | cara topic memberi progress/state kepada pure components |
+| 5 | docs/standardizations/02-topic-contract-scene-shell.md | plan topic wajib mencatat scene shell version atau custom opt-out |
+| 6 | docs/standardizations/01-architecture-runtime.md | diagram timeline topic → scene component V1 → SVG |
 | 7 | docs/standardizations/README.md | index dan alur baca yang mengarah ke rules baru |
-| 8 | docs/standardizations/06-icon-generation.md | cross-reference ringan: icon ditempatkan di ContentBody, bukan pipeline baru |
+| 8 | docs/standardizations/05-svg-layout-asset-pipeline.md | cross-reference ringan: icon ditempatkan di ContentBody, bukan pipeline baru |
 
 Tidak perlu update file service atau audio karena V1 tidak mengatur backend maupun SFX.
 

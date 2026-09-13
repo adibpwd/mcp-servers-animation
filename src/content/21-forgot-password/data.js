@@ -2,7 +2,7 @@
 // ─────────────────────────────────────────────────────────────
 // Eksekusi sesuai src/content/21-forgot-password/_docs/
 // FORGOT_PASSWORD_PLAN.md (2026-09-12). Empat Act, scene-ui V1,
-// koordinat LOCAL, sumbu vertikal AXIS_X. Cerita: Raka lupa password
+// koordinat LOCAL, sumbu vertikal AXIS_X. Cerita: Adib lupa password
 // — sistem TIDAK memberitahu password lama — input email respon generik
 // sama (anti-enumeration) — token reset pendek umur + sekali pakai —
 // password baru di-hash + salt — hash lama di-replace — session lama
@@ -26,7 +26,7 @@ export const COLORS = {
   MUTED: '#94A3B8',
 
   RESET: '#FBBF24',     // jalur pemulihan — aktor utama
-  RECORD: '#38BDF8',    // record akun Raka
+  RECORD: '#38BDF8',    // record akun Adib
   CRYPTO: '#F472B6',    // mesin hash — password lama & baru
   TOKEN: '#A78BFA',     // token reset (pendek umur)
   PENDING: '#FBOF24',   // status sementara
@@ -35,12 +35,14 @@ export const COLORS = {
   SYSTEM: '#22D3EE',    // warna domain ADIB-DEV.COM (brand kontrak seri)
 }
 
-// PHASES — 4 Act (±45s dengan intro 1,2s)
+// PHASES — 4 Act (~29-30s per loop: intro ~1s + Act1-4 ~27.8s +
+// repeatDelay 1.2s. Revisi-04 §4.4: durasi di bawah disamakan ke runtime
+// aktual GSAP timeline di Animation.jsx, bukan lagi target ±45s lama.)
 export const PHASES = [
-  { id: 'act1-denied', badge: 'ACT 1 — LOGIN GAGAL, PASSWORD TIDAK DISIMPAN', badgeColor: COLORS.RESET, duration: 9.0 },
-  { id: 'act2-generic', badge: 'ACT 2 — PERMINTAAN TIDAK MEMBOCORKAN AKUN', badgeColor: COLORS.TOKEN, duration: 11.0 },
-  { id: 'act3-token', badge: 'ACT 3 — LINK RESET HANYA SEMENTARA', badgeColor: COLORS.CRYPTO, duration: 12.5 },
-  { id: 'act4-hash', badge: 'ACT 4 — HASH BARU MENGGANTIKAN LAMA', badgeColor: COLORS.SUCCESS, duration: 12.0 },
+  { id: 'act1-denied', badge: 'ACT 1 — LOGIN GAGAL, PASSWORD TIDAK DISIMPAN', badgeColor: COLORS.RESET, duration: 6.6 },
+  { id: 'act2-generic', badge: 'ACT 2 — PERMINTAAN TIDAK MEMBOCORKAN AKUN', badgeColor: COLORS.TOKEN, duration: 7.0 },
+  { id: 'act3-token', badge: 'ACT 3 — LINK RESET HANYA SEMENTARA', badgeColor: COLORS.CRYPTO, duration: 8.3 },
+  { id: 'act4-hash', badge: 'ACT 4 — HASH BARU MENGGANTIKAN LAMA', badgeColor: COLORS.SUCCESS, duration: 5.9 },
 ]
 
 export const INTRO_CATEGORY_LABEL = 'DEVELOPER TOOLS'
@@ -53,24 +55,27 @@ export const INTRO_SUBTITLE = 'Pulihkan tanpa membocorkan yang lama'
 export const AXIS_X = 410 - DEFAULT_LAYOUT_V1.body.x           // local 366 — sumbu vertikal
 
 export const DOOR_Y = 45                                        // local 45 — pintu login (gagal/siap)
-export const RECORD_Y = 170                                     // local 170 — kartu record (akun Raka)
-export const FORM_Y = 300                                       // local 300 — form recovery (email)
-export const INBOX_Y = 300                                      // local 300 (disamakan FORM_Y)
+export const RECORD_Y = 170                                     // local 170 — kartu record (akun Adib)
+export const INBOX_Y = 300                                      // local 300 — form pemulihan + inbox (satu kartu)
 export const TOKEN_Y = 435                                      // local 435 — token reset + jam
+export const COMPARE_Y = 378                                    // local 378 — revisi-04 §4.6: dua percobaan email → respons identik
 export const GATE_Y = 565                                       // local 565 — gerbang verifikasi token
 export const CLOSING_Y = 685                                    // local 685 — cap payoff
 
 export const CAPTION_Y = [760, 760, 760, 760]                 // local 760 — floating caption bar di bawah
 
 export const RECORD_LABEL = 'RECORD AKUN'
-export const RECORD_EMAIL = 'raka@devmail.id'
+export const RECORD_EMAIL = 'iammuslikhuladib@gmail.com'
 export const TOKEN_CODE   = 'TOKEN-73F1'   // token reset pendek (1x pakai)
 
 export const DOOR_LABEL = 'LOGIN'
 export const FORM_LABEL = 'FORM PEMULIHAN'
-export const INBOX_LABEL = 'INBOX RAKA'
+export const INBOX_LABEL = 'INBOX ADIB'
 export const TOKEN_LABEL = 'TOKEN RESET'
 export const GATE_LABEL = 'GERBANG RESET'
+// revisi-04 §4.6: dua percobaan email dengan status beda, respons sama
+export const ATTEMPT_MATCH_LABEL = 'EMAIL TERDAFTAR'
+export const ATTEMPT_NOMATCH_LABEL = 'EMAIL TIDAK ADA'
 
 // Teks deklaratif ≤5 kata, dekat objek
 export const CAPTIONS = {

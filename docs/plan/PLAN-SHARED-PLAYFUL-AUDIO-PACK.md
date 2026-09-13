@@ -121,7 +121,7 @@ Setelah sumber dipilih:
 ## 8. Rencana Update Standar Dokumentasi
 
 Setelah pack dan minimal satu topic pemakai sudah lolos preview/export, update
-docs/standardizations/08-audio-sfx-generation.md. Jangan mengubah standar
+docs/standardizations/06-audio-sfx.md. Jangan mengubah standar
 hanya berdasarkan asumsi plan; aturan final harus berasal dari implementasi
 yang sudah didengar dan diverifikasi.
 

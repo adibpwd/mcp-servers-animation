@@ -45,7 +45,7 @@ tidak mengulang.
 
 ## 3. Perubahan Dokumen
 
-### 3.1 `docs/standardizations/09-standar-pembuatan-konten.md` — §1.Q Series Identity Contract
+### 3.1 `docs/standardizations/03-planning-storytelling-quality-gate.md` — §1.Q Series Identity Contract
 
 Tambahkan ke poin "Preflight wajib" (di bawah bullet yang ada):
 
@@ -72,7 +72,7 @@ ada di seri hanya karena topik berbeda."
   item tagline intro, nama protagonis, dan warna brand domain terhadap
   reference topic; catat deviasi + alasan tertulis.
 
-### 3.3 `docs/standardizations/05-svg-text-guide.md` — § "Warna title intro"
+### 3.3 `docs/standardizations/05-svg-layout-asset-pipeline.md` — § "Warna title intro"
 
 Perluas blok di akhir (saat ini line 187-191) dengan aturan tagline branding:
 
@@ -82,7 +82,7 @@ Perluas blok di akhir (saat ini line 187-191) dengan aturan tagline branding:
   warna semantik tema topic;
 - rujuk ke `09-standar-pembuatan-konten.md` §1.Q.
 
-### 3.4 `docs/standardizations/03-tutorial-buat-topic-baru.md` — Langkah 2 "Bikin Intro"
+### 3.4 `docs/standardizations/03-planning-storytelling-quality-gate.md` — Langkah 2 "Bikin Intro"
 
 Tambahkan contoh konkret tagline beserta dua segmen warna:
 

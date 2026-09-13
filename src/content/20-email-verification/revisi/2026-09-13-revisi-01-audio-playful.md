@@ -63,7 +63,7 @@ lokal dibuat backward-compatible dengan default silent.
 
 Jaga Act 4: match/consume/verified/door tidak boleh menjadi empat cue keras berurutan. Prioritaskan shimmer pada Verified dan relief-settle pada pintu; cue lain kecil atau silent.
 
-- Ikuti docs/standardizations/08-audio-sfx-generation.md §2, §3, §7, dan §8.
+- Ikuti docs/standardizations/06-audio-sfx.md §2, §3, §7, dan §8.
 - Preview satu loop penuh dengan volume normal, lalu export audio. Catat cue
   terlalu pelan, bertumpuk, terlambat, atau terasa mengganggu di revisi ini.
 - Tidak ada asset baru yang di-download pada revisi topic ini; kandidat aset

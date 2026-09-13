@@ -5,7 +5,7 @@
 **Belum dieksekusi.** Dokumen ini plan-only sesuai permintaan — folder
 `src/content/dns-explained/{Animation.jsx,data.js,manifest.js}` BELUM
 dibuat. Review dulu sebelum lanjut ke Langkah 0 di
-`docs/standardizations/03-tutorial-buat-topic-baru.md`.
+`docs/standardizations/03-planning-storytelling-quality-gate.md`.
 
 ## Overview
 
@@ -624,4 +624,4 @@ checklist di bawah selesai, baru pindah status ke `ready`.
    spesifik (mis. menyesuaikan format Reels/TikTok tertentu)?
 
 Setelah dikonfirmasi, lanjut eksekusi mengikuti urutan Langkah 0-6 di
-`docs/standardizations/03-tutorial-buat-topic-baru.md`.
+`docs/standardizations/03-planning-storytelling-quality-gate.md`.

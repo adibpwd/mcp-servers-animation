@@ -6,7 +6,7 @@ object, request flow, GSAP timeline, dan data tetap milik masing-masing
 topic — folder ini HANYA menyediakan layout/chrome.
 
 Rencana & rationale lengkap: `docs/plan/PLAN-12-SHARED-SCENE-COMPONENTS-V1.md`.
-Safe-zone contract terkait: `docs/standardizations/09-standar-pembuatan-konten.md`
+Safe-zone contract terkait: `docs/standardizations/03-planning-storytelling-quality-gate.md`
 § Safe-Zone Layout Contract.
 
 ## Status

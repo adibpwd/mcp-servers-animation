@@ -23,6 +23,8 @@ import oauth2DelegatedLoginManifest from './22-oauth2-delegated-login/manifest.j
 import registerManifest            from './19-register/manifest.js'
 import emailVerificationManifest   from './20-email-verification/manifest.js'
 import forgotPasswordManifest     from './21-forgot-password/manifest.js'
+import linuxFilesystemManifest    from './25-linux-filesystem/manifest.js'
+import terminalNavigationManifest from './26-terminal-navigation/manifest.js'
 
 // ═══════════════════════════════════════════════════════════════
 // ✅ FIRST PASS SELESAI — 19/20/21/24 rebuild penuh (timeline 4 Act,
@@ -344,14 +346,35 @@ export const CONTENT_REGISTRY = [
   },
 
   // ═══════════════════════════════════════════════════════════
-  // ✅ FIRST PASS SELESAI — 24-cors 4 Act (preflight OPTIONS → policy
-  // → request → respons), scene-ui V1, warna #FB923C. Belum preview
-  // manual & export MP4 (lihat 24-cors/_docs/CORS_PLAN.md § Checklist)
+  // ✅ FIRST PASS SELESAI — 24-cors rebuild penuh dari nol mengikuti
+  // _docs/CORS_PLAN.md (2026-09-13), timeline 4 Act + render JSX.
+  // Belum preview manual & export MP4 (lihat CORS_PLAN.md § Checklist
+  // Eksekusi). Versi lama (pre-rebuild) diarsipkan di
+  // _archive/backup-24-cors-20260913/, bukan basis rebuild ini.
   // ═══════════════════════════════════════════════════════════
 
   {
     ...corsManifest,
     status:    'coming-soon',
     component: () => import('./24-cors/Animation'),
+  },
+
+  {
+    ...linuxFilesystemManifest,
+    status:    'ready',
+    component: () => import('./25-linux-filesystem/Animation'),
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // 🚧 IN PROGRESS — 26-terminal-navigation first pass selesai
+  // (timeline 4 Act + render JSX, scene-ui V1, pure inline SVG),
+  // belum preview manual & export MP4 (lihat
+  // 26-terminal-navigation/_docs/TERMINAL_NAVIGATION_PLAN.md § Checklist Eksekusi)
+  // ═══════════════════════════════════════════════════════════
+
+  {
+    ...terminalNavigationManifest,
+    status:    'coming-soon',
+    component: () => import('./26-terminal-navigation/Animation'),
   },
 ]

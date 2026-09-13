@@ -26,14 +26,14 @@ kurikulum/prioritas, tanpa mengubah `id` topic maupun perilaku aplikasi.
   **bukan** path folder. Jadi export pipeline & content-db **aman**, tidak perlu
   diubah selama field `id` di registry tetap sama.
 - Fitur icon generator scan pakai glob `src/content/*/icons/icons.json`
-  (lihat `docs/standardizations/06-icon-generation.md`) → glob `*` tetap match
+  (lihat `docs/standardizations/05-svg-layout-asset-pipeline.md`) → glob `*` tetap match
   folder yang sudah diberi prefix angka, **aman**.
 - Referensi path folder spesifik yang HARUS diupdate manual (grep hit):
-  - `docs/standardizations/04-referensi-gsap.md` → menyebut
+  - `docs/standardizations/04-motion-gsap-reference.md` → menyebut
     `src/content/tailscale/revision/...` (2 tempat)
-  - `docs/standardizations/03-tutorial-buat-topic-baru.md` → menyebut
+  - `docs/standardizations/03-planning-storytelling-quality-gate.md` → menyebut
     `src/content/http-request-response/_docs/...`
-  - `docs/standardizations/02-standar-konten.md` → menyebut
+  - `docs/standardizations/02-topic-contract-scene-shell.md` → menyebut
     `src/content/linux-vs-unix/` sebagai contoh (bisa dibiarkan generik atau
     diupdate ke nama baru, low priority)
   - File `_docs/`, `revision/`, `PLAN-*.md` **di dalam** tiap folder topic itu
@@ -105,9 +105,9 @@ update tabel ini sebelum eksekusi.
              kalau memang mau di-publish, atau biarkan tetap tidak terdaftar
    3.2. Cek file lain yang mereferensikan path folder topic secara hardcode
       3.2.1. grep ulang `src/content/<nama-lama>` di seluruh repo (exclude node_modules, dist)
-      3.2.2. Update referensi di docs/standardizations/04-referensi-gsap.md
-      3.2.3. Update referensi di docs/standardizations/03-tutorial-buat-topic-baru.md
-      3.2.4. Review docs/standardizations/02-standar-konten.md (opsional, contoh generik)
+      3.2.2. Update referensi di docs/standardizations/04-motion-gsap-reference.md
+      3.2.3. Update referensi di docs/standardizations/03-planning-storytelling-quality-gate.md
+      3.2.4. Review docs/standardizations/02-topic-contract-scene-shell.md (opsional, contoh generik)
 
 4. Verifikasi
    4.1. `npm run dev` → buka ContentList, pastikan semua 14 topic ready/coming-soon
