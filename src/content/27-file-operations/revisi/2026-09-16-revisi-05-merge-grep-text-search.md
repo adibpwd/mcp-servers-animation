@@ -193,23 +193,23 @@ content yang dirender bersamaan.
 
 ## Checklist penerimaan sebelum Content 30 dihapus
 
-- [ ] Act 5 menambah ±15 detik dan total video berada pada target ±55–60
+- [x] Act 5 menambah ±15 detik dan total video berada pada target ±55–60
       detik tanpa hold kosong.
-- [ ] `grep port config.ini` membuat baris `port=3000` terlihat sebagai isi
+- [x] `grep port config.ini` membuat baris `port=3000` terlihat sebagai isi
       file; keyword tidak muncul terlalu dini.
-- [ ] `grep -i error app.log` memvisualkan sedikitnya tiga kapitalisasi dan
+- [x] `grep -i error app.log` memvisualkan sedikitnya tiga kapitalisasi dan
       ketiganya menjadi match setelah modifier diterapkan.
-- [ ] `grep -r TODO .` memperlihatkan scan lintas node dan mengumpulkan
+- [x] `grep -r TODO .` memperlihatkan scan lintas node dan mengumpulkan
       minimal dua hasil berpath relatif.
-- [ ] `find`/`locate` tetap berarti mencari nama/lokasi file, sedangkan
+- [x] `find`/`locate` tetap berarti mencari nama/lokasi file, sedangkan
       `grep` berarti mencari isi; perbedaan ditulis pada takeaway.
-- [ ] Preview grep, result rail, motion corridor, terminal paling tinggi, dan
+- [x] Preview grep, result rail, motion corridor, terminal paling tinggi, dan
       closing tidak overlap di frame before, transit, atau after.
-- [ ] Semua action baru reset bersih pada loop kedua: history, token,
+- [x] Semua action baru reset bersih pada loop kedua: history, token,
       highlight, result rail, scan progress, dan panel preview.
-- [ ] SFX baru dipetakan, tidak dobel, dan sinkron dengan Apply.
-- [ ] Preview manual dan export final Content 27 disetujui.
-- [ ] Baru setelah semua item di atas lulus, Content 30 dan entri roadmapnya
+- [x] SFX baru dipetakan, tidak dobel, dan sinkron dengan Apply.
+- [x] Preview manual dan export final Content 27 disetujui.
+- [x] Baru setelah semua item di atas lulus, Content 30 dan entri roadmapnya
       dihapus secara eksplisit dalam perubahan terpisah yang recoverable.
 
 ## Status pelaksanaan (2026-09-16)
@@ -220,12 +220,12 @@ sudah dieksekusi lewat Desktop Commander.
 | File | Status |
 |---|---|
 | `data.js` | ✅ direvisi (entry aktif) — Act 5 ditambah ke `PHASES`, `GREP_SCENARIOS` baru, `TERMINAL_STEPS`/`CAPTION_BY_CMD`/`GUI_VERB`/`CHANGE_BADGE`/`SFX_MAP` diperluas. Backup: `data.revisi-04.js`. |
-| `Animation.jsx` | ✅ direvisi (entry aktif) — `GrepPreviewPanel` & `GrepResultRail` baru; `CommandPulse` (`kind: 'scan'`) digeneralisasi agar dipakai ulang oleh `grep -r`; scheduling Act 5 (`grep-port`, `grep-icase`, `grep-recursive`) ditambah di `scheduleAct`. Lolos syntax check esbuild (bundle + external deps) — **belum diverifikasi visual di browser/preview**. Backup: `Animation.revisi-04.jsx`. |
+| `Animation.jsx` | ✅ direvisi (entry aktif) — `GrepPreviewPanel` & `GrepResultRail` baru; `CommandPulse` (`kind: 'scan'`) digeneralisasi agar dipakai ulang oleh `grep -r`; scheduling Act 5 (`grep-port`, `grep-icase`, `grep-recursive`) ditambah di `scheduleAct`. Lolos syntax check esbuild dan sudah dicek preview manual oleh user (disetujui). Backup: `Animation.revisi-04.jsx`. |
 | `metadata.json` + `manifest.js` | ✅ subtitle & tags diperluas menyebut "cari isi teks" / `grep`. |
 | `caption.md` | Tidak ada file caption sosial untuk Content 27 di project ini — langkah dilewati (tidak applicable). |
 | `scripts/export-lib.js` | Tidak disentuh — tidak ada tabel cue per-topic di file ini; SFX baru (`SFX_MAP.CHIME` → `ui/chime.wav`, sudah dicek ada di `public/audio/ui/`) berjalan lewat `sfxLoader` yang sama seperti SFX lain, tidak butuh perubahan terpisah. |
-| Preview + export Content 27 | ⏳ **Belum dilakukan** — perlu dibuka manual di browser/player untuk verifikasi visual (highlight match, result rail, scan `-r`, reset saat loop kedua) sebelum checklist penerimaan di atas bisa dicentang. |
-| `src/content/30-grep-text-search/` | Tidak disentuh, sesuai aturan — baru dihapus setelah checklist penerimaan lulus. |
+| Preview + export Content 27 | ✅ Sudah dicek manual oleh user dan disetujui (2026-09-16). |
+| `src/content/30-grep-text-search/` | ✅ **Dihapus** (2026-09-16), setelah checklist penerimaan disetujui user. Tidak ada entry roadmap lain (docs/) yang menunjuk folder ini — dicek dengan `grep -rl` sebelum hapus, tidak ada hasil. Riwayat plan-nya tetap tersimpan di git history (recoverable). |
 
-**Belum dieksekusi:** semua item checklist penerimaan di atas (perlu preview
-manual), dan langkah 7 (hapus Content 30) yang memang menunggu checklist itu.
+**Selesai:** seluruh checklist penerimaan disetujui user dan langkah 7 (hapus
+Content 30) sudah dieksekusi. Revisi-05 tuntas.
