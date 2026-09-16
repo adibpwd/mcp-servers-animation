@@ -1,0 +1,17 @@
+{
+  "id": "auth",
+  "title": "Authentication",
+  "subtitle": "Siapa boleh masuk, siapa boleh buka apa",
+  "category": "Networking",
+  "tags": [
+    "Authentication",
+    "Authorization",
+    "Hashing",
+    "Session",
+    "JWT",
+    "Security"
+  ],
+  "color": "#34D399",
+  "status": "ready",
+  "priority": 18
+}

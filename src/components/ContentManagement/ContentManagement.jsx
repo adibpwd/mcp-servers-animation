@@ -82,11 +82,17 @@ export default function ContentManagement() {
       {/* Header with View Toggle */}
       <div className="cm-header">
         <div className="cm-title-group">
-          <button className="cm-back-btn" onClick={() => navigate('/')}>← Back</button>
           <div className="cm-title">
             <h1>Content Management</h1>
             <p className="cm-subtitle">{items.length} konten · Manage priority & status</p>
           </div>
+          <button
+            className="cm-history-btn"
+            onClick={() => navigate('/export-history')}
+            title="View export history"
+          >
+            📋 History
+          </button>
         </div>
 
         <div className="view-toggle">

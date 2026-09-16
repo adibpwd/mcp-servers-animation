@@ -1,0 +1,16 @@
+{
+  "id": "tailscale",
+  "title": "How Tailscale Works",
+  "subtitle": "From blocked NAT to a private mesh network",
+  "category": "Networking",
+  "tags": [
+    "Tailscale",
+    "VPN",
+    "WireGuard",
+    "Mesh Network",
+    "NAT Traversal"
+  ],
+  "color": "#6366F1",
+  "status": "posted",
+  "priority": 11
+}

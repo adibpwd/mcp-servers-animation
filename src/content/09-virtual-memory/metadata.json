@@ -1,0 +1,15 @@
+{
+  "id": "virtual-memory",
+  "title": "Virtual Memory Management",
+  "subtitle": "RAM vs Disk swap, page tables, TLB, and paging explained",
+  "category": "Linux Deep Dive",
+  "tags": [
+    "Memory",
+    "Virtual",
+    "Paging",
+    "Advanced"
+  ],
+  "color": "#EC4899",
+  "status": "posted",
+  "priority": 3
+}

@@ -1,8 +1,8 @@
-Frontend buka di app.example, data ada di api.example — beda origin, tapi kok bisa gagal baca? 😵
+Frontend buka di adib-dev.com, data ada di api.example — beda origin, tapi kok bisa gagal baca? 😵
 
 Tapi bingung... CORS bukan "server menolak terima request". Origin beda bikin browser jadi gerbang: request dipegang dulu.
 
-Karena request-nya POST + Authorization (non-simple), browser gak langsung lanjut — dia bertanya dulu via preflight OPTIONS: "Origin app.example, boleh POST, boleh bawa authorization?"
+Karena request-nya POST + Authorization (non-simple), browser gak langsung lanjut — dia bertanya dulu via preflight OPTIONS: "Origin adib-dev.com, boleh POST, boleh bawa authorization?"
 
 API jawab lewat header izin: Access-Control-Allow-Origin, Allow-Methods, Allow-Headers. Kalau cocok, request asli baru berjalan & browser buka data untuk JavaScript. Kalau nggak cocok? Ditahan!
 

@@ -1,0 +1,16 @@
+{
+  "id": "dns-explained",
+  "title": "Cara Kerja DNS",
+  "subtitle": "Domain jadi IP address — buku telepon internet",
+  "category": "Networking",
+  "tags": [
+    "DNS",
+    "Resolver",
+    "Root Server",
+    "TLD",
+    "Networking"
+  ],
+  "color": "#06B6D4",
+  "status": "draft",
+  "priority": 13
+}

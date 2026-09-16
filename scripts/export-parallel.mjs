@@ -102,6 +102,16 @@ export async function detectDuration(topicId, baseUrl, onLog) {
   try {
     const page = await openPage(browser, topicId, baseUrl, onLog)
 
+    try {
+      await page.waitForFunction(
+        () => window.__animationTimeline && typeof window.__animationTimeline.duration === 'function' && window.__animationTimeline.duration() > 0,
+        { timeout: 15000 }
+      )
+    } catch (err) {
+      const pageUrl = page.url()
+      throw new Error(`Timeline tidak terdeteksi di ${pageUrl} (durasi null). ${err.message}`)
+    }
+
     const dur = await page.evaluate(() => {
       const tl = window.__animationTimeline
       if (!tl) return null

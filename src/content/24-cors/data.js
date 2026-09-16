@@ -47,7 +47,7 @@ export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
 // ── Intro header — scene-ui V1 IntroHeaderMorphV1. ──
 export const INTRO_CATEGORY_LABEL = 'DEV TOOLS'
-export const INTRO_DOMAIN = 'APP.EXAMPLE'
+export const INTRO_DOMAIN = 'ADIB-DEV.COM'
 export const INTRO_CATEGORY = `${INTRO_CATEGORY_LABEL} · ${INTRO_DOMAIN}`
 export const INTRO_TITLE_A = 'CORS'
 export const INTRO_TITLE_B = ' CHECK'
@@ -99,7 +99,7 @@ export const FLOW_WAYPOINTS = {
   P5_POLICY: POLICY_Y,     // policy shelf / processor
 }
 
-export const APP_LABEL = 'APP.EXAMPLE'
+export const APP_LABEL = 'ADIB-DEV.COM'
 export const GATE_LABEL = 'BROWSER GATE'
 export const API_LABEL = 'API.EXAMPLE'
 export const POLICY_LABEL = 'POLICY SHELF'
@@ -136,7 +136,7 @@ export const REQUESTS = {
   PREFLIGHT: {
     method: 'OPTIONS', path: '/data',
     lines: [
-      'Origin: app.example',
+      'Origin: adib-dev.com',
       'Access-Control-Request-Method: POST',
       'Access-Control-Request-Headers: authorization',
     ],
@@ -144,7 +144,7 @@ export const REQUESTS = {
   },
   PREFLIGHT_RESPONSE: {
     lines: [
-      'Access-Control-Allow-Origin: app.example',
+      'Access-Control-Allow-Origin: adib-dev.com',
       'Access-Control-Allow-Methods: GET, POST',
       'Access-Control-Allow-Headers: authorization',
     ],

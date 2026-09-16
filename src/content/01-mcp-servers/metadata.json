@@ -1,0 +1,15 @@
+{
+  "id": "mcp-servers",
+  "title": "MCP Servers",
+  "subtitle": "How AI agents plug into your tools",
+  "category": "AI Infrastructure",
+  "tags": [
+    "MCP",
+    "Protocol",
+    "Tools",
+    "AI"
+  ],
+  "color": "#4ADE80",
+  "status": "posted",
+  "priority": 1
+}

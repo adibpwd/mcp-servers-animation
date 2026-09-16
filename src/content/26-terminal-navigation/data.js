@@ -40,6 +40,11 @@ export const INTRO_TITLE_A = 'TERMINAL '
 export const INTRO_TITLE_B = 'NAVIGATION'
 export const INTRO_SUBTITLE = 'Tahu lokasi, lihat isi, lalu berpindah'
 
+// Revisi-03 (2026-09-14) — ambient chapter marker pada intro, bukan badge
+// aktif (badge lengkap tetap PHASES[0].badge, dipakai ActBadgeNavigatorV1
+// setelah intro). Lihat revisi/2026-09-14-revisi-03-act-1-intro-ambient.md
+export const INTRO_ACT_LABEL = 'ACT 1'
+
 export const HOME = '/home/adib'
 export const PATH_PROJECTS = '/home/adib/Projects'
 export const PATH_LANDING = '/home/adib/Projects/landing-page'

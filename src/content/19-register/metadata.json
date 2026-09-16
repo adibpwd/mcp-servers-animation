@@ -1,0 +1,16 @@
+{
+  "id": "register",
+  "title": "Register — Buat Akun",
+  "subtitle": "Credential baru masuk sistem, sesi langsung dibuat",
+  "category": "Developer Tools",
+  "tags": [
+    "Register",
+    "Authentication",
+    "Session",
+    "TLS",
+    "Web"
+  ],
+  "color": "#FBBF24",
+  "status": "ready",
+  "priority": 19
+}

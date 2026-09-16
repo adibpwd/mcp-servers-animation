@@ -6,7 +6,7 @@
 | Status | 📝 PLAN ONLY — jangan dieksekusi |
 | Target audiens | Pemula Linux yang sudah memahami terminal, command line, dan file |
 | Tujuan belajar | Memahami stdout, redirect overwrite, append, serta input redirect sebagai jalur data command |
-| Prasyarat | 28 Reading Files, 48 Shell/Terminal/Command Line |
+| Prasyarat | 27 Terminal File Workflow, 48 Shell/Terminal/Command Line |
 | Scene shell | scene-ui V1, portrait 820 × 1340 |
 
 ## Audience promise

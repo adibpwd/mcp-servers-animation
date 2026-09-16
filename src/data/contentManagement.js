@@ -3,7 +3,7 @@
 
 const getApiBase = () => {
   if (typeof window !== 'undefined') {
-    return `http://${window.location.hostname}:3373`
+    return window.location.origin
   }
   return 'http://localhost:3373'
 }

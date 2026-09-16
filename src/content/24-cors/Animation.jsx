@@ -384,7 +384,7 @@ export default function CorsAnimation({
           { label: INTRO_TITLE_B, color: COLORS.SUCCESS },
         ]}
         subtitle={INTRO_SUBTITLE}
-        hero={{ thumbWidth: 260 }}
+        hero={{ thumbWidth: 484 }}
         titleFilter="url(#glow)"
         testId="cors-intro-header"
       />

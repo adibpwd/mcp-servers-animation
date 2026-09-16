@@ -1157,6 +1157,118 @@ migrasi penuh body).
 
 ---
 
+#### T. Causal Motion Contract (Before → Action → After)
+
+Setiap perubahan konsep atau state yang penting untuk tujuan belajar wajib
+ditampilkan sebagai **rantai sebab-akibat**, bukan sebagai dua screenshot
+sebelum/sesudah yang berganti mendadak. Kontrak ini berlaku untuk semua topic
+bermutasi—termasuk file operation, CRUD, konfigurasi, proses OS, network
+route, maupun simulator—bukan hanya request/response.
+
+Satu action wajib memiliki lima beat yang tercatat di plan:
+
+| Beat | Pertanyaan yang harus terjawab | Bukti visual minimum |
+|---|---|---|
+| 1. Before | Apa state awalnya? Apa yang belum ada/belum berubah? | Objek sumber, target, dan batas state tampak jelas. |
+| 2. Intent | Apa yang memicu aksi? | Click, command yang diketik, toggle, paket, atau input lain lahir dari source. |
+| 3. Travel / process | Bagaimana sebab berjalan menuju akibat? | Objek/pulse/path/progress bergerak melalui jalur yang relevan; tidak teleport. |
+| 4. Apply | Tepat kapan state berubah? | Impact pada target: muncul, pindah, ganti, terisi, menyala, atau hilang. |
+| 5. After / explain | Apa hasil yang perlu diingat? | State akhir stabil minimal 0,65 detik, dengan badge/caption singkat dekat hasil. |
+
+**Aturan keras:** hasil akhir tidak boleh terlihat sebelum beat **Apply**.
+Jika sebuah action tidak memiliki objek yang masuk akal untuk dibawa,
+gunakan `CommandPulse`, focus ring, progress scan, atau path menyala sebagai
+representasi intent—tetapi tetap tunjukkan arah source → target dan titik
+apply. Motion dekoratif yang tidak menjelaskan perubahan bukan pengganti beat
+ini.
+
+##### T.1 Template tabel action wajib di plan
+
+Untuk setiap action belajar (bukan sekadar setiap Act), plan topic harus
+memiliki tabel berikut. Satu Act boleh mengandung beberapa action, tetapi
+setiap baris tetap harus independen dan dapat dipreview.
+
+| Action id | Before yang tampak | Pemicu / source | Jalur / process | Target & apply | After yang tampak | Hold | SFX | Frame audit |
+|---|---|---|---|---|---|---:|---|---|
+| `create-folder` | Grid belum memiliki folder | Prompt terminal + Enter | Pulse naik ke slot grid | Pulse tiba → folder pop-in | Counter +1, badge `+ folder` | 0,8s | pop | before / transit / after |
+| `copy-file` | Source ada, target kosong | Tombol/command copy | Beam bercabang dari source | Target muncul, source tetap | Dua file terlihat bersamaan | 0,9s | arrive | before / branch / after |
+
+Definisi kolom:
+
+- **Before yang tampak** harus menyebut state nyata, bukan label abstrak
+  seperti “siap”. Tuliskan objek yang ada dan yang memang belum ada.
+- **Pemicu/source** adalah titik lahir action. Action tidak boleh mulai dari
+  tengah canvas tanpa asal.
+- **Jalur/process** menyebut arah, waypoint bila ada, dan jenis motion.
+- **Target & apply** menyatakan event tunggal yang mengubah state; misalnya
+  pulse tiba, packet memasuki processor, atau drag mencapai folder.
+- **After yang tampak** menyatakan perbedaan yang dapat dicek audiens.
+- **Hold** adalah waktu baca state akhir, bukan jeda kosong.
+- **Frame audit** minimal mencakup satu frame sebelum, satu saat transit, dan
+  satu sesudah apply. Frame ini wajib diperiksa saat preview.
+
+##### T.2 Kontrak state nyata, reflow, dan removal
+
+- Jangan render object future sebagai slot/ghost permanen bila konsepnya
+  “belum ada”. Object baru baru boleh masuk DOM/`activeIds` pada beat Apply.
+- Saat item bertambah atau hilang dari grid/list, tulis aturan **reflow**:
+  item lama slide menuju posisi baru, item baru pop-in di posisi akhir, dan
+  removal shrink/fade dahulu sebelum item lain menutup celah.
+- State lama harus dapat terlihat cukup lama untuk dibandingkan dengan state
+  baru. Untuk copy, source dan copy tampil bersamaan. Untuk move, tile yang
+  sama berpindah dan source menjadi empty state. Untuk delete, target masuk
+  state warning/confirmation sebelum hilang.
+- Badge/caption yang merujuk item bergerak harus berposisi relatif terhadap
+  posisi final/snapshot item, bukan coordinate absolut yang akan tertinggal
+  ketika reflow terjadi.
+- Preview baca/inspect bukan hanya focus ring: bila tujuan command adalah
+  membaca isi, tampilkan bagian isi yang relevan dan bedakan perilakunya
+  (mis. full output, scroll bertahap, awal file, atau stream live).
+
+##### T.3 Kontrak layout dinamis dan anti-overflow
+
+Panel yang jumlah baris/tingginya berubah wajib mendefinisikan anchor dan
+rumus ukuran di plan. Contoh: terminal memakai `bottom` tetap lalu tumbuh ke
+atas, bukan `top` tetap lalu mendorong closing zone ke bawah. Catat:
+
+1. anchor tetap (`bottom`, `right`, atau center);
+2. ukuran minimum, maksimum, row height, dan padding;
+3. strategi overflow (truncate, wrap, scroll visual, atau clip);
+4. bounding box pada ukuran terbesar;
+5. elemen yang tidak boleh tertutup pada ukuran terbesar.
+
+`clipPath` hanya pembatas isi internal yang memang dapat di-scroll/dipotong;
+ia bukan solusi untuk menyembunyikan collision antar-panel. Collision tetap
+harus diperbaiki di layout map.
+
+##### T.4 Pelajaran tervalidasi: Content 27 File Operations, Revisi 02–04
+
+Revisi 02 memperkenalkan relasi terminal → GUI, tetapi fixed terminal height
+dan chip teks belum cukup menjelaskan state. Revisi 03 mengunci terminal
+berbasis jumlah baris, grid dengan ikon bermakna, dan urutan
+type → Enter → travel → apply → explain. Revisi 04 menyempurnakannya dengan
+state nyata dan dinamis: item belum ada sampai apply, grid reflow saat add/
+remove, serta preview file yang memperlihatkan isi.
+
+Pelajaran lintas-topic yang harus dipakai kembali:
+
+1. **Jangan hanya memberi label perubahan; perlihatkan mekanismenya.**
+   Command, click, dan request harus meninggalkan source yang bisa ditelusuri
+   mata sampai ke target.
+2. **Gunakan motion yang berbeda untuk semantik yang berbeda.** Add = pop-in;
+   copy = branch + source tetap; move = satu objek bergerak; delete = warning
+   lalu shrink; inspect = focus menuju preview; search = scan berurutan.
+3. **State nyata lebih mudah dipahami daripada placeholder.** “Belum ada”
+   sebaiknya benar-benar belum dirender; jangan bocorkan jawaban sebelum
+   action selesai.
+4. **Reflow adalah bagian dari penjelasan, bukan kosmetik.** Perpindahan item
+   lain membuktikan struktur collection berubah tanpa membuat audiens merasa
+   UI tiba-tiba ditukar.
+5. **Perubahan ukuran harus punya arah aman.** Panel dinamis bertumbuh menuju
+   ruang yang dialokasikan; ukuran maksimum diaudit sebagai frame tersendiri.
+
+---
+
 ### 2. Pre-Planning Checklist (Wajib Sebelum Coding)
 
 Langkah yang WAJIB selesai sebelum menyentuh `Animation.jsx`:
@@ -1165,7 +1277,10 @@ Langkah yang WAJIB selesai sebelum menyentuh `Animation.jsx`:
 [ ] 0. CONTENT STATE & SERIES IDENTITY (WAJIB sebelum storyboard — khusus topic request/response atau bertingkat)
     [ ] 0.1. Isi tabel Content State Contract (client awal → transit → service → client akhir) — lihat §1.M
     [ ] 0.2. Isi preflight Series Identity Contract (seri, kategori, palette Title A Biru/Cyan + Title B Hijau, header reference) — lihat §1.Q
-    [ ] 0.3. Untuk tiap method/aksi, jawab 4 pertanyaan Method Visualization Contract sebelum lanjut — lihat §1.N
+[ ] 0.3. Untuk tiap method/aksi, jawab 4 pertanyaan Method Visualization Contract sebelum lanjut — lihat §1.N
+    [ ] 0.4. Buat satu baris Causal Motion Contract untuk SETIAP action belajar:
+         before, intent/source, travel/process, apply, after, hold, SFX, dan
+         tiga frame audit — lihat §1.T.1
 
 [ ] 1. STORYBOARD NARATIF
     [ ] 1.1. Tulis deskripsi setiap Act (max 4 Act): siapa, di mana, apa yang terjadi
@@ -1202,7 +1317,9 @@ Langkah yang WAJIB selesai sebelum menyentuh `Animation.jsx`:
     [ ] 4.4. Definisikan FlowchartSpine: semua node + semua waypoint path (termasuk Act 1)
     [ ] 4.5. Untuk node intermediary, rancang visual "keputusan routing"-nya — lihat §1.L
     [ ] 4.6. Untuk teks yang merujuk elemen bergerak, rencanakan posisi relatif — lihat §1.K
-    [ ] 4.7. Buat diagram zona vertikal + catat bounding box objek terbesar — lihat §1.R
+[ ] 4.7. Buat diagram zona vertikal + catat bounding box objek terbesar — lihat §1.R
+    [ ] 4.8. Untuk panel/grid dinamis: tulis anchor, rumus min/max size,
+         strategi overflow, dan bounding box saat ukuran maksimum — lihat §1.T.3
 
 [ ] 5. CAPTION & TEKS PLANNING
     [ ] 5.1. Tulis semua caption (≤5 kata, deklaratif, tanpa emoji, tanpa tanda tanya — hard rule)
@@ -1213,13 +1330,17 @@ Langkah yang WAJIB selesai sebelum menyentuh `Animation.jsx`:
     [ ] 6.1. Definisikan durasi per Act (total 40-60s, distribusi wajar)
     [ ] 6.2. Per elemen: kapan popIn, kapan popOut — TIDAK BOLEH ada elemen tanpa popOut, termasuk elemen yang sudah "sampai tujuan"
     [ ] 6.3. Cek: ada buffer nganggur > 0.5s yang bisa dipangkas?
-    [ ] 6.4. Cek konsistensi arah gerak tiap elemen terhadap status naratifnya — lihat §1.J
+[ ] 6.4. Cek konsistensi arah gerak tiap elemen terhadap status naratifnya — lihat §1.J
+    [ ] 6.5. Untuk add/remove/reorder: tulis state DOM awal/akhir dan gerak
+         reflow tiap objek yang terdampak — lihat §1.T.2
 
 [ ] 7. CONTINUITY & ACT DESIGN AUDIT (khusus topic request/response)
     [ ] 7.1. Cek tidak ada pop-out request tanpa objek penghubung di sisi tujuan — lihat §1.O
     [ ] 7.2. Bandingkan tiap jeda terhadap hold budget default; tulis alasan kalau melebihi — lihat §1.O
     [ ] 7.3. Pastikan tiap Act punya entry state dan exit state yang eksplisit — lihat §1.P
-    [ ] 7.4. Cek tidak ada epilog daftar-method yang sebenarnya bisa jadi action dari client — lihat §1.P
+[ ] 7.4. Cek tidak ada epilog daftar-method yang sebenarnya bisa jadi action dari client — lihat §1.P
+    [ ] 7.5. Ambil dan review frame before, transit, dan after untuk setiap
+         action; hasil boleh disetujui hanya bila cause → effect terbaca — lihat §1.T
 
 [ ] 8. SCENE SHELL REVIEW (kalau pakai scene-ui V1, lihat §1.S)
     [ ] 8.1. Header (`IntroHeaderMorphV1`) tetap terlihat setelah morph
@@ -1454,4 +1575,3 @@ Section §1.M–§1.R dan checklist terkait (§2 poin 0, 4.7, 7) ditambahkan dar
 retrospektif revisi 04–07 topic `17-rest-api` — fokus pada state contract,
 method-as-object, continuity/no-teleport, series identity, dan safe-zone
 layout untuk topic request/response.
-

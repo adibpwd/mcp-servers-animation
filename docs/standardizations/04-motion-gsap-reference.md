@@ -171,6 +171,159 @@ Dipakai untuk: simulasi drag & drop, transisi item antar container,
 visualisasi data flow. Contoh nyata: animasi page dari RAM ke Swap di
 `virtual-memory/Animation.jsx`.
 
+### Advanced Pattern: Causal Action Lifecycle (Before → Action → After)
+
+Untuk semua action yang mengubah state, jangan memanggil `setState` hasil
+akhir tepat setelah command/click tampil. Jadwalkan satu lifecycle yang
+memisahkan **intent**, **perjalanan**, **apply**, dan **waktu membaca hasil**.
+Ini adalah pola implementasi dari Causal Motion Contract di
+`03-planning-storytelling-quality-gate.md` §1.T.
+
+```jsx
+// `action` adalah visual penghubung: command pulse, packet, drag ghost,
+// atau scan dot. Target belum berubah pada onIntent/onTravel.
+const runCausalAction = (tl, startTime, {
+  id,
+  source,
+  target,
+  onIntent,
+  onTravel,
+  onApply,
+  onExplain,
+  sfx,
+  intentDur = 0.18,
+  travelDur = 0.55,
+  applyDur = 0.35,
+  holdDur = 0.8,
+}) => {
+  let t = startTime
+  const progress = { v: 0 }
+
+  // 1. Intent — command Enter/click sudah jelas, state target belum berubah.
+  tl.add(() => {
+    onIntent?.()
+    sfx?.('intent')
+  }, t)
+  t += intentDur
+
+  // 2. Travel — action terlihat berangkat dari source dan bergerak ke target.
+  tl.to(progress, {
+    v: 1,
+    duration: travelDur,
+    ease: 'power2.inOut',
+    onUpdate: () => onTravel?.(progress.v, source, target),
+  }, t)
+  t += travelDur
+
+  // 3. Apply — SATU titik waktu yang diperbolehkan mengubah data nyata.
+  tl.add(() => {
+    onApply?.()
+    sfx?.('apply')
+  }, t)
+  t += applyDur
+
+  // 4. Explain — state akhir bertahan untuk dapat dibandingkan/dibaca.
+  tl.add(() => onExplain?.(), t)
+  t += holdDur
+
+  return t // action setelahnya SELALU mulai dari waktu hasil ini
+}
+```
+
+Contoh penggunaan untuk item yang dibuat dari terminal:
+
+```jsx
+t = runCausalAction(tl, t, {
+  id: 'mkdir-src',
+  source: TERMINAL_PROMPT,
+  target: gridSlotFor('src'),
+  onIntent: () => setTerminal({ committed: '$ mkdir src', output: 'running…' }),
+  onTravel: (p, from, to) => setCommandPulse({ visible: true, p, from, to }),
+  onApply: () => {
+    setCommandPulse({ visible: false })
+    setActiveIds((ids) => orderIds([...ids, 'src'])) // item baru hadir DI SINI
+  },
+  onExplain: () => setChangeBadge({ id: 'src', label: '+ folder' }),
+  sfx: playActionSfx,
+})
+```
+
+**Aturan implementasi:**
+
+- `onApply` adalah satu-satunya callback yang menambah, menghapus, atau
+  mengubah state konseptual. Jangan bocorkan state final di `onIntent`.
+- Render action/pulse sampai travel selesai; hapus/morph hanya setelah apply.
+- Callback `onExplain` tidak membuat mutasi kedua. Ia hanya menahan/fokuskan
+  hasil agar audiens punya waktu membacanya.
+- Return time wajib menjadi awal action berikutnya; jangan menggunakan angka
+  Act durasi terpisah yang dapat menyebabkan overlap tidak sengaja.
+- Untuk action tanpa benda fisik (mis. search), `onTravel` dapat memindahkan
+  focus ring atau scan dot melintasi target, lalu `onApply` menyalakan hasil.
+
+#### Variasi semantik yang disarankan
+
+| Makna action | Motion source → target | Apply yang terlihat | After minimum |
+|---|---|---|---|
+| Create | pulse menuju empty area | object pop-in | object + badge `+1` |
+| Copy | beam bercabang dari source | target baru pop-in | source dan copy tampil bersamaan |
+| Move | satu object mengikuti path | object settle di target | source kosong / target terisi |
+| Delete | pulse berhenti di confirm lalu lanjut | object shrink/fade | empty state + warning selesai |
+| Read | focus line menuju preview | isi panel terbuka | baris yang relevan terbaca |
+| Search | scan dot melintasi kandidat | kandidat target focus | result path/label stabil |
+
+### Advanced Pattern: Dynamic Collection Reflow
+
+Jika action menambah atau menghapus item dari grid/list, animasikan object
+lama ke posisi layout barunya. Jangan render koleksi baru sekaligus sehingga
+penonton merasa UI berganti layar.
+
+```jsx
+const scheduleAdd = (tl, at, newIds, {
+  currentIds,
+  layoutFor,
+  setPositions,
+  setActiveIds,
+  setScale,
+}) => {
+  const nextIds = orderIds([...currentIds, ...newIds])
+  const from = layoutFor(currentIds)
+  const to = layoutFor(nextIds)
+
+  // Existing items stay mounted and slide to their next slots.
+  const motion = Object.fromEntries(currentIds.map((id) => [id, { ...from[id] }]))
+  currentIds.forEach((id) => {
+    tl.to(motion[id], {
+      x: to[id].x,
+      y: to[id].y,
+      duration: 0.42,
+      ease: 'power2.inOut',
+      onUpdate: () => setPositions({ ...motion }),
+    }, at)
+  })
+
+  // New ids enter only at apply, then pop in at their computed final slots.
+  tl.add(() => {
+    setActiveIds(nextIds)
+    setPositions(to)
+    setScale((prev) => ({ ...prev, ...Object.fromEntries(newIds.map((id) => [id, 0])) }))
+  }, at)
+  newIds.forEach((id) => {
+    const scale = { v: 0 }
+    tl.to(scale, {
+      v: 1, duration: 0.36, ease: 'back.out(1.5)',
+      onUpdate: () => setScale((prev) => ({ ...prev, [id]: scale.v })),
+    }, at + 0.03)
+  })
+
+  return { endTime: at + 0.42, nextIds, nextLayout: to }
+}
+```
+
+Untuk removal, lakukan urutan terbalik: shrink target dulu → hapus id pada
+akhir shrink → hitung layout baru → slide item tersisa. Simpan snapshot
+`nextLayout` untuk menempatkan badge dekat posisi **akhir** item; jangan lookup
+posisi lama saat render.
+
 ### Advanced Pattern: Persistent Anchor Object Lintas-Act
 
 Pola render standar (`{phaseIdx === N && <g>...</g>}`, lihat
@@ -698,4 +851,3 @@ return () => tl.kill()
 - GSAP Timeline Docs: https://greensock.com/docs/v3/GSAP/Timeline
 - Easing Visualizer: https://greensock.com/ease-visualizer/
 - GSAP Cheat Sheet: https://ihatetomatoes.net/greensock-cheat-sheet/
-

@@ -1,0 +1,15 @@
+{
+  "id": "process-vs-thread",
+  "title": "Process vs Thread",
+  "subtitle": "Memory isolation, context switching, and when to use each",
+  "category": "Operating Systems",
+  "tags": [
+    "Process",
+    "Thread",
+    "Memory",
+    "Concurrency"
+  ],
+  "color": "#FB923C",
+  "status": "draft",
+  "priority": 8
+}

@@ -1,0 +1,17 @@
+{
+  "id": "rest-api",
+  "title": "REST API",
+  "subtitle": "Aturan standar di balik \"istirahat\" yang sibuk",
+  "category": "Networking",
+  "tags": [
+    "REST",
+    "API",
+    "CRUD",
+    "HTTP Methods",
+    "JSON",
+    "Statelessness"
+  ],
+  "color": "#A78BFA",
+  "status": "posted",
+  "priority": 17
+}

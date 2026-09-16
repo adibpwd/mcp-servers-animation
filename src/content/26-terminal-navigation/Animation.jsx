@@ -5,15 +5,88 @@ import gsap from 'gsap'
 import {
   VW, VH, COLORS, PHASES, LABELS, CAPTIONS, SFX_MAP, TERMINAL_STEPS, LINE_COLOR,
   INTRO_CATEGORY_LABEL, INTRO_DOMAIN, INTRO_TITLE_A, INTRO_TITLE_B, INTRO_SUBTITLE,
+  INTRO_ACT_LABEL,
 } from './data'
 import sfxLoader from '../../shared/audio/sfxLoader'
 import {
   IntroHeaderMorphV1,
   ActBadgeNavigatorV1,
   ContentBodyV1,
+  DEFAULT_LAYOUT_V1,
 } from '../../shared/scene-ui/v1'
 
 const HISTORY_VISIBLE = 8
+
+// Revisi-07 (2026-09-14) — ikon ringkasan 4 Act untuk heroIllustration
+// (IntroHeaderMorphV1 UPDATE 4, lihat revisi/2026-09-14-revisi-07-hero-illustration.md).
+// Pure presentational, statis di hero — bukan bagian dari timeline GSAP.
+// Warna tiap chip mengikuti COLORS/PHASES.badgeColor per Act supaya nyambung
+// dengan ActBadgeNavigatorV1 begitu contentStarted.
+function HeroWorkflowIllustration() {
+  const items = [
+    { x: -222, color: COLORS.NAV, label: 'RUTE' },
+    { x: -74, color: COLORS.MODIFY, label: 'WORKSPACE' },
+    { x: 74, color: COLORS.INSPECT, label: 'KELOLA' },
+    { x: 222, color: COLORS.PACKAGE, label: 'JALANKAN' },
+  ]
+  return (
+    <g>
+      {items.map((it, i) => (
+        <g key={it.label} transform={'translate(' + it.x + ' 0)'}>
+          <circle r="34" fill={COLORS.PANEL_ALT} stroke={it.color} strokeWidth="2.5" />
+          {i === 0 && (
+            <>
+              <path d="M0,-13 C7,-13 13,-7 13,0 C13,9 0,19 0,19 C0,19 -13,9 -13,0 C-13,-7 -7,-13 0,-13 Z" fill={it.color} />
+              <circle cx="0" cy="-1" r="4" fill={COLORS.PANEL_ALT} />
+            </>
+          )}
+          {i === 1 && (
+            <>
+              <path d="M-14,-7 L-4,-7 L-1,-3 L14,-3 L14,10 L-14,10 Z" fill="none" stroke={it.color} strokeWidth="2.5" strokeLinejoin="round" />
+              <line x1="4" y1="-1" x2="4" y2="7" stroke={it.color} strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="0" y1="3" x2="8" y2="3" stroke={it.color} strokeWidth="2.5" strokeLinecap="round" />
+            </>
+          )}
+          {i === 2 && (
+            <>
+              <rect x="-11" y="-14" width="18" height="24" rx="2" fill="none" stroke={it.color} strokeWidth="2.2" />
+              <line x1="-7" y1="-7" x2="3" y2="-7" stroke={it.color} strokeWidth="1.6" />
+              <line x1="-7" y1="-2" x2="3" y2="-2" stroke={it.color} strokeWidth="1.6" />
+              <line x1="6" y1="6" x2="16" y2="-4" stroke={it.color} strokeWidth="2.6" strokeLinecap="round" />
+            </>
+          )}
+          {i === 3 && (
+            <>
+              <rect x="-15" y="-12" width="30" height="22" rx="3" fill="none" stroke={it.color} strokeWidth="2.2" />
+              <text x="0" y="4" textAnchor="middle" fontFamily="monospace" fontSize="12" fontWeight="700" fill={it.color}>{'>_'}</text>
+            </>
+          )}
+          <text x="0" y="54" textAnchor="middle" fontFamily="monospace" fontSize="11" fontWeight="700" fill={COLORS.MUTED} letterSpacing="1">{it.label}</text>
+          {i < items.length - 1 && (
+            <text x="74" y="6" textAnchor="middle" fontSize="16" fill={COLORS.MUTED}>{'\u203A'}</text>
+          )}
+        </g>
+      ))}
+    </g>
+  )
+}
+
+// Revisi-03 (2026-09-14) — tuning tunggal untuk ambient "ACT 1" di intro.
+// Lihat revisi/2026-09-14-revisi-03-act-1-intro-ambient.md. Ubah nilai di
+// sini saja saat preview-tuning, jangan sebar ke tempat lain.
+const INTRO_ACT_OPACITY = 0.18 // rentang tuning yang diizinkan: 0.15–0.25
+const INTRO_ACT_FADE_IN_AT = 0.05
+const INTRO_ACT_FADE_IN_DURATION = 0.32
+const INTRO_ACT_FADE_OUT_AT = 0.85 // harus selesai sebelum contentStarted (1.15)
+const INTRO_ACT_FADE_OUT_DURATION = 0.22
+// Revisi-04 (2026-09-14) — x disamakan dengan x intro title/header
+// (layout.header.x = 44), bukan lagi offset kanan. Ini juga x yang sama
+// dipakai ActBadgeNavigatorV1 (nav.x = 44) sehingga transisi ambient →
+// badge terasa menyambung di posisi horizontal yang sama, walau ambient
+// ini tetap teks polos tanpa bentuk badge/pill.
+const INTRO_ACT_X = DEFAULT_LAYOUT_V1.header.x
+const INTRO_ACT_Y = 478 // di atas tagline (y=550), di belakang blok title
+const INTRO_ACT_FONT_SIZE = 42 // ~0.6× titleFontSize hero (72)
 
 export default function TerminalNavigationAnimation({
   paused = false,
@@ -29,6 +102,7 @@ export default function TerminalNavigationAnimation({
 
   const [phaseIdx, setPhaseIdx] = useState(0)
   const [morphP, setMorphP] = useState(0)
+  const [introActOpacity, setIntroActOpacity] = useState(0) // revisi-03 ambient ACT 1
   const [contentStarted, setContentStarted] = useState(false)
   const [caption, setCaption] = useState('')
   const [pop, setPop] = useState({})
@@ -136,6 +210,7 @@ export default function TerminalNavigationAnimation({
     tl.add(() => {
       setPhaseIdx(0)
       setMorphP(0)
+      setIntroActOpacity(0)
       setContentStarted(false)
       setCaption('')
       setPop({})
@@ -154,9 +229,31 @@ export default function TerminalNavigationAnimation({
       p: 1, duration: 0.9, ease: 'power3.inOut',
       onUpdate: () => setMorphP(morph.p),
     }, 0.25)
+
+    // Revisi-03 — ambient "ACT 1" pada intro: fade-in lembut, stabil di
+    // INTRO_ACT_OPACITY, lalu fade-out sebelum ActBadgeNavigatorV1 muncul
+    // (contentStarted @1.15) supaya tidak bertumpuk.
+    const introAct = { o: 0 }
+    tl.to(introAct, {
+      o: INTRO_ACT_OPACITY,
+      duration: INTRO_ACT_FADE_IN_DURATION,
+      ease: 'power1.out',
+      onUpdate: () => setIntroActOpacity(introAct.o),
+    }, INTRO_ACT_FADE_IN_AT)
+    tl.to(introAct, {
+      o: 0,
+      duration: INTRO_ACT_FADE_OUT_DURATION,
+      ease: 'power1.in',
+      onUpdate: () => setIntroActOpacity(introAct.o),
+    }, INTRO_ACT_FADE_OUT_AT)
+
     tl.add(() => { setContentStarted(true); play(SFX_MAP.PACKAGE) }, 1.15)
-    popIn(1.25, 'terminal', SFX_MAP.POP)
-    popIn(1.30, 'narration-bubble', SFX_MAP.POP2)
+    // Revisi (2026-09-14) — terminal & narration-bubble muncul di awal Act 1
+    // tanpa menunggu action apa pun, jadi langsung full-visible (tanpa pop-in
+    // animate). Element lain yang munculnya dipicu action tertentu (mis.
+    // takeaway di Act 4) tetap pakai popIn().
+    tl.add(() => setPop((prev) => ({ ...prev, terminal: { opacity: 1, scale: 1, x: 0, y: 0 } })), 1.15)
+    tl.add(() => setPop((prev) => ({ ...prev, 'narration-bubble': { opacity: 1, scale: 1, x: 0, y: 0 } })), 1.15)
 
     const INTRO_DELAY = 1.15
     const actStart = [0, 0, 0, 0]
@@ -287,8 +384,60 @@ export default function TerminalNavigationAnimation({
       </defs>
       <rect width={VW} height={VH} fill={COLORS.BG} />
 
+      {/* Revisi-03 (2026-09-14) — ambient "ACT 1" chapter marker, murni
+          dekoratif, di BELAKANG title/subtitle intro (di-render sebelum
+          IntroHeaderMorphV1). Bukan badge aktif — PHASES[0].badge lengkap
+          tetap dipakai ActBadgeNavigatorV1 setelah intro.
+          Revisi-04 (2026-09-14) — x disamakan dengan x intro title/header
+          (kiri, textAnchor start dari layout.header.x), bukan lagi rata
+          kanan. Tetap teks polos tanpa rect/pill — badge sungguhan baru
+          muncul lewat ActBadgeNavigatorV1 begitu title sudah pindah ke
+          posisi header (contentStarted === true). */}
+      {!contentStarted && introActOpacity > 0 && (
+        <text
+          x={INTRO_ACT_X}
+          y={INTRO_ACT_Y}
+          textAnchor="start"
+          fontFamily="sans-serif"
+          fontWeight="700"
+          fontSize={INTRO_ACT_FONT_SIZE}
+          letterSpacing="6"
+          fill={COLORS.NAV}
+          opacity={introActOpacity}
+          style={{ pointerEvents: 'none' }}
+          data-testid="terminal-navigation-intro-act-ambient"
+        >
+          {INTRO_ACT_LABEL}
+        </text>
+      )}
+
       <IntroHeaderMorphV1
         progress={morphP}
+        // Revisi-05 (2026-09-14) — override "hero" (aman, non-breaking, lihat
+        // komentar prop `hero` di IntroHeaderMorphV1) supaya tagline/title/
+        // subtitle intro tidak terlalu rapat. Default HERO_DEFAULTS shared
+        // (taglineY 550, titleY 640, subtitleY 716) sengaja TIDAK diubah di
+        // file component-nya karena itu breaking change untuk semua topic
+        // lain yang pakai V1 — jadi override lokal saja di sini.
+        hero={{ taglineY: 522, subtitleY: 754 }}
+        // Revisi-06 (2026-09-14) — heroBackground (UPDATE 3 di
+        // IntroHeaderMorphV1, non-breaking) untuk kebutuhan thumbnail.
+        // Warna dari COLORS.NAV (tema "navigasi" topic ini) translucent,
+        // fade-out otomatis begitu progress lewat titleMorphSplit (default),
+        // compact header tidak berubah sama sekali. Lihat
+        // revisi/2026-09-14-revisi-06-hero-background.md.
+        heroBackground={{
+          fill: 'rgba(56, 189, 248, 0.10)',
+          stroke: 'rgba(56, 189, 248, 0.25)',
+        }}
+        // Revisi-07 (2026-09-14) — heroIllustration (UPDATE 4 di
+        // IntroHeaderMorphV1, non-breaking), ringkasan 4 Act jadi ikon di
+        // bawah subtitle hero, khusus buat kebutuhan thumbnail (bukan
+        // ilustrasi baru per command, cukup satu peta kecil dari keseluruhan
+        // workflow topic). Lihat revisi/2026-09-14-revisi-07-hero-illustration.md.
+        heroIllustration={{
+          content: <HeroWorkflowIllustration />,
+        }}
         categorySegments={[
           { label: INTRO_CATEGORY_LABEL + ' · ', color: COLORS.MUTED },
           { label: INTRO_DOMAIN, color: COLORS.NAV },

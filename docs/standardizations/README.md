@@ -24,8 +24,8 @@ validasi.
 |---|---|
 | [01-architecture-runtime.md](01-architecture-runtime.md) | Runtime animasi: React, GSAP, state, export, dan arsitektur scene. |
 | [02-topic-contract-scene-shell.md](02-topic-contract-scene-shell.md) | Kontrak folder, manifest, registry, lifecycle, dan scene-ui V1. |
-| [03-planning-storytelling-quality-gate.md](03-planning-storytelling-quality-gate.md) | Tutorial topic baru, storytelling, pre-planning, continuity, layout contract, anti-pattern, dan checklist quality gate. |
-| [04-motion-gsap-reference.md](04-motion-gsap-reference.md) | Referensi teknis GSAP: timeline, state handoff, export safety, determinism, dan motion patterns. |
+| [03-planning-storytelling-quality-gate.md](03-planning-storytelling-quality-gate.md) | Tutorial topic baru, storytelling, pre-planning, continuity, layout contract, anti-pattern, dan checklist quality gate—termasuk kontrak wajib Before → Action → After. |
+| [04-motion-gsap-reference.md](04-motion-gsap-reference.md) | Referensi teknis GSAP: timeline, state handoff, export safety, determinism, motion patterns, dan lifecycle action/reflow koleksi dinamis. |
 | [05-svg-layout-asset-pipeline.md](05-svg-layout-asset-pipeline.md) | SVG text, warna, safe-zone, scene coordinate, icon/asset audit, generation, crop, dan loader. |
 | [06-audio-sfx.md](06-audio-sfx.md) | Sourcing, SFX_MAP, audio coverage, loudness, integrasi, dan validasi audio. |
 
@@ -34,8 +34,8 @@ validasi.
 | Kebutuhan | Dokumen aktif |
 |---|---|
 | Membuat folder topic / manifest / registry | 02 |
-| Menentukan cerita, Act, state contract, continuity, layout, scene shell | 03 |
-| Tween, repeat, seek, flushSync, atau export safety | 04 |
+| Menentukan cerita, Act, state contract, continuity, layout, scene shell, before → action → after | 03 |
+| Tween, repeat, seek, flushSync, export safety, action lifecycle, atau grid reflow | 04 |
 | Text overflow, color, overlap, local coordinate, icon | 05 |
 | Asset SFX, Audio Beat Map, loudness, audio coverage | 06 |
 | Menjelaskan alur React/GSAP/export dari awal | 01 |
@@ -59,4 +59,5 @@ berada di [docs/plan/PLAN-SINGLE-SERVICE.md](../plan/PLAN-SINGLE-SERVICE.md).
 - Jika perlu perubahan lintas dokumen, update cross-reference pada enam
   dokumen aktif dan tambahkan contoh nyata bila aturan berasal dari revisi.
 
-**Konsolidasi terakhir:** 2026-09-13.
+**Konsolidasi terakhir:** 2026-09-16 — ditambah pelajaran Revisi 02–04
+Content 27: causal motion, state nyata, reflow, dan audit layout dinamis.

@@ -13,28 +13,54 @@ const ROOT = path.resolve(__dirname, '..')
 const app = express()
 const PORT = process.env.PORT || 3300
 
-// Content DB path
-const CONTENT_DB_PATH = path.join(__dirname, 'content-db.json')
+// Content metadata: scan src/content/*/metadata.json
+const CONTENT_ROOT = path.join(ROOT, 'src/content')
 
-// ── Helpers: Read & Write content-db.json ──────────────────────
-function readContentDb() {
+// ── Helpers: read/write metadata.json tiap folder ─────────────
+function readTopicMetadata(folder) {
+  const file = path.join(CONTENT_ROOT, folder, 'metadata.json')
+  if (!fs.existsSync(file)) return null
   try {
-    const raw = fs.readFileSync(CONTENT_DB_PATH, 'utf-8')
-    return JSON.parse(raw)
+    return JSON.parse(fs.readFileSync(file, 'utf-8'))
   } catch (err) {
-    console.error('[ContentDB] Failed to read:', err.message)
-    return { items: [] }
+    console.error(`[ContentDB] Bad metadata in ${folder}:`, err.message)
+    return null
   }
 }
 
-function writeContentDb(db) {
-  try {
-    fs.writeFileSync(CONTENT_DB_PATH, JSON.stringify(db, null, 2), 'utf-8')
-    return true
-  } catch (err) {
-    console.error('[ContentDB] Failed to write:', err.message)
-    return false
+function buildContentItems() {
+  const items = []
+  if (!fs.existsSync(CONTENT_ROOT)) return items
+  const dirs = fs.readdirSync(CONTENT_ROOT, { withFileTypes: true })
+    .filter(d => d.isDirectory())
+    .map(d => d.name)
+  for (const folder of dirs) {
+    const meta = readTopicMetadata(folder)
+    if (!meta) continue
+    items.push(meta)
   }
+  return items.sort((a, b) => (a.priority ?? Infinity) - (b.priority ?? Infinity))
+}
+
+function findFolderByContentId(contentId) {
+  if (!fs.existsSync(CONTENT_ROOT)) return null
+  const dirs = fs.readdirSync(CONTENT_ROOT, { withFileTypes: true }).filter(d => d.isDirectory())
+  for (const d of dirs) {
+    const metaId = readTopicMetadata(d.name)?.id
+    const folderSlug = d.name.replace(/^\d+-/, '')
+    if (metaId === contentId || d.name === contentId || folderSlug === contentId) return d.name
+  }
+  return null
+}
+
+function writeTopicMetadata(contentId, updates) {
+  const folder = findFolderByContentId(contentId)
+  if (!folder) return null
+  const file = path.join(CONTENT_ROOT, folder, 'metadata.json')
+  const meta = readTopicMetadata(folder) || { id: contentId }
+  const merged = { ...meta, ...updates }
+  fs.writeFileSync(file, JSON.stringify(merged, null, 2) + '\n', 'utf-8')
+  return merged
 }
 
 // Enable CORS with permissive configuration for development
@@ -294,16 +320,15 @@ app.get('/api/health', (req, res) => {
 
 // GET /api/content - Get all content items (sorted by priority ascending)
 app.get('/api/content', (req, res) => {
-  const db = readContentDb()
-  const sorted = [...db.items].sort((a, b) => a.priority - b.priority)
-  res.json({ ok: true, items: sorted })
+  const items = buildContentItems()
+  res.json({ ok: true, items })
 })
 
 // GET /api/content/:id - Get single content item
 app.get('/api/content/:id', (req, res) => {
   const { id } = req.params
-  const db = readContentDb()
-  const item = db.items.find(i => i.id === id)
+  const folder = findFolderByContentId(id)
+  const item = folder ? readTopicMetadata(folder) : null
 
   if (!item) {
     return res.status(404).json({ ok: false, error: `Content '${id}' not found` })
@@ -327,25 +352,21 @@ app.post('/api/content/:id', (req, res) => {
     return res.status(400).json({ ok: false, error: `Invalid priority: must be number 1-100` })
   }
 
-  const db = readContentDb()
-  const idx = db.items.findIndex(i => i.id === id)
+  const folder = findFolderByContentId(id)
 
-  if (idx === -1) {
+  if (!folder) {
     return res.status(404).json({ ok: false, error: `Content '${id}' not found` })
   }
 
   // Apply updates
-  if (status !== undefined) db.items[idx].status = status
-  if (priority !== undefined) db.items[idx].priority = Math.max(1, Math.min(100, priority))
+  const updates = {}
+  if (status !== undefined) updates.status = status
+  if (priority !== undefined) updates.priority = Math.max(1, Math.min(100, priority))
 
-  const saved = writeContentDb(db)
+  const item = writeTopicMetadata(id, updates)
 
-  if (!saved) {
-    return res.status(500).json({ ok: false, error: 'Failed to save changes' })
-  }
-
-  console.log(`[ContentDB] Updated '${id}':`, { status, priority })
-  res.json({ ok: true, item: db.items[idx] })
+  console.log(`[ContentDB] Updated '${id}' (${folder}/metadata.json):`, updates)
+  res.json({ ok: true, item })
 })
 
 async function startExport(topicId, volume = 75, speed = 1.0) {

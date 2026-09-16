@@ -34,6 +34,33 @@
 // seperti sebelumnya, tidak ada perubahan pada layout.header. Kalau
 // `titleLines` tidak diberikan, behavior lama (title 1 baris terus, dari
 // hero sampai header) tetap berjalan tanpa perubahan apa pun.
+//
+// UPDATE 3 (non-breaking, sama pola PLAN-12 §11): ditambah prop opsional
+// `heroBackground` untuk backdrop di belakang tagline+title+subtitle pada
+// momen hero (mis. buat kebutuhan thumbnail). Backdrop ini STATIS di posisi
+// hero (tidak ikut lerp ke posisi/ukuran header) dan fade-out (opacity ->0)
+// begitu progress lewat `heroBackground.fadeOutSplit` (default sama dengan
+// `titleMorphSplit`) — di compact header backdrop ini sudah tidak ada sama
+// sekali, konsisten dengan header compact yang selama ini "polos" tanpa
+// panel. Bounding box lebar/tinggi dihitung otomatis dari estimasi lebar
+// tagline/title/subtitle terlebar + padding, kecuali topic override manual
+// lewat `heroBackground.x/y/width/height`. Kalau `heroBackground` tidak
+// diberikan, behavior lama (tidak ada backdrop sama sekali) tetap berjalan
+// tanpa perubahan apa pun — non-breaking.
+//
+// UPDATE 4 (non-breaking, sama pola PLAN-12 §11): ditambah prop opsional
+// `heroIllustration` untuk elemen visual/ikon ringkasan (mis. mini-diagram
+// yang merangkum keseluruhan konten topic) di area hero, kebutuhan yang
+// sama seperti `heroBackground` (thumbnail lebih informatif daripada cuma
+// teks). Sama seperti heroBackground: STATIS di posisi hero (tidak lerp ke
+// header) dan fade-out habis begitu progress lewat
+// `heroIllustration.fadeOutSplit` (default = `titleMorphSplit`) — compact
+// header tidak pernah menampilkan elemen ini. Topic mengirim SVG siap pakai
+// lewat `heroIllustration.content` (React node, digambar relatif terhadap
+// origin 0,0 sendiri — component ini hanya translate ke posisi `y` yang
+// diberikan, default di bawah subtitle hero, dan center secara horizontal ke
+// tengah canvas). Kalau `heroIllustration` tidak diberikan, behavior lama
+// (tidak ada elemen tambahan) tetap berjalan tanpa perubahan apa pun.
 
 import React from 'react'
 import { DEFAULT_LAYOUT_V1, lerp, clamp01, estimateTextWidth } from './PortraitSceneLayoutV1'
@@ -69,6 +96,18 @@ const DEFAULT_SUBTITLE_COLOR = '#94A3B8'
 const DEFAULT_TITLE_FONT_FAMILY = "'Arial Black', Impact, sans-serif"
 const DEFAULT_CATEGORY_FONT_FAMILY = 'monospace'
 const DEFAULT_SUBTITLE_FONT_FAMILY = 'sans-serif'
+
+// Default backdrop hero (lihat UPDATE 3) — translucent netral, aman dipakai
+// di atas background gelap topic manapun tanpa perlu topic set fill manual.
+const HERO_BACKGROUND_DEFAULTS = {
+  fill: 'rgba(148, 163, 184, 0.08)',
+  stroke: 'rgba(148, 163, 184, 0.18)',
+  strokeWidth: 1,
+  rx: 24,
+  paddingX: 36,
+  paddingY: 32,
+  opacity: 1,
+}
 
 /**
  * IntroHeaderMorphV1 — lihat PLAN-12 §6 untuk kontrak lengkap.
@@ -117,6 +156,35 @@ const DEFAULT_SUBTITLE_FONT_FAMILY = 'sans-serif'
  *                                 multiline hero selesai fade-out dan
  *                                 single-line mulai fade-in. Diabaikan kalau
  *                                 `titleLines` tidak diberikan.
+ * @param {object} [heroBackground] opsional (lihat UPDATE 3). Kalau
+ *                                 diberikan, dirender sebagai <rect> backdrop
+ *                                 STATIS di belakang tagline+title+subtitle
+ *                                 versi hero (tidak ikut lerp ke header), lalu
+ *                                 fade-out habis begitu progress lewat
+ *                                 `heroBackground.fadeOutSplit`. Fields (semua
+ *                                 optional, ada default):
+ *                                 `fill`, `stroke`, `strokeWidth`, `rx`,
+ *                                 `paddingX`/`paddingY` (jarak teks ke tepi
+ *                                 box, dipakai kalau width/height auto),
+ *                                 `opacity` (opacity maksimum sebelum fade),
+ *                                 `fadeOutSplit` (default = `titleMorphSplit`),
+ *                                 dan override manual `x`/`y`/`width`/`height`
+ *                                 kalau auto-bounding-box tidak pas. TIDAK
+ *                                 wajib; kalau tidak diberikan, behavior lama
+ *                                 (tidak ada backdrop) tetap berjalan tanpa
+ *                                 perubahan apa pun.
+ * @param {object} [heroIllustration] opsional (lihat UPDATE 4). Elemen visual
+ *                                 statis (mis. ikon ringkasan workflow topic)
+ *                                 di area hero, fade-out sama kurva dengan
+ *                                 `heroBackground`. Fields: `content` (wajib
+ *                                 kalau prop ini dipakai — React node, SVG
+ *                                 digambar relatif origin 0,0 sendiri),
+ *                                 `y` (default `hero.subtitleY + 90`),
+ *                                 `scale` (default 1), `opacity` (default 1),
+ *                                 `fadeOutSplit` (default = `titleMorphSplit`).
+ *                                 TIDAK wajib; kalau tidak diberikan, behavior
+ *                                 lama (tidak ada elemen tambahan) tetap
+ *                                 berjalan tanpa perubahan apa pun.
  */
 export default function IntroHeaderMorphV1({
   progress,
@@ -125,6 +193,8 @@ export default function IntroHeaderMorphV1({
   titleSegments,
   titleLines,
   titleMorphSplit = 0.3,
+  heroBackground,
+  heroIllustration,
   subtitle,
   layout = DEFAULT_LAYOUT_V1,
   hero = {},
@@ -185,8 +255,69 @@ export default function IntroHeaderMorphV1({
   const multilineOpacity = hasTitleLines ? (1 - smoothstep01(0, titleMorphSplit, mp)) : 0
   const heroLineHeight = h.titleFontSize * 0.98
 
+  // ── heroBackground (opsional, lihat UPDATE 3) — backdrop STATIS di posisi
+  // hero, fade-out pakai smoothstep sama pola titleLines di atas. Kalau
+  // `heroBackground` tidak diberikan, `hb` null dan tidak ada apa pun yang
+  // dirender di sini (behavior lama, non-breaking). ──
+  const hb = heroBackground ? { ...HERO_BACKGROUND_DEFAULTS, ...heroBackground } : null
+  const hbFadeSplit = hb?.fadeOutSplit ?? titleMorphSplit
+  const hbOpacity = hb ? clamp01(hb.opacity ?? 1) * (1 - smoothstep01(0, hbFadeSplit, mp)) : 0
+
+  let hbX, hbY, hbWidth, hbHeight
+  if (hb) {
+    // Auto-bounding-box: bungkus teks terlebar (tagline/title/subtitle,
+    // termasuk titleLines kalau dipakai) + padding. Bisa dioverride penuh
+    // lewat heroBackground.x/y/width/height kalau auto tidak pas.
+    const categoryText = Array.isArray(categorySegments) && categorySegments.length > 0
+      ? categorySegments.map((s) => s.label).join('')
+      : (category || '')
+    let contentWidth = Math.max(
+      estimatedWidth,
+      estimateTextWidth(categoryText, h.taglineFontSize),
+      estimateTextWidth(subtitle || '', h.subtitleFontSize),
+    )
+    let topEdge = h.taglineY - h.taglineFontSize * 0.85
+    let bottomEdge = h.subtitleY + h.subtitleFontSize * 0.3
+    if (hasTitleLines) {
+      const widestLine = Math.max(...titleLines.map((lineSegs) => (
+        estimateTextWidth((lineSegs || []).map((s) => s.label).join(''), h.titleFontSize) * 1.18
+      )))
+      contentWidth = Math.max(contentWidth, widestLine)
+      const stackHalf = ((titleLines.length - 1) / 2) * heroLineHeight
+      topEdge = Math.min(topEdge, h.titleY - stackHalf - h.titleFontSize * 0.85)
+      bottomEdge = Math.max(bottomEdge, h.titleY + stackHalf + h.titleFontSize * 0.3)
+    }
+    // X box selalu di-center ke tengah canvas (bukan heroStartX) — konsisten
+    // dengan cara title (single-line MAUPUN titleLines) sama-sama di-center
+    // ke layout.canvas.width/2. Kalau pakai heroStartX (basis lebar title
+    // single-line), box bisa geser saat titleLines aktif karena tiap baris
+    // dihitung ulang center-nya sendiri (lihat render titleLines di bawah).
+    hbWidth = hb.width ?? (contentWidth + hb.paddingX * 2)
+    hbX = hb.x ?? ((layout.canvas.width / 2) - (hbWidth / 2))
+    hbY = hb.y ?? (topEdge - hb.paddingY)
+    hbHeight = hb.height ?? (bottomEdge - topEdge + hb.paddingY * 2)
+  }
+
+  // ── heroIllustration (opsional, lihat UPDATE 4) — konten SVG statis
+  // (mis. ikon ringkasan workflow) di area hero, fade-out pakai kurva yang
+  // sama seperti heroBackground. Kalau `heroIllustration` tidak diberikan,
+  // `hi` null dan tidak ada apa pun yang dirender (non-breaking). ──
+  const hi = heroIllustration
+    ? { y: h.subtitleY + 90, scale: 1, opacity: 1, ...heroIllustration }
+    : null
+  const hiFadeSplit = hi?.fadeOutSplit ?? titleMorphSplit
+  const hiOpacity = hi ? clamp01(hi.opacity ?? 1) * (1 - smoothstep01(0, hiFadeSplit, mp)) : 0
+
   return (
     <g opacity={visible ? 1 : 0} data-testid={testId}>
+      {hb && hbOpacity > 0 && (
+        <rect
+          x={hbX} y={hbY} width={hbWidth} height={hbHeight} rx={hb.rx}
+          fill={hb.fill} stroke={hb.stroke} strokeWidth={hb.strokeWidth}
+          opacity={hbOpacity}
+        />
+      )}
+
       <text
         x={taglineX} y={taglineY} textAnchor="start"
         fill={Array.isArray(categorySegments) && categorySegments.length > 0 ? undefined : categoryColor}
@@ -255,6 +386,15 @@ export default function IntroHeaderMorphV1({
       >
         {subtitle}
       </text>
+
+      {hi && hiOpacity > 0 && (
+        <g
+          transform={`translate(${layout.canvas.width / 2} ${hi.y}) scale(${hi.scale})`}
+          opacity={hiOpacity}
+        >
+          {hi.content}
+        </g>
+      )}
     </g>
   )
 }

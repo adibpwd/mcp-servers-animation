@@ -8,6 +8,7 @@
 | Tujuan belajar | Memahami package manager, repository, package, dan alasan memasang aplikasi dari sumber tepercaya |
 | Prasyarat | 25 Linux Filesystem, 26 Terminal Navigation, 27 File Operations |
 | Scene shell | scene-ui V1, portrait 820 × 1340 |
+| Plan contract | Detail contract di bagian **Revisi Plan 2026-09-16** di bawah menggantikan ringkasan lama bila ada perbedaan. |
 
 ## Audience promise
 
@@ -149,3 +150,242 @@ Sebelum eksekusi, audit asset shared untuk semantik, loudness, provenance, dan f
 ## Batasan
 
 Content ini tidak membahas apt update/upgrade, memilih repository, PPA, Flatpak, Snap, atau troubleshooting dependency error. apt dan repository dibahas lebih dalam pada content 35; alternatif packaging dibahas pada content 114.
+
+---
+
+# Revisi Plan 2026-09-16 — Kontrak Produksi Detail
+
+> Bagian ini adalah sumber kebenaran untuk implementasi baru Content 34.
+> Ringkasan di atas tetap dipertahankan sebagai sejarah plan, tetapi keputusan
+> timing, state, motion, layout, dan acceptance criteria di bawah mengungguli
+> bagian lama jika ada perbedaan. Status tetap **plan only**.
+
+## A. Batas konsep yang dikunci
+
+**Audience promise:** audiens dapat menjelaskan alur `nama package →
+repository tepercaya → dependency → izin admin → installed app`, serta tahu
+bahwa app tidak boleh terlihat terpasang sebelum prosesnya selesai.
+
+| Dibahas | Tidak dibahas |
+|---|---|
+| Nama package, repository resmi/tepercaya, dependency, state instalasi, izin admin secara ringkas | Cara kerja `sudo`, password, policy, sudoers, root shell, atau privilege escalation. |
+| Contoh aman `sudo apt install editor-lite` sebagai pemicu visual | `apt update`, upgrade, PPA, Flatpak/Snap, error dependency, installer acak, atau `curl | sh`. |
+| Package manager sebagai perantara yang memeriksa lalu memasang package | Klaim repo selalu aman atau semua software hanya tersedia dari repo distro. |
+
+Content 34 hanya menyatakan **perubahan sistem memerlukan izin**. Penjelasan
+siapa yang memiliki izin dan bagaimana `sudo` bekerja harus tetap dimiliki
+Content 37–38 setelah kedua plan tersebut digabung.
+
+## B. Series identity dan visual language
+
+| Field | Keputusan final |
+|---|---|
+| Title A | `INSTALL` — `#38BDF8` sky blue |
+| Title B | `APPS` — `#34D399` emerald |
+| Subtitle | `Dari repository ke aplikasi siap pakai` |
+| Tone | Rantai pasok ramah: package manager mencari, memeriksa, melengkapi, lalu memasang. |
+| Hero | Satu `IntroHeaderMorphV1`, tetap mounted setelah morph. |
+| Navigator | Empat Act dari satu `PHASES`; tidak ada header/badge inline kedua. |
+| Canvas | Portrait 820 × 1340; seluruh visual topic memakai local coordinate `ContentBodyV1`. |
+
+| Semantik | Hex | Penggunaan |
+|---|---|---|
+| Info/repository | `#38BDF8` | Metadata sumber dan title pertama. |
+| Success/installed | `#34D399` | Check, final app, title kedua. |
+| Activity | `#FB923C` | Request, resolver, progress. |
+| Dependency | `#A78BFA` | Chip komponen pendukung. |
+| Attention/admin gate | `#FBBF24` | Perubahan sistem akan terjadi, bukan warna title. |
+| Error/blocked | `#F43F5E` | Hanya state abstrak bila benar-benar diperlukan. |
+
+## C. Story, Act, dan object continuity
+
+Hook: `editor-lite` belum ada. Instalasi bukan tombol magis; penonton dapat
+mengikuti benda yang sama sampai akhirnya menjadi aplikasi installed.
+
+| Act | Cerita | Entry state | Exit state | Durasi |
+|---|---|---|---|---:|
+| 1 — Pilih package | App dibutuhkan, nama package dipilih, target menjadi nyata | Terminal idle, app belum installed | Package card berada pada hub | 9,0s |
+| 2 — Temukan sumber | Hub mengirim lookup ke repository, metadata kembali ke package | Package belum punya source | Card berbadge repository | 12,0s |
+| 3 — Siapkan kebutuhan | Resolver menemukan komponen pendukung dan membentuk bundle | Satu package card | Bundle package + dependency siap | 12,0s |
+| 4 — Pasang dengan izin | Bundle meminta izin sistem, progress menulis app, result muncul | System shelf kosong | `editor-lite` installed | 15,0s |
+
+Target total: **50–60 detik** termasuk intro, hold untuk membaca payoff, dan
+closing. Tidak ada Act kelima khusus rangkuman; takeaway muncul setelah result
+Act 4 stabil.
+
+| Actor | Lahir | Persist | Handoff wajib |
+|---|---|---|---|
+| Terminal prompt | Intro selesai | Act 1–4 | Command commit menjadi history/output. |
+| Package card `editor-lite` | Act 1 Apply | Act 1–4 | Request → metadata → bundle → installed memakai satu id/anchor. |
+| Package manager hub | Act 1 | Act 1–4 | Idle → lookup → resolve → install. |
+| Repository shelf | Redup Act 1 | Act 1–3 | Menyala hanya saat menerima lookup. |
+| Dependency chips | Act 3 Apply | Act 3–4 | Masuk bertahap ke bundle, maksimum tiga visual. |
+| Admin gate | Act 4 Intent | Hanya Act 4 | Waiting → approved, lalu tutup saat instalasi mulai. |
+
+Tidak ada actor yang boleh di-unmount lalu muncul tiba-tiba di posisi lain.
+Setiap perubahan bentuk atau tempat memakai overlap, path, atau tween posisi
+minimal satu frame.
+
+## D. State contract
+
+| State | Yang tampak | Yang belum boleh tampak | Pemicu | Bukti hasil |
+|---|---|---|---|---|
+| `need` | Terminal + label `editor-lite` | Card, metadata, dependency, app ready | Nama dipilih | Target jelas. |
+| `request` | Command Enter, card menuju hub | Repository result | Pulse tiba di hub | Lookup berjalan. |
+| `found` | Repository + metadata pada card | Dependency, progress, ready | Response kembali | Sumber dapat dibaca. |
+| `resolving` | Hub dan chip dependency | Progress dan installed | Resolver aktif | Bundle lengkap. |
+| `awaiting-admin` | Bundle berhenti di gate | Progress/check | Intent install | Batas perubahan jelas. |
+| `installing` | Progress dan system shelf | App hijau sebelum 100% | Gate approved | Sistem sedang berubah. |
+| `installed` | Card hijau, check, output selesai | Gate/progress aktif | Progress complete | App siap dipakai. |
+
+## E. Causal Motion Contract per action
+
+Setiap action wajib mengikuti `before → intent → travel/process → apply →
+after/explain`. Mutasi state konseptual hanya boleh terjadi pada kolom
+**Apply**. Setiap hold adalah waktu untuk membaca hasil, bukan jeda kosong.
+
+| Action | Before | Intent/source | Travel/process | Apply | After/explain | Hold | SFX | Audit frame |
+|---|---|---|---|---|---|---:|---|---|
+| `choose-package` | App belum installed | `$ apt install editor-lite` selesai diketik | Token `editor-lite` bergerak dari prompt ke hub | Token tiba; package card lahir | Badge `package name` | 0,8s | tick, pop | idle / token / card |
+| `lookup-repo` | Card tanpa source | Hub mengirim lookup | Pulse hub → repository shelf | Shelf menyala, metadata masuk card | Badge `official repository` | 1,0s | swoosh, arrive | card / path / metadata |
+| `resolve-deps` | Satu card | `checking dependencies` di hub | Resolver ring + chip menuju bundle | Chip menyatu satu per satu | `+ 2 dependencies` | 1,0s | pop stagger | single / travel / bundle |
+| `request-admin` | Bundle siap, shelf sistem kosong | `sudo` commit sebagai konteks izin | Bundle bergerak dan berhenti di gate | Gate approved | `Perubahan sistem perlu izin` | 0,8s | lock, unlock | bundle / wait / approved |
+| `install-package` | Gate approved, 0% progress | Progress start | Bundle menuju shelf seiring 0–100% | 100%; bundle morph jadi app | Check + `installed: editor-lite` | 1,2s | confirm, ding | 0% / 50% / installed |
+
+### Motion semantics
+
+- Package card hanya lahir saat Apply, bukan sebagai future state dari awal.
+- Repository tidak boleh menyala tanpa request object/pulse yang berangkat dari
+  hub; metadata tidak boleh muncul tanpa return/handoff.
+- Dependency adalah komponen fisik yang masuk bundle, bukan label atau
+  konfeti. Maksimum 2–3 chip; sisanya menjadi `+N`.
+- Bundle harus berhenti di admin gate sebelum approved. Tidak ada password,
+  root mode, atau command berisiko di layar.
+- Installed app tidak boleh diberi check/warna success sebelum progress 100%.
+
+## F. Layout contract dan overflow audit
+
+Semua nilai adalah local coordinate `ContentBodyV1` (`732 × 965`).
+
+| Zona | Local y | Isi | Guardrail |
+|---|---:|---|---|
+| Caption | 18–68 | Satu caption pendek | Maks. 8 kata; fade bila transit melintas. |
+| Terminal | 92–210 | Prompt + output 1–3 baris | Clip internal, truncate text, tidak kecilkan font. |
+| Hub | 246–414 | Manager dan package card | Card maksimum 170×92, selalu terlihat. |
+| Transit/repository | 444–640 | Path, shelf, dependency lane | Satu request/bundle aktif. |
+| Gate/result | 670–824 | Gate **atau** progress/result | Dua panel besar tidak bertumpuk. |
+| Closing | 858–940 | Takeaway | Hanya sesudah installed state stabil. |
+
+Aturan dinamis:
+
+1. Terminal maksimal tiga baris dan tumbuh ke atas dari baseline zonanya;
+   tidak boleh mendorong hub.
+2. Gate dan progress memakai bounding box sama dan bertransisi crossfade/morph.
+3. `clipPath` hanya membatasi terminal/metadata panjang; tidak boleh digunakan
+   untuk menyembunyikan collision antar-zone.
+4. Audit frame paling besar: terminal 3 baris + dependency lane penuh +
+   gate/progress + closing sekaligus.
+
+## G. Data model dan komponen
+
+```js
+PACKAGE = {
+  id: 'editor-lite',
+  label: 'editor-lite',
+  source: 'official repository',
+  status: 'need | request | found | resolving | awaiting-admin | installing | installed',
+}
+DEPENDENCIES = [
+  { id: 'ui-kit', label: 'ui-kit' },
+  { id: 'text-engine', label: 'text-engine' },
+]
+```
+
+| Komponen | State | Aturan implementasi |
+|---|---|---|
+| `TerminalPanel` | typing, committed, output | Prompt adalah source action; history bergerak ke atas saat commit. |
+| `PackageCard` | request, found, bundle, installed | Satu actor persist; badge/posisi/morph berubah. |
+| `PackageManagerHub` | idle, lookup, resolve, install | Pulse/ring hanya ketika process berjalan. |
+| `RepositoryShelf` | dim, queried, matched | Label official/trusted, bukan web download. |
+| `DependencyChip` | absent, travelling, bundled | Stagger menuju bundle, maksimum tiga. |
+| `AdminGate` | hidden, waiting, approved | Context izin singkat; bukan pelajaran sudo. |
+| `InstallProgress` | 0–100, complete | Final state hanya pada complete. |
+| `TakeawayCard` | hidden, visible | Muncul setelah output installed dapat dibaca. |
+
+Gunakan inline SVG untuk semua actor yang bergerak atau punya sub-state.
+Jangan gunakan emoji maupun logo aplikasi pihak ketiga. Aset statis hanya
+ditambahkan setelah asset matrix, `icons.json`, dan loader fallback disetujui.
+
+## H. Copy dan audio map
+
+| Beat | Copy | Bukti visual |
+|---|---|---|
+| Target | `Package punya nama` | `editor-lite` di prompt dan card. |
+| Source | `Repository menyediakan package` | Metadata kembali ke card. |
+| Dependency | `Kebutuhan ikut diperiksa` | Chip menuju bundle. |
+| Izin | `Perubahan sistem perlu izin` | Bundle berhenti pada gate. |
+| Result | `Aplikasi siap dipakai` | Installed card dan check. |
+| Closing | `Pilih sumber yang tepercaya` | Source repository tetap terlihat. |
+
+Copy deklaratif, maksimal 8 kata, tanpa emoji/pertanyaan, dan tidak diulang
+persis pada caption serta label UI.
+
+| Momen | Candidate SFX | Trigger |
+|---|---|---|
+| Header compact | `success/shimmer` | Morph selesai. |
+| Command commit | `ui/tick` | Intent choose-package. |
+| Repository | `transitions/light-swoosh-quick`, `ui/paper-arrive` | Travel dan Apply lookup. |
+| Dependency | `ui/pop` / `ui/pop-2` | Apply chip; maksimal dua cue. |
+| Gate | `impacts/lock`, `impacts/unlock` | Waiting dan approved. |
+| Installed / closing | `success/confirm`, `success/ding` | Apply final dan takeaway. |
+
+Semua cue aktual harus ada di `SFX_MAP` serta schedule export pada timestamp
+Apply. Audio tidak boleh menjadi satu-satunya penanda perubahan.
+
+## I. Acceptance criteria dan urutan eksekusi setelah disetujui
+
+### Audit visual
+
+| Action | Before | Transit | After | Lulus bila |
+|---|---|---|---|---|
+| Choose | App belum ada | Token dari prompt | Card di hub | Card lahir saat token tiba. |
+| Lookup | Card tanpa source | Request di path | Metadata di card | Tidak ada teleport. |
+| Resolve | Satu card | Chips menuju bundle | Bundle + count | Tidak ada overflow. |
+| Admin | Bundle menunggu | Gate hold | Approved | Tidak ada root/password/risky command. |
+| Install | 0% | Sekitar 50% | Installed | Final tidak muncul dini. |
+
+### Checklist penerimaan
+
+- [ ] Tepat empat Act, target 50–60 detik, tanpa hold kosong.
+- [ ] Setiap action memiliki before, source, travel, apply, after, hold, SFX,
+      dan tiga frame audit.
+- [ ] Package card persist dari request sampai installed.
+- [ ] Repository tidak diklaim aman sempurna; dependency bukan dekorasi.
+- [ ] Content 34 tidak mengajarkan sudo melampaui context izin ringkas.
+- [ ] Title mengikuti sky blue → emerald.
+- [ ] Tidak ada collision pada frame terbesar dan replay loop kedua.
+- [ ] State reset bersih: terminal, package, metadata, chips, gate, progress,
+      caption, result, dan SFX state.
+- [ ] Preview intro, seluruh audit frame, replay, dan export test lulus.
+
+### Urutan implementasi nanti
+
+1. `data.js`: PHASES, palette, package/dependency, captions, action map,
+   dan SFX_MAP.
+2. `Animation.jsx`: state model, actor persistent, lifecycle causal action,
+   layout, timeline, dan reset loop.
+3. Metadata, manifest, dan caption sosial.
+4. Asset matrix bila icon statis benar-benar diperlukan.
+5. Compile/static check → preview frame audit/replay → finalkan timing SFX →
+   export test. Status ready hanya setelah checklist benar-benar lulus.
+
+## J. Referensi
+
+- `docs/standardizations/03-planning-storytelling-quality-gate.md` — state,
+  continuity, safe-zone, dan Causal Motion Contract.
+- `docs/standardizations/04-motion-gsap-reference.md` — causal action,
+  moving object, persistent actor, dan deterministic timeline.
+- `docs/standardizations/05-svg-layout-asset-pipeline.md` — palette,
+  typography, clipping, asset matrix, dan collision audit.
+- Plan Content 37 dan 38 — batas materi user/group/admin sebelum keduanya
+  digabung pada revisi terpisah.

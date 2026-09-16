@@ -28,7 +28,7 @@
   gap: 16px;
 }
 
-.cm-back-btn {
+.cm-history-btn {
   padding: 8px 16px;
   background: rgba(56, 189, 248, 0.1);
   border: 1.5px solid #334155;
@@ -42,7 +42,7 @@
   white-space: nowrap;
 }
 
-.cm-back-btn:hover {
+.cm-history-btn:hover {
   background: rgba(56, 189, 248, 0.2);
   border-color: #38BDF8;
 }

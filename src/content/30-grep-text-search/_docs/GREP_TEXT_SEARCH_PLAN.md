@@ -6,7 +6,7 @@
 | Status | 📝 PLAN ONLY — jangan dieksekusi |
 | Target audiens | Pemula Linux yang sudah memahami file, terminal, dan pencarian nama file |
 | Tujuan belajar | Memahami grep sebagai pencarian isi teks, serta fungsi dasar pencarian case-insensitive dan recursive |
-| Prasyarat | 28 Reading Files in Terminal dan 29 Find Files |
+| Prasyarat | 27 Terminal File Workflow (membaca dan mencari file) |
 | Scene shell | scene-ui V1, portrait 820 × 1340 |
 
 ## Audience promise

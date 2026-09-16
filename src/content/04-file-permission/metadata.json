@@ -1,0 +1,15 @@
+{
+  "id": "file-permission",
+  "title": "Linux File Permission",
+  "subtitle": "Understanding rwxrwxrwx and chmod explained",
+  "category": "Linux Basics",
+  "tags": [
+    "Permission",
+    "chmod",
+    "Security",
+    "Beginner"
+  ],
+  "color": "#FBBF24",
+  "status": "posted",
+  "priority": 2
+}

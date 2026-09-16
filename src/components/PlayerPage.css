@@ -1,0 +1,39 @@
+.player-page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #070913;
+  color: #94A3B8;
+  font-family: inherit;
+}
+
+.player-page-unavailable {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100vh;
+  background: #070913;
+  color: #E2E8F0;
+  text-align: center;
+}
+
+.player-page-unavailable .topic-title {
+  color: #FBBF24;
+  font-size: 1.2rem;
+}
+
+.player-page-unavailable .back-btn {
+  background: #1E293B;
+  color: #E2E8F0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+
+.player-page-unavailable .back-btn:hover {
+  background: #334155;
+}
