@@ -15,5 +15,7 @@
   ],
   "color": "#34D399",
   "status": "draft",
-  "priority": 34
+  "priority": 34,
+  "pinned": true,
+  "pinnedAt": "2026-09-20T21:41:38.938Z"
 }

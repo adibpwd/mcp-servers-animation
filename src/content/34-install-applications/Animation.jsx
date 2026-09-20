@@ -47,6 +47,48 @@ const DISTRO_LOGO_ICON = {
   alpine: 'alpine-logo',
 }
 
+// ── Revisi 04 (2026-09-21) — flowchart spine: satu garis vertikal dari
+// hub (persisten) turun ke zona Act yang sedang aktif, jadi backbone
+// visual yang menyatukan Act 1-8 (bukan garis terpisah per-Act yang bisa
+// numpuk; hanya SATU segmen yang tampil, ikut mutasi phaseIdx). ──
+const PHASE_SPINE_Y = [
+  CAROUSEL_Y,
+  CAROUSEL_Y,
+  NETWORK_CENTER.y,
+  TRANSIT_TOP + 26,
+  GATE_CENTER.y,
+  TRANSIT_TOP + 40,
+  TRANSIT_TOP + 30,
+  (ZONE.CLOSING.yStart + ZONE.CLOSING.yEnd) / 2,
+]
+const FlowSpine = ({ phaseIdx, color }) => {
+  if (phaseIdx == null || phaseIdx < 0 || phaseIdx >= PHASE_SPINE_Y.length) return null
+  const x = HUB_CENTER.x
+  const y1 = HUB_CENTER.y
+  const y2 = PHASE_SPINE_Y[phaseIdx]
+  if (Math.abs(y2 - y1) < 1) return null
+  return (
+    <g opacity="0.5">
+      <line x1={x} y1={y1} x2={x} y2={y2} stroke={color} strokeWidth="2" strokeDasharray="3 7" strokeLinecap="round" />
+      <circle r="4" fill={color}>
+        <animateMotion dur="1.6s" repeatCount="indefinite" path={'M ' + x + ' ' + y1 + ' L ' + x + ' ' + y2} />
+      </circle>
+    </g>
+  )
+}
+// ── Badge preview "distro -> manager -> format paket" (revisi 04 tujuan
+// 1) — muncul di atas hub tiap distro beat Act 1, warna ikut brand color
+// distro yang sedang aktif. ──
+const DistroPreviewBadge = ({ visible, preview }) => {
+  if (!visible || !preview) return null
+  return (
+    <g transform={'translate(' + HUB_CENTER.x + ' ' + (HUB_CENTER.y - 66) + ')'}>
+      <rect x="-78" y="-16" width="156" height="32" rx="16" fill={COLORS.PANEL_ALT} stroke={preview.color} strokeWidth="2" />
+      <text x="0" y="5" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="11" fill={preview.color}>{preview.managerId + ' \u00b7 ' + preview.pkgFormat}</text>
+    </g>
+  )
+}
+
 const TYPE_DUR = 0.5
 const TRAVEL_DUR = 0.6
 
@@ -150,6 +192,13 @@ const ManagerCarousel = ({ y, activeId, visible }) => {
   const startX = 366 - ((n - 1) * gap) / 2
   return (
     <g transform={'translate(0 ' + y + ')'}>
+      {/* revisi 04: garis cabang 1-ke-5 dari hub -- tool beda, fungsi sama */}
+      <g opacity="0.3">
+        {MANAGERS.map((m, i) => {
+          const x = startX + i * gap
+          return <line key={m.id} x1={HUB_CENTER.x} y1="-46" x2={x} y2="-16" stroke={COLORS.ACTIVITY} strokeWidth="1.2" strokeDasharray="2 5" />
+        })}
+      </g>
       {MANAGERS.map((m, i) => {
         const active = m.id === activeId
         const x = startX + i * gap
@@ -458,6 +507,7 @@ export default function InstallApplicationsAnimation({
 
   const [distroActiveId, setDistroActiveId] = useState(null)
   const [distroSettledId, setDistroSettledId] = useState(null)
+  const [distroPreview, setDistroPreview] = useState(null)
   const [managerActiveId, setManagerActiveId] = useState(null)
   const [managerBadgeVisible, setManagerBadgeVisible] = useState(false)
 
@@ -522,6 +572,7 @@ export default function InstallApplicationsAnimation({
       setHistory([]); setActivePrompt(''); setTypingActive(false)
       setHubState('idle'); setManagerLabel(''); setCardPos({ x: HUB_CENTER.x + 140, y: HUB_CENTER.y }); setCardBadge('need')
       setDistroActiveId(null); setDistroSettledId(null); setManagerActiveId(null); setManagerBadgeVisible(false)
+      setDistroPreview(null)
       setNetworkVisible(false); setPulseVisible(false); setPulsePos(NETWORK_CENTER); setMetadataArrived(false)
       setSourceVisible(false); setSourceActiveId(null)
       setPlanVisible(false); setDepCount(0); setPlanReady(false); setGateState('hidden')
@@ -596,11 +647,17 @@ export default function InstallApplicationsAnimation({
       tl.add(() => {
         setDistroActiveId(d.id)
         setDistroSettledId(null)
+        // revisi 04: preview manager+format langsung saat distro itu fokus
+        setDistroPreview({ managerId: d.managerId, pkgFormat: d.pkgFormat, color: d.color })
         play(SFX_MAP.POP)
       }, a1 + 1.4 + i * 1.5)
     })
     // pilihan demo: Ubuntu (apt/.deb) sebagai titik akhir Act 1
-    tl.add(() => { setDistroActiveId('ubuntu'); play(SFX_MAP.POP) }, a1 + 1.4 + DISTROS.length * 1.5)
+    tl.add(() => {
+      setDistroActiveId('ubuntu')
+      setDistroPreview({ managerId: 'apt', pkgFormat: '.deb', color: '#E95420' })
+      play(SFX_MAP.POP)
+    }, a1 + 1.4 + DISTROS.length * 1.5)
     tl.add(() => {
       setDistroActiveId(null)
       setDistroSettledId('ubuntu')
@@ -650,6 +707,8 @@ export default function InstallApplicationsAnimation({
       setPulseVisible(false)
       setMetadataArrived(false)
       setCardBadge('network')
+      // revisi 03 bug fix: Act 2 tidak lagi nangkring begitu Act 3 mulai
+      setManagerBadgeVisible(false)
       addLine(TERMINAL_LINES.OUT_NETWORK, 'muted')
     }, a3)
     // request metadata → official repo, lalu metadata kembali → found
@@ -677,6 +736,9 @@ export default function InstallApplicationsAnimation({
       setSourceVisible(true)
       setSourceActiveId(null)
       setCardBadge('sources')
+      // revisi 03 bug fix: Act 3 tidak lagi nangkring begitu Act 4 mulai
+      setNetworkVisible(false)
+      setPulseVisible(false)
       addLine(TERMINAL_LINES.OUT_SOURCES, 'muted')
     }, a4)
     // camera-pan satu per satu: yang tidak dibahas jadi node redup
@@ -701,6 +763,8 @@ export default function InstallApplicationsAnimation({
       setPlanReady(false)
       setGateState('waiting')
       setCardBadge('resolving')
+      // revisi 03 bug fix: Act 4 tidak lagi nangkring begitu Act 5 mulai
+      setSourceVisible(false)
       addLine(TERMINAL_LINES.OUT_TREE, 'muted')
     }, a5)
     tl.add(() => { setDepCount(1); play(SFX_MAP.POP) }, a5 + 0.9)
@@ -737,6 +801,9 @@ export default function InstallApplicationsAnimation({
       setCapsuleP(0)
       setProgressPct(0)
       setCardBadge('download')
+      // revisi 03 bug fix: Act 5 (plan+gate) tidak lagi nangkring begitu Act 6 mulai
+      setPlanVisible(false)
+      setGateState('hidden')
       addLine(TERMINAL_LINES.OUT_DOWNLOAD, 'muted')
     }, a6)
     // empat capsule terunduh satu per satu; progress hanya naik saat tiba
@@ -768,6 +835,8 @@ export default function InstallApplicationsAnimation({
       setStageIdx(0)
       setUnpackedCount(0)
       setCardBadge('verify')
+      // revisi 03 bug fix: Act 6 tidak lagi nangkring begitu Act 7 mulai
+      setDownloadVisible(false)
       addLine(TERMINAL_LINES.OUT_VERIFY, 'muted')
       play(SFX_MAP.POP)
     }, a7)
@@ -817,6 +886,9 @@ export default function InstallApplicationsAnimation({
     tl.add(() => {
       setPhaseIdx(7)
       setCardBadge('installed')
+      // revisi 03 bug fix: Act 7 conveyor tidak lagi nangkring begitu Act 8
+      // mulai — ReadyPanel (ledger + app tile) sudah cukup jadi bukti hasil
+      setInstallVisible(false)
     }, a8)
     cap(CAPTIONS.TAKEAWAY, COLORS.SUCCESS, a8 + 2.6)
     tl.add(() => {
@@ -875,8 +947,11 @@ export default function InstallApplicationsAnimation({
             <TerminalPanel history={history} activePrompt={activePrompt} typingActive={typingActive} />
 
             {/* Hub — zona 216-358: package manager hub + package card persisten */}
+            {/* revisi 04: flow spine dari hub turun ke zona Act aktif */}
+            <FlowSpine phaseIdx={phaseIdx} color={PHASES[phaseIdx] ? PHASES[phaseIdx].badgeColor : COLORS.BORDER} />
             <PackageManagerHub x={HUB_CENTER.x} y={HUB_CENTER.y} state={hubState} managerLabel={managerLabel} />
             <PackageCard x={cardPos.x} y={cardPos.y} badgeKey={cardBadge} manager={managerLabel} />
+            <DistroPreviewBadge visible={phaseIdx === 0} preview={distroPreview} />
 
             {/* Act 1 — distro carousel (satu keluarga per beat) */}
             <DistroCarousel y={CAROUSEL_Y} activeId={distroActiveId} settledId={distroSettledId} visible={phaseIdx === 0} />

@@ -11,5 +11,7 @@
   ],
   "color": "#4ADE80",
   "status": "posted",
-  "priority": 1
+  "priority": 1,
+  "pinned": false,
+  "pinnedAt": null
 }

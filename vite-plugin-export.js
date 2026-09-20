@@ -326,7 +326,7 @@ async function handleApiRoute(req, res) {
     }
     if (req.method === 'POST') {
       parseJsonBody(req, res, (body) => {
-        const { status, priority } = body
+        const { status, priority, pinned, pinnedAt } = body
         const VALID_STATUSES = ['draft', 'ready', 'posted']
         if (status && !VALID_STATUSES.includes(status)) {
           res.writeHead(400, { 'Content-Type': 'application/json' })
@@ -338,6 +338,16 @@ async function handleApiRoute(req, res) {
           res.end(JSON.stringify({ ok: false, error: `Invalid priority` }))
           return
         }
+        if (pinned !== undefined && typeof pinned !== 'boolean') {
+          res.writeHead(400, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ ok: false, error: `Invalid pinned` }))
+          return
+        }
+        if (pinnedAt !== undefined && (typeof pinnedAt !== 'string' || Number.isNaN(Date.parse(pinnedAt)))) {
+          res.writeHead(400, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ ok: false, error: `Invalid pinnedAt` }))
+          return
+        }
         const folder = findFolderByContentId(contentId)
         if (!folder) {
           res.writeHead(404, { 'Content-Type': 'application/json' })
@@ -347,6 +357,14 @@ async function handleApiRoute(req, res) {
         const updates = {}
         if (status !== undefined) updates.status = status
         if (priority !== undefined) updates.priority = Math.max(1, Math.min(100, priority))
+        if (pinned !== undefined) {
+          updates.pinned = pinned
+          if (pinned) {
+            updates.pinnedAt = pinnedAt || new Date().toISOString()
+          } else {
+            updates.pinnedAt = null
+          }
+        }
         try {
           const item = writeTopicMetadata(contentId, updates)
           res.writeHead(200, { 'Content-Type': 'application/json' })

@@ -337,10 +337,10 @@ app.get('/api/content/:id', (req, res) => {
   res.json({ ok: true, item })
 })
 
-// POST /api/content/:id - Update status and/or priority
+// POST /api/content/:id - Update status, priority, dan/atau pin dock
 app.post('/api/content/:id', (req, res) => {
   const { id } = req.params
-  const { status, priority } = req.body
+  const { status, priority, pinned, pinnedAt } = req.body
 
   const VALID_STATUSES = ['draft', 'ready', 'posted']
 
@@ -350,6 +350,12 @@ app.post('/api/content/:id', (req, res) => {
   }
   if (priority !== undefined && (typeof priority !== 'number' || priority < 1 || priority > 100)) {
     return res.status(400).json({ ok: false, error: `Invalid priority: must be number 1-100` })
+  }
+  if (pinned !== undefined && typeof pinned !== 'boolean') {
+    return res.status(400).json({ ok: false, error: `Invalid pinned: must be boolean` })
+  }
+  if (pinnedAt !== undefined && (typeof pinnedAt !== 'string' || Number.isNaN(Date.parse(pinnedAt)))) {
+    return res.status(400).json({ ok: false, error: `Invalid pinnedAt: must be ISO date string` })
   }
 
   const folder = findFolderByContentId(id)
@@ -362,6 +368,14 @@ app.post('/api/content/:id', (req, res) => {
   const updates = {}
   if (status !== undefined) updates.status = status
   if (priority !== undefined) updates.priority = Math.max(1, Math.min(100, priority))
+  if (pinned !== undefined) {
+    updates.pinned = pinned
+    if (pinned) {
+      updates.pinnedAt = pinnedAt || new Date().toISOString()
+    } else {
+      updates.pinnedAt = null
+    }
+  }
 
   const item = writeTopicMetadata(id, updates)
 

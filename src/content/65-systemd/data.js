@@ -40,51 +40,46 @@ export const COLORS = {
   SUCCESS: '#34D399',
 }
 
-// Durasi per Act (revisi-02 §3.5) — estimasi, WAJIB diukur ulang dari
-// timeline nyata saat preview (checklist 11.11, masih pending).
+// Durasi per Act (revisi-05) — dipangkas delay kosong antar Act
 export const PHASES = [
-  { id: 'process-to-service', badge: 'ACT 1 — DARI PROCESS KE SERVICE', badgeColor: COLORS.PROCESS, duration: 12.0 },
-  { id: 'manager-lifecycle', badge: 'ACT 2 — MANAGER MENJALANKAN LIFECYCLE', badgeColor: COLORS.MANAGER, duration: 12.0 },
-  { id: 'boot-dependency', badge: 'ACT 3 — BOOT & DEPENDENCY, ENABLE \u2260 START', badgeColor: COLORS.DEPENDENCY, duration: 16.0 },
-  { id: 'process-gagal', badge: 'ACT 4 — KETIKA PROCESS GAGAL', badgeColor: COLORS.FAILED, duration: 12.0 },
-  { id: 'jejak-journal', badge: 'ACT 5 — JEJAK DI JOURNAL', badgeColor: COLORS.JOURNAL, duration: 15.0 },
-  { id: 'diagnosis-aman', badge: 'ACT 6 — DIAGNOSIS: IKUTI BUKTI', badgeColor: COLORS.DIAGNOSIS, duration: 13.0 },
+  { id: 'process-to-service', badge: 'ACT 1 — DARI PROCESS KE SERVICE', badgeColor: COLORS.PROCESS, duration: 7.5 },
+  { id: 'manager-lifecycle', badge: 'ACT 2 — MANAGER MENJALANKAN LIFECYCLE', badgeColor: COLORS.MANAGER, duration: 6.2 },
+  { id: 'boot-dependency', badge: 'ACT 3 — BOOT & DEPENDENCY, ENABLE \u2260 START', badgeColor: COLORS.DEPENDENCY, duration: 8.5 },
+  { id: 'process-gagal', badge: 'ACT 4 — KETIKA PROCESS GAGAL', badgeColor: COLORS.FAILED, duration: 8.2 },
+  { id: 'jejak-journal', badge: 'ACT 5 — JEJAK DI JOURNAL', badgeColor: COLORS.JOURNAL, duration: 11.5 },
+  { id: 'diagnosis-aman', badge: 'ACT 6 — DIAGNOSIS: IKUTI BUKTI', badgeColor: COLORS.DIAGNOSIS, duration: 9.8 },
 ]
 
 export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
 export const INTRO_CATEGORY_LABEL = 'LINUX FUNDAMENTALS'
-export const INTRO_DOMAIN = 'WEB-DEMO.SERVICE'
+export const INTRO_DOMAIN = 'ADIB-DEV.COM'
 export const INTRO_TITLE = 'SYSTEMD'
 export const INTRO_SUBTITLE = 'Service yang dikelola, dijaga, dan diamati'
 
 // ═══════════════════════════════════════════════
-// PETA SISTEM — tujuh stasiun tersebar (revisi-02 §3.1, Bagian 4).
-// Local coordinate di dalam ContentBodyV1 (body 732 x 965). Ukuran
-// (w,h) DISESUAIKAN dari rencana asli Bagian 4 supaya tidak keluar
-// dari body 0-732 dan tidak bertabrakan (deviasi tercatat di
-// revisi-04 -- rencana asli 300x190 utk process/unit overflow di
-// pinggir kanan pada cx=602).
+// PETA SISTEM — tujuh stasiun tersebar (revisi-05 layout cleanup).
+// Local coordinate di dalam ContentBodyV1 (body 732 x 965).
+// Cek overlap (05 Bab A, gap >= 20): Manager x 216..516 (y 242..417) vs
+// Managed Process x 536..712 (y 370..470) -> gap 20. Managed Process
+// (bawah 470) vs Journal (atas 490) -> gap 20. Journal (bawah 710) vs
+// Diagnosis (atas 730) -> gap 20. Semua tepi kanan <= 712 dari 732.
+// Deviasi dari angka revisi-05 §1.1 (cx 585, w 220 -> kiri 475 menabrak
+// Manager 516): dicatat di dokumen revisi-05.
 // ═══════════════════════════════════════════════
-// Ukuran dibesarkan dari draft awal supaya semua teks isi stasiun bisa
-// >=11px (05-svg-layout-asset-pipeline.md standar caption/label), bukan
-// 300x190 mentah dari rencana Bagian 4 (deviasi tercatat di revisi-04).
 export const STATIONS = {
   processManual: { cx: 145, cy: 135, w: 250, h: 170, label: 'processManual' },
   unitFile: { cx: 587, cy: 135, w: 250, h: 170, label: 'unitFile' },
-  manager: { cx: 366, cy: 330, w: 300, h: 170, label: 'manager' },
-  managedProcess: { cx: 615, cy: 420, w: 190, h: 100, label: 'managedProcess' },
+  manager: { cx: 366, cy: 330, w: 300, h: 175, label: 'manager' },
+  managedProcess: { cx: 624, cy: 420, w: 176, h: 100, label: 'managedProcess' },
   bootTarget: { cx: 165, cy: 590, w: 280, h: 150, label: 'bootTarget' },
-  journal: { cx: 560, cy: 590, w: 300, h: 230, label: 'journal' },
+  journal: { cx: 540, cy: 600, w: 340, h: 220, label: 'journal' },
   diagnosis: { cx: 366, cy: 780, w: 430, h: 100, label: 'diagnosis' },
 }
-// Stamp payoff (Act 6 akhir) -- di bawah Diagnosis Terminal, bukan
-// menimpa Journal lagi (perbaikan tabrakan revisi-02 §2.3).
+// Stamp payoff (Act 6 akhir) -- di bawah Diagnosis Terminal
 export const CLOSING_Y = 912
 
-// Garis alur -- tiap objek baru WAJIB lahir dari salah satu garis ini
-// (Aturan Asal-Usul, revisi-02 §3.2 cara 1). Label singkat menempel
-// di tengah garis lewat PathLabel.
+// Garis alur
 export const LINES = [
   { id: 'process-to-unit', from: 'processManual', to: 'unitFile', label: 'dideklarasikan sebagai unit' },
   { id: 'unit-to-manager', from: 'unitFile', to: 'manager', label: 'dikenali systemd' },
@@ -93,6 +88,7 @@ export const LINES = [
   { id: 'managed-to-journal', from: 'managedProcess', to: 'journal', label: 'stdout/stderr' },
   { id: 'managed-to-diagnosis', from: 'managedProcess', to: 'diagnosis', label: 'status' },
   { id: 'journal-to-diagnosis', from: 'journal', to: 'diagnosis', label: 'log terfilter' },
+  { id: 'boot-to-diagnosis', from: 'bootTarget', to: 'diagnosis', label: 'konteks boot' },
 ]
 
 // ═══════════════════════════════════════════════

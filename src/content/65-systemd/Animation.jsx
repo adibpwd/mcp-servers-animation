@@ -211,156 +211,147 @@ export default function SystemdAnimation({
     t += 0.8
     tl.add(() => setContentStarted(true), t)
 
-    // ═══════════════ ACT 1 — Dari Process ke Service (12s, §6.1) ═════
+    // ═══════════════ ACT 1 — Dari Process ke Service (7.5s, §6.1) ═════
     tl.add(() => setPhaseIdx(0), t)
-    // 1) Process Manual lahir sendirian -- satu-satunya "asal-usul" tanpa
-    //    garis (titik awal cerita), fade polos bukan popIn dramatis.
+    // 1) Process Manual lahir sendirian -- titik awal cerita
     lightStation(tl, t + 0.1, 'processManual', { duration: 0.8 })
     say(tl, t + 0.3, CAPTIONS.RAW_PROCESS, 'processManual')
     // 2) Garis Process -> Unit digambar
-    drawLine(tl, t + 2.0, 'process-to-unit', { duration: 0.7, sfxEntry: SFX_MAP.SLIDE_IN })
+    drawLine(tl, t + 1.2, 'process-to-unit', { duration: 0.7, sfxEntry: SFX_MAP.SLIDE_IN })
     // 3) Unit File menyala di ujung garis + path tag + Path Bar
-    //    (garis selesai di t+2.7 -> station menyala tepat di ujungnya, bunyi POP
-    //    sinkron dengan visual, tanpa jeda kosong)
-    lightStation(tl, t + 2.7, 'unitFile', { duration: 0.6, sfxEntry: SFX_MAP.POP })
-    setPathText(tl, t + 2.85, PATH_ATLAS.unitFile)
-    say(tl, t + 2.95, CAPTIONS.UNIT_DECLARED, 'unitFile')
+    lightStation(tl, t + 1.9, 'unitFile', { duration: 0.6, sfxEntry: SFX_MAP.POP })
+    setPathText(tl, t + 2.05, PATH_ATLAS.unitFile)
+    say(tl, t + 2.15, CAPTIONS.UNIT_DECLARED, 'unitFile')
     // 4) Unit fields terisi
-    tl.add(() => setUnitDeclared(true), t + 5.5)
-    sfxOn(tl, t + 5.5, () => playSfx(SFX_MAP.TICK))
-    // service dikenali penuh, tak lama setelah field terisi
-    tl.add(() => setServiceBorn(true), t + 5.8)
-    sfxOn(tl, t + 5.8, () => playSfx(SFX_MAP.CHIME))
-    say(tl, t + 5.9, CAPTIONS.SERVICE_BORN, 'unitFile')
-    // 5) Process Manual meredup, TIDAK dihapus (temuan a)
-    dimStation(tl, t + 8.5, 'processManual', { to: 0.35 })
-    let act1End = t + 12.0
+    tl.add(() => setUnitDeclared(true), t + 3.8)
+    sfxOn(tl, t + 3.8, () => playSfx(SFX_MAP.TICK))
+    // service dikenali penuh
+    tl.add(() => setServiceBorn(true), t + 4.1)
+    sfxOn(tl, t + 4.1, () => playSfx(SFX_MAP.CHIME))
+    say(tl, t + 4.2, CAPTIONS.SERVICE_BORN, 'unitFile')
+    // 5) Process Manual meredup
+    dimStation(tl, t + 5.8, 'processManual', { to: 0.35 })
+    let act1End = t + 7.5
 
-    // ═══════════════ ACT 2 — Manager Menjalankan Lifecycle (12s, §6.2) ═
+    // ═══════════════ ACT 2 — Manager Menjalankan Lifecycle (6.2s, §6.2) ═
     let t2 = act1End
     tl.add(() => setPhaseIdx(1), t2)
-    // 1) Garis Unit File -> Manager; Manager lahir menyala di ujung garis
+    // 1) Garis Unit File -> Manager; Manager lahir menyala
     drawLine(tl, t2 + 0.1, 'unit-to-manager', { duration: 0.7, sfxEntry: SFX_MAP.WHOOSH_LOW })
-    lightStation(tl, t2 + 0.9, 'manager', { duration: 0.6 })
-    tl.add(() => setLifecycle('starting'), t2 + 0.9)
-    say(tl, t2 + 1.0, CAPTIONS.MANAGER_STARTS, 'manager')
+    lightStation(tl, t2 + 0.8, 'manager', { duration: 0.6 })
+    tl.add(() => setLifecycle('starting'), t2 + 0.8)
+    say(tl, t2 + 0.9, CAPTIONS.MANAGER_STARTS, 'manager')
     // 2) starting -> active
-    let a2 = t2 + 3.0
+    let a2 = t2 + 2.2
     tl.add(() => setLifecycle('active'), a2)
     sfxOn(tl, a2, () => playSfx(SFX_MAP.SUCCESS))
     say(tl, a2 + 0.1, CAPTIONS.BECOMES_ACTIVE, 'manager')
-    a2 += 1.0
     // 3) garis pendek Manager -> Managed Process, lahir dgn PID 4021
-    drawLine(tl, a2, 'manager-to-managed', { duration: 0.5, sfxEntry: SFX_MAP.POP2 })
-    a2 += 0.6
-    lightStation(tl, a2, 'managedProcess', { duration: 0.5 })
-    setPathText(tl, a2 + 0.1, PATH_ATLAS.managedProcessInitial)
-    say(tl, a2 + 0.2, CAPTIONS.PID_NOTE, 'managedProcess')
-    let act2End = t2 + 12.0
+    drawLine(tl, a2 + 1.0, 'manager-to-managed', { duration: 0.5, sfxEntry: SFX_MAP.POP2 })
+    lightStation(tl, a2 + 1.5, 'managedProcess', { duration: 0.5 })
+    setPathText(tl, a2 + 1.6, PATH_ATLAS.managedProcessInitial)
+    say(tl, a2 + 1.7, CAPTIONS.PID_NOTE, 'managedProcess')
+    let act2End = t2 + 6.2
 
-    // ═══════════════ ACT 3 — Boot & Dependency, Enable ≠ Start (16s, §6.3) ═
+    // ═══════════════ ACT 3 — Boot & Dependency, Enable ≠ Start (8.5s, §6.3) ═
     let t3 = act2End
     tl.add(() => setPhaseIdx(2), t3)
     // 1) Garis Manager -> Boot Target; Boot Target lahir menyala
     drawLine(tl, t3 + 0.1, 'manager-to-boot', { duration: 0.7, sfxEntry: SFX_MAP.WHOOSH })
-    lightStation(tl, t3 + 0.9, 'bootTarget', { duration: 0.6 })
-    setPathText(tl, t3 + 1.0, PATH_ATLAS.bootTarget)
-    say(tl, t3 + 1.1, CAPTIONS.BOOT_TARGET, 'bootTarget')
-    let a3 = t3 + 3.0
+    lightStation(tl, t3 + 0.8, 'bootTarget', { duration: 0.6 })
+    setPathText(tl, t3 + 0.9, PATH_ATLAS.bootTarget)
+    say(tl, t3 + 1.0, CAPTIONS.BOOT_TARGET, 'bootTarget')
+    let a3 = t3 + 2.4
     sfxOn(tl, a3, () => playSfx(SFX_MAP.TICK))
     say(tl, a3 + 0.05, CAPTIONS.DEP_CHAIN, 'bootTarget')
-    a3 += 2.5
+    a3 += 1.8
     // ENABLE (boot-time) vs START (sekarang) -- dua badge, dua SFX beda
     tl.add(() => setEnabledOn(true), a3)
     sfxOn(tl, a3, () => playSfx(SFX_MAP.LOCK))
-    a3 += 1.5
+    a3 += 1.3
     tl.add(() => setStartedOn(true), a3)
     sfxOn(tl, a3, () => playSfx(SFX_MAP.POP2))
     say(tl, a3 + 0.1, CAPTIONS.ENABLE_VS_START, 'bootTarget')
-    // Boot Target TIDAK diredupkan/dihapus di akhir Act (revisi-02 §3.1:
-    // semua stasiun tetap terlihat sampai Act 6)
-    let act3End = t3 + 16.0
+    let act3End = t3 + 8.5
 
-    // ═══════════════ ACT 4 — Ketika Process Gagal (12s, §6.4) ═════════
+    // ═══════════════ ACT 4 — Ketika Process Gagal (8.2s, §6.4) ═════════
     let t4 = act3End
     tl.add(() => setPhaseIdx(3), t4)
     say(tl, t4 + 0.1, CAPTIONS.PROCESS_DIES, 'managedProcess')
-    let a4 = t4 + 2.0
+    let a4 = t4 + 1.5
     tl.add(() => setLifecycle('failed'), a4)
-    blinkLine(tl, a4, 'manager-to-managed', { cycles: 5, stepDuration: 0.18, sfxEntry: SFX_MAP.ALERT_PULSE })
+    blinkLine(tl, a4, 'manager-to-managed', { cycles: 4, stepDuration: 0.16, sfxEntry: SFX_MAP.ALERT_PULSE })
     say(tl, a4 + 0.1, CAPTIONS.STATE_FAILED, 'manager')
-    a4 += 2.5
+    a4 += 2.3
     tl.add(() => { setLifecycle('restarting'); setRestartAttempt(1) }, a4)
     sfxOn(tl, a4, () => playSfx(SFX_MAP.TICK))
     say(tl, a4 + 0.1, CAPTIONS.BOUNDED_RESTART, 'manager')
-    a4 += 2.8
-    // path tag Managed Process crossfade /proc/4021/ -> /proc/4198/ lewat
-    // perubahan `pid` (dibaca langsung di render, tanpa state terpisah)
+    a4 += 2.2
     tl.add(() => { setLifecycle('active'); setPid(PID_AFTER_RESTART) }, a4)
     sfxOn(tl, a4, () => playSfx(SFX_MAP.CONFIRM))
     say(tl, a4 + 0.1, CAPTIONS.BACK_ACTIVE, 'manager')
-    let act4End = t4 + 12.0
+    let act4End = t4 + 8.2
 
-    // ═══════════════ ACT 5 — Jejak di Journal (15s, §6.5) ═════════════
+    // ═══════════════ ACT 5 — Jejak di Journal (11.5s, §6.5) ═════════════
     let t5 = act4End
     tl.add(() => setPhaseIdx(4), t5)
     drawLine(tl, t5 + 0.1, 'managed-to-journal', { duration: 0.7, sfxEntry: SFX_MAP.WHOOSH_LOW })
-    lightStation(tl, t5 + 0.9, 'journal', { duration: 0.6 })
-    setPathText(tl, t5 + 1.0, PATH_ATLAS.journal)
-    say(tl, t5 + 1.1, CAPTIONS.STDOUT_TO_JOURNAL, 'journal')
-    let a5 = t5 + 3.0
+    lightStation(tl, t5 + 0.8, 'journal', { duration: 0.6 })
+    setPathText(tl, t5 + 0.9, PATH_ATLAS.journal)
+    say(tl, t5 + 1.0, CAPTIONS.STDOUT_TO_JOURNAL, 'journal')
+    let a5 = t5 + 2.2
     JOURNAL_ENTRIES.forEach((entry, i) => {
       if (i < 2) {
-        // dua entri pertama "dipicu peristiwa" -- pulsa berjalan di garis
-        pulseAlong(tl, a5, `j-pulse-${i}`, 'managed-to-journal', { duration: 0.5 })
-        tl.add(() => setJournalCount(i + 1), a5 + 0.5)
-        // TICK di momen pulsa tiba & entri muncul (bukan saat pulsa berangkat)
-        sfxOn(tl, a5 + 0.5, () => playSfx(SFX_MAP.TICK))
+        pulseAlong(tl, a5, `j-pulse-${i}`, 'managed-to-journal', { duration: 0.4 })
+        tl.add(() => setJournalCount(i + 1), a5 + 0.4)
+        sfxOn(tl, a5 + 0.4, () => playSfx(SFX_MAP.TICK))
       } else {
         tl.add(() => setJournalCount(i + 1), a5)
         sfxOn(tl, a5, () => playSfx(SFX_MAP.TICK, 0.7))
       }
-      a5 += 0.85
+      a5 += 0.7
     })
     say(tl, a5 + 0.1, CAPTIONS.MANAGER_EVENTS, 'journal')
-    a5 += 1.5
+    a5 += 1.6
     say(tl, a5, CAPTIONS.TIMELINE_GROWS, 'journal')
-    let act5End = t5 + 15.0
+    let act5End = t5 + 11.5
 
-    // ═══════════════ ACT 6 — Diagnosis: Ikuti Bukti (13s, §6.6) ═══════
+    // ═══════════════ ACT 6 — Diagnosis: Ikuti Bukti (9.8s, §6.6) ═══════
     let t6 = act5End
     tl.add(() => setPhaseIdx(5), t6)
-    // 1) Dua garis konvergen ke Diagnosis Terminal
-    drawLine(tl, t6 + 0.1, 'managed-to-diagnosis', { duration: 0.6, sfxEntry: SFX_MAP.WHOOSH })
-    drawLine(tl, t6 + 0.1, 'journal-to-diagnosis', { duration: 0.6 })
-    lightStation(tl, t6 + 0.8, 'diagnosis', { duration: 0.6, sfxEntry: SFX_MAP.CHIME })
-    let a6 = t6 + 2.2
+    // 1) Garis alur konvergen dari Managed Process, Journal, dan Boot Target ke Diagnosis Terminal
+    drawLine(tl, t6 + 0.1, 'managed-to-diagnosis', { duration: 0.5, sfxEntry: SFX_MAP.WHOOSH })
+    drawLine(tl, t6 + 0.1, 'journal-to-diagnosis', { duration: 0.5 })
+    drawLine(tl, t6 + 0.1, 'boot-to-diagnosis', { duration: 0.5 })
+    lightStation(tl, t6 + 0.7, 'diagnosis', { duration: 0.6, sfxEntry: SFX_MAP.CHIME })
+    let a6 = t6 + 1.6
     // 2) 3 langkah menyala berurutan, tiap step: Path Bar + garis relevan
     tl.add(() => setDiagnosisStep(0), a6)
     sfxOn(tl, a6, () => playSfx(SFX_MAP.POP2))
     setPathText(tl, a6 + 0.05, PATH_ATLAS.managedProcessRestarted)
-    blinkLine(tl, a6, 'managed-to-diagnosis', { cycles: 2, stepDuration: 0.35, color: COLORS.DIAGNOSIS, warn: false })
+    blinkLine(tl, a6, 'managed-to-diagnosis', { cycles: 2, stepDuration: 0.3, color: COLORS.DIAGNOSIS, warn: false })
     say(tl, a6 + 0.1, CAPTIONS.READ_STATUS, 'diagnosis')
     a6 += 2.0
     tl.add(() => setDiagnosisStep(1), a6)
     sfxOn(tl, a6, () => playSfx(SFX_MAP.POP2))
     setPathText(tl, a6 + 0.05, PATH_ATLAS.journal)
-    blinkLine(tl, a6, 'journal-to-diagnosis', { cycles: 2, stepDuration: 0.35, color: COLORS.DIAGNOSIS, warn: false })
+    blinkLine(tl, a6, 'journal-to-diagnosis', { cycles: 2, stepDuration: 0.3, color: COLORS.DIAGNOSIS, warn: false })
     say(tl, a6 + 0.1, CAPTIONS.FILTER_JOURNAL, 'diagnosis')
     a6 += 2.0
     tl.add(() => setDiagnosisStep(2), a6)
     sfxOn(tl, a6, () => playSfx(SFX_MAP.POP2))
-    blinkLine(tl, a6, 'journal-to-diagnosis', { cycles: 2, stepDuration: 0.35, color: COLORS.DIAGNOSIS, warn: false })
+    setPathText(tl, a6 + 0.05, PATH_ATLAS.bootTarget)
+    blinkLine(tl, a6, 'boot-to-diagnosis', { cycles: 2, stepDuration: 0.3, color: COLORS.DIAGNOSIS, warn: false })
     say(tl, a6 + 0.1, CAPTIONS.CHECK_CONTEXT, 'diagnosis')
-    a6 += 2.3
-    // 4) Closing -- dua stamp di bawah Diagnosis Terminal (bukan menimpa Journal)
+    a6 += 2.0
+    // 4) Closing -- dua stamp di bawah Diagnosis Terminal
     const co = { v: 0 }
     tl.to(co, { v: 1, duration: 0.5, ease: 'back.out(1.6)', onUpdate: () => setClosingOpacity(co.v) }, a6)
     sfxOn(tl, a6, () => playSfx(SFX_MAP.DING))
     say(tl, a6 + 0.1, CAPTIONS.TAKEAWAY, 'diagnosis')
-    let act6End = a6 + 1.8
+    let act6End = a6 + 1.7
 
-    tl.to({}, { duration: 0.9 }, act6End)
+    tl.to({}, { duration: 0.5 }, act6End)
 
     return () => {
       tl.kill()
@@ -516,14 +507,35 @@ export default function SystemdAnimation({
     )
   }
 
+  // IconCaption dirender DI DALAM <g translate(cx, cy)> tiap stasiun, jadi
+  // semua koordinat di sini LOKAL (relatif pusat stasiun). Batas aman
+  // dihitung di koordinat absolut body (32..700 dari 732) lalu dikonversi.
   const IconCaption = ({ stationId, text }) => {
     if (!text || captionStation !== stationId) return null
     const st = STATIONS[stationId]
     if (!st) return null
+
+    let absX = st.cx
+    let textAnchor = 'middle'
+    if (st.cx > 500) {
+      absX = Math.min(st.cx + 40, 700)
+      textAnchor = 'end'
+    } else if (st.cx < 200) {
+      absX = Math.max(st.cx - 40, 32)
+      textAnchor = 'start'
+    }
+    const localX = absX - st.cx
+    const localY = st.h / 2 + 20
+
+    // > 32 karakter dipotong dua baris supaya tidak melewati lebar canvas
+    const lines = wrapText(text, 32)
+
     return (
-      <text x={st.cx} y={st.cy + st.h / 2 + 22} textAnchor="middle" fontSize={13} fontWeight={600}
+      <text x={localX} y={localY} textAnchor={textAnchor} fontSize={13} fontWeight={600}
         fontFamily="sans-serif" fill={COLORS.TEXT} stroke={COLORS.BG} strokeWidth={4} paintOrder="stroke">
-        {text}
+        {lines.map((ln, idx) => (
+          <tspan key={idx} x={localX} dy={idx === 0 ? 0 : 16}>{ln}</tspan>
+        ))}
       </text>
     )
   }
@@ -664,17 +676,17 @@ export default function SystemdAnimation({
               <rect x={-STATIONS.manager.w / 2} y={-STATIONS.manager.h / 2}
                 width={STATIONS.manager.w} height={STATIONS.manager.h} rx={16}
                 fill={COLORS.PANEL} stroke={COLORS.MANAGER} strokeWidth={2.6} filter="url(#shadow)" />
-              <g transform="translate(0, -62)" filter="url(#glow)"><Icon type="gear" size={44} color={COLORS.MANAGER} /></g>
-              <text x={0} y={-20} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="monospace" letterSpacing={1} fill={COLORS.MANAGER}>{MANAGER_LABEL}</text>
-              <g transform="translate(0, 6)">
+              <g transform="translate(0, -50)" filter="url(#glow)"><Icon type="gear" size={44} color={COLORS.MANAGER} /></g>
+              <text x={0} y={-16} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="monospace" letterSpacing={1} fill={COLORS.MANAGER}>{MANAGER_LABEL}</text>
+              <g transform="translate(0, 10)">
                 <g transform="translate(-68, 0)">
                   <Icon type={{ declared: 'document', starting: 'play', active: 'check', failed: 'alert', restarting: 'restart' }[lifecycle]} size={18} color={LIFECYCLE_META[lifecycle].color} />
                 </g>
                 <text x={-48} y={4} fontSize={14} fontWeight={800} fontFamily="monospace" fill={LIFECYCLE_META[lifecycle].color}>{LIFECYCLE_META[lifecycle].label}</text>
               </g>
-              <text x={0} y={32} textAnchor="middle" fontSize={11} fontFamily="monospace" fill={COLORS.MUTED}>{LIFECYCLE_META[lifecycle].note}</text>
+              <text x={0} y={36} textAnchor="middle" fontSize={11} fontFamily="monospace" fill={COLORS.MUTED}>{LIFECYCLE_META[lifecycle].note}</text>
               {restartAttempt > 0 && (
-                <g transform="translate(0, 58)">
+                <g transform="translate(0, 60)">
                   <rect x={-72} y={-12} width={144} height={24} rx={12} fill={COLORS.BG} stroke={COLORS.MANAGER} strokeWidth={1.5} />
                   <g transform="translate(-56, 0)"><Icon type="restart" size={14} color={COLORS.MANAGER} /></g>
                   <text x={4} y={4} textAnchor="middle" fontSize={10} fontFamily="monospace" fill={COLORS.MANAGER}>restart {restartAttempt}/3</text>
@@ -688,10 +700,10 @@ export default function SystemdAnimation({
               <rect x={-STATIONS.managedProcess.w / 2} y={-STATIONS.managedProcess.h / 2}
                 width={STATIONS.managedProcess.w} height={STATIONS.managedProcess.h} rx={12}
                 fill={COLORS.PANEL} stroke={lifecycle === 'failed' ? COLORS.FAILED : COLORS.ACTIVE} strokeWidth={2.2} filter="url(#shadow)" />
-              <g transform="translate(-58, 0)"><Icon type="process" size={26} color={lifecycle === 'failed' ? COLORS.FAILED : COLORS.ACTIVE} /></g>
-              <text x={10} y={-14} fontSize={10} fontWeight={700} fontFamily="monospace" letterSpacing={0.5} fill={COLORS.MUTED}>{MANAGED_PROCESS_LABEL}</text>
-              <text x={10} y={4} fontSize={12} fontWeight={700} fontFamily="monospace" fill={COLORS.TEXT}>PID {pid}</text>
-              <text x={10} y={22} fontSize={10} fontFamily="monospace" fill={COLORS.MUTED}>{pid === PID_INITIAL ? PATH_ATLAS.managedProcessInitial : PATH_ATLAS.managedProcessRestarted}</text>
+              <g transform="translate(-62, 0)"><Icon type="process" size={26} color={lifecycle === 'failed' ? COLORS.FAILED : COLORS.ACTIVE} /></g>
+              <text x={-42} y={-14} fontSize={10} fontWeight={700} fontFamily="monospace" letterSpacing={0.5} fill={COLORS.MUTED}>{MANAGED_PROCESS_LABEL}</text>
+              <text x={-42} y={4} fontSize={12} fontWeight={700} fontFamily="monospace" fill={COLORS.TEXT}>PID {pid}</text>
+              <text x={-42} y={22} fontSize={10} fontFamily="monospace" fill={COLORS.MUTED}>{pid === PID_INITIAL ? PATH_ATLAS.managedProcessInitial : PATH_ATLAS.managedProcessRestarted}</text>
               <IconCaption stationId="managedProcess" text={caption} />
             </g>
 
@@ -729,15 +741,17 @@ export default function SystemdAnimation({
               <g transform={`translate(${-STATIONS.journal.w / 2 + 24}, ${-STATIONS.journal.h / 2 + 20})`}><Icon type="stack" size={20} color={COLORS.JOURNAL} /></g>
               <text x={-STATIONS.journal.w / 2 + 42} y={-STATIONS.journal.h / 2 + 24} fontSize={11} fontWeight={700} fontFamily="monospace" letterSpacing={1} fill={COLORS.JOURNAL}>JOURNAL</text>
               {JOURNAL_ENTRIES.slice(0, journalCount).map((entry, i) => {
-                const active = phaseIdx === 5 && entry.highlighted
+                const isStep1 = phaseIdx === 5 && diagnosisStep === 1 && (entry.id === 'j4' || entry.id === 'j5')
+                const isStep2 = phaseIdx === 5 && diagnosisStep === 2 && entry.id === 'j6'
+                const active = entry.highlighted && (phaseIdx === 4 || isStep1 || isStep2)
                 const rowY = -STATIONS.journal.h / 2 + 46 + i * 25
                 return (
                   <g key={entry.id} transform={`translate(0, ${rowY})`}>
-                    {active && <rect x={-STATIONS.journal.w / 2 + 8} y={-11} width={STATIONS.journal.w - 16} height={22} rx={5} fill={COLORS.DIAGNOSIS} opacity={0.14} />}
+                    {active && <rect x={-STATIONS.journal.w / 2 + 8} y={-11} width={STATIONS.journal.w - 16} height={22} rx={5} fill={COLORS.DIAGNOSIS} opacity={0.18} />}
                     <text x={-STATIONS.journal.w / 2 + 14} y={4} fontSize={9.5} fontFamily="monospace" fill={COLORS.MUTED}>{entry.time}</text>
-                    <rect x={-46} y={-9} width={60} height={16} rx={4} fill={COLORS.BG} stroke={SOURCE_COLOR[entry.source]} strokeWidth={1} />
-                    <text x={-16} y={3} textAnchor="middle" fontSize={8} fontFamily="monospace" fill={SOURCE_COLOR[entry.source]}>{entry.source}</text>
-                    <text x={20} y={4} fontSize={10} fontFamily="monospace" fill={COLORS.TEXT}>{entry.text}</text>
+                    <rect x={-98} y={-9} width={60} height={16} rx={4} fill={COLORS.BG} stroke={SOURCE_COLOR[entry.source]} strokeWidth={1} />
+                    <text x={-68} y={3} textAnchor="middle" fontSize={8} fontFamily="monospace" fill={SOURCE_COLOR[entry.source]}>{entry.source}</text>
+                    <text x={-30} y={4} fontSize={9.5} fontFamily="monospace" fill={COLORS.TEXT}>{entry.text}</text>
                   </g>
                 )
               })}

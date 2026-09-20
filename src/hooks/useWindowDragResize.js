@@ -88,15 +88,55 @@ export function useWindowDragResize({ rect, mode, disabled, onMove, onResize }) 
     const vw = window.innerWidth
     const vh = window.innerHeight
 
+    const ratio = d.aspectRatio || (390 / 760)
+
     let newWidth = d.originWidth
     let newHeight = d.originHeight
 
-    if (d.handle.includes('e')) {
+    if (d.handle === 'e') {
+      // Resize horizontal -> auto-adjust height untuk menjaga rasio emulator portrait
       newWidth = clamp(d.originWidth + (e.clientX - d.startX), MIN_WIDTH, vw - d.originX)
-    }
-    if (d.handle.includes('s')) {
+      newHeight = Math.round(newWidth / ratio)
+      // Jaga agar height tidak keluar viewport
+      if (newHeight > vh - d.originY) {
+        newHeight = vh - d.originY
+        newWidth = Math.round(newHeight * ratio)
+      }
+    } else if (d.handle === 's') {
+      // Resize vertikal -> auto-adjust width untuk menjaga rasio emulator portrait
       newHeight = clamp(d.originHeight + (e.clientY - d.startY), MIN_HEIGHT, vh - d.originY)
+      newWidth = Math.round(newHeight * ratio)
+      // Jaga agar width tidak keluar viewport
+      if (newWidth > vw - d.originX) {
+        newWidth = vw - d.originX
+        newHeight = Math.round(newWidth / ratio)
+      }
+    } else {
+      // Corner handle ('se') -> sesuaikan proporsional berdasarkan pergerakan terbesar
+      const deltaX = e.clientX - d.startX
+      const deltaY = e.clientY - d.startY
+      
+      if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+        newWidth = clamp(d.originWidth + deltaX, MIN_WIDTH, vw - d.originX)
+        newHeight = Math.round(newWidth / ratio)
+      } else {
+        newHeight = clamp(d.originHeight + deltaY, MIN_HEIGHT, vh - d.originY)
+        newWidth = Math.round(newHeight * ratio)
+      }
+
+      // Clamp ke batas aman viewport
+      if (newHeight > vh - d.originY) {
+        newHeight = vh - d.originY
+        newWidth = Math.round(newHeight * ratio)
+      }
+      if (newWidth > vw - d.originX) {
+        newWidth = vw - d.originX
+        newHeight = Math.round(newWidth / ratio)
+      }
     }
+
+    newWidth = Math.max(MIN_WIDTH, newWidth)
+    newHeight = Math.max(MIN_HEIGHT, newHeight)
 
     d.currentWidth = newWidth
     d.currentHeight = newHeight
@@ -133,6 +173,7 @@ export function useWindowDragResize({ rect, mode, disabled, onMove, onResize }) 
       originY: rect.y,
       originWidth: rect.width,
       originHeight: rect.height,
+      aspectRatio: rect.width && rect.height ? rect.width / rect.height : (390 / 760),
       currentWidth: rect.width,
       currentHeight: rect.height,
     }

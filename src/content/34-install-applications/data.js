@@ -81,15 +81,19 @@ export const DEPENDENCIES = [
   { id: 'text-engine', label: 'text-engine' },
 ]
 
-// ── Distro (Act 1, revisi bagian 3 & 7) — chip wordmark netral, bukan
-// reproduksi logo asli (fallback plan bagian 3 poin 3). Satu keluarga per
-// beat, card sebelumnya tetap redup sebagai konteks. ──
+// ── Distro (Act 1, revisi bagian 3 & 7; diperluas revisi 04) — chip
+// wordmark + logo asli (icons/icons.json). Setiap distro membawa
+// managerId + pkgFormat eksplisit supaya Act 1 bisa menunjukkan preview
+// "distro -> manager -> format paket" langsung, bukan cuma highlight
+// bergantian tanpa makna. `color` dipakai untuk connector/pulse saat
+// distro itu aktif (hex resmi brand, sinkron dengan icons/_originals/
+// LICENSE-LOGOS.md). ──
 export const DISTROS = [
-  { id: 'ubuntu',   label: 'Ubuntu',    family: 'Debian family',  managerId: 'apt' },
-  { id: 'fedora',   label: 'Fedora',    family: 'RHEL family',    managerId: 'dnf' },
-  { id: 'arch',     label: 'Arch',      family: 'Arch family',    managerId: 'pacman' },
-  { id: 'opensuse', label: 'openSUSE',  family: 'SUSE family',    managerId: 'zypper' },
-  { id: 'alpine',   label: 'Alpine',    family: 'minimal/container', managerId: 'apk' },
+  { id: 'ubuntu',   label: 'Ubuntu',    family: 'Debian family',      managerId: 'apt',    pkgFormat: '.deb',      color: '#E95420' },
+  { id: 'fedora',   label: 'Fedora',    family: 'RHEL family',        managerId: 'dnf',    pkgFormat: '.rpm',      color: '#51A2DA' },
+  { id: 'arch',     label: 'Arch',      family: 'Arch family',        managerId: 'pacman', pkgFormat: '.pkg.tar',  color: '#1793D1' },
+  { id: 'opensuse', label: 'openSUSE',  family: 'SUSE family',        managerId: 'zypper', pkgFormat: '.rpm',      color: '#73BA25' },
+  { id: 'alpine',   label: 'Alpine',    family: 'minimal/container',  managerId: 'apk',    pkgFormat: '.apk',      color: '#0D597F' },
 ]
 export const DISTRO_TAKEAWAY = 'Distro menentukan manager dan source policy'
 
@@ -156,7 +160,7 @@ export const LIFECYCLE_ACTIONS = [
 // ── Copy layar (revisi bagian 9) — narasi "internet" dibatasi pada Act 3
 // dan 6, langsung diikuti batas akurat (repository/mirror terkonfigurasi). ──
 export const CAPTIONS = {
-  DISTRO: 'Distro memilih ekosistem package',
+  DISTRO: 'Tiap distro punya package manager dan format paket bawaan sendiri',
   MANAGER: 'Tool berbeda, pekerjaan inti serupa',
   NETWORK: 'Repository terkonfigurasi ada di jaringan',
   MIRROR: 'Mirror menyalin repository resmi',
@@ -177,7 +181,7 @@ export const CAPTIONS = {
 // repo nyata (acceptance criteria bagian 10). ──
 export const TERMINAL_LINES = {
   REQUEST: '> editor-lite belum terpasang',
-  OUT_DISTRO: 'Distro terdeteksi: menentukan manager & source policy',
+  OUT_DISTRO: 'OS terdeteksi: Ubuntu \u2192 auto-select manager: apt (.deb)',
   OUT_MANAGER: 'Manager dipilih sesuai keluarga distro',
   OUT_NETWORK: 'Menghubungi repository terkonfigurasi...',
   OUT_FOUND: 'editor-lite ditemukan di official repository',

@@ -2,16 +2,17 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import ListView from './ListView'
 import KanbanView from './KanbanView'
+import OSGridView from './OSGridView'
 import { 
   sortByPriority, 
   updateItemPriority, 
   updateItemStatus,
-  fetchContentList,
+  fetchContentList, 
   saveItemChanges 
 } from '../../data/contentManagement'
 import { WorkspaceProvider, useWorkspace } from '../workspace/WorkspaceContext'
 import WorkspaceSurface from '../workspace/WorkspaceSurface'
-import WindowDock from '../workspace/WindowDock'
+import MacOSDock from '../workspace/MacOSDock'
 import { resolveTopicById } from '../../content/resolveTopic'
 import './ContentManagement.css'
 
@@ -28,7 +29,13 @@ export default function ContentManagement() {
 }
 
 function ContentManagementInner() {
-  const [view, setView] = useState('list')
+  const [view, setView] = useState(() => {
+    try {
+      return window.localStorage.getItem('cm_view_mode') || 'os'
+    } catch (_) {
+      return 'os'
+    }
+  })
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -36,8 +43,15 @@ function ContentManagementInner() {
   const [openNowOnly, setOpenNowOnly] = useState(false)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const { windows, order, focusedId, openContent, focusWindow, hydrated } = useWorkspace()
+  const { windows, order, focusedId, openContent, focusWindow, syncPinnedFromServer, hydrated } = useWorkspace()
   const deepLinkAppliedRef = useRef(false)
+
+  const handleSetView = (newView) => {
+    setView(newView)
+    try {
+      window.localStorage.setItem('cm_view_mode', newView)
+    } catch (_) {}
+  }
 
   // Fetch all items from API on mount
   useEffect(() => {
@@ -47,13 +61,15 @@ function ContentManagementInner() {
       const result = await fetchContentList()
       if (result.success) {
         setItems(result.items) // Already sorted by API
+        // Hentikan sync pertama saat bukan device pertama (source of truth server)
+        syncPinnedFromServer(result.items)
       } else {
         setError('Gagal memuat data dari server. Pastikan server berjalan.')
       }
       setLoading(false)
     }
     loadItems()
-  }, [])
+  }, [syncPinnedFromServer])
 
   // PLAN-19 §9.3 / Phase 4.4 — deep link `/?open=id1,id2&focus=id2`.
   // Dijalankan sekali setelah items ter-load dan workspace ter-hydrate,
@@ -156,10 +172,10 @@ function ContentManagementInner() {
 
   // Buka content sebagai window internal (PLAN-19).
   // Direct route /preview/:id tetap ada & dipakai handleQuickPreview/bookmark.
-  const handleOpenWindow = (itemId) => {
+  const handleOpenWindow = (itemId, options) => {
     const item = items.find((i) => i.id === itemId)
     const resolved = resolveTopicById(itemId)
-    openContent(itemId, item?.title, resolved?.meta?.folderNumber)
+    openContent(itemId, item?.title, resolved?.meta?.folderNumber, options?.originRect)
   }
 
   if (loading) {
@@ -204,15 +220,23 @@ function ContentManagementInner() {
 
         <div className="view-toggle">
           <button
+            className={`view-btn ${view === 'os' ? 'active' : ''}`}
+            onClick={() => handleSetView('os')}
+            title="OS Desktop (Launchpad & macOS Dock)"
+          >
+            <span className="view-icon">💻</span>
+            <span>OS Desktop</span>
+          </button>
+          <button
             className={`view-btn ${view === 'list' ? 'active' : ''}`}
-            onClick={() => setView('list')}
+            onClick={() => handleSetView('list')}
           >
             <span className="view-icon">📋</span>
             <span>List</span>
           </button>
           <button
             className={`view-btn ${view === 'kanban' ? 'active' : ''}`}
-            onClick={() => setView('kanban')}
+            onClick={() => handleSetView('kanban')}
           >
             <span className="view-icon">📊</span>
             <span>Kanban</span>
@@ -267,6 +291,14 @@ function ContentManagementInner() {
 
       {/* Main Content Area */}
       <div className="cm-content">
+        {view === 'os' && (
+          <OSGridView
+            items={filteredItems}
+            windows={windows}
+            onOpenWindow={handleOpenWindow}
+          />
+        )}
+
         {view === 'list' && (
           <ListView
             items={filteredItems}
@@ -287,7 +319,7 @@ function ContentManagementInner() {
       </div>
 
       <WorkspaceSurface />
-      <WindowDock />
+      <MacOSDock />
     </div>
   )
 }
