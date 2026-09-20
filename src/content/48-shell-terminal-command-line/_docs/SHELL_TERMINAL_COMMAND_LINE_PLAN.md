@@ -147,3 +147,247 @@ Sebelum eksekusi, audit asset audio shared untuk semantik, loudness, provenance,
 ## Batasan
 
 Content ini tidak membahas syntax Bash, environment variable, redirection, pipe, alias, scripting, atau shell remote secara mendalam. Bash dibahas pada content 49; redirect pada content 51; pipe pada content 52; SSH pada content 44.
+
+
+---
+
+# Revisi Plan 2026-09-16 — Peta Shell dari Fondasi sampai Scripting
+
+> Bagian ini menggantikan batas konsep, storyboard, dan acceptance criteria lama
+> bila ada perbedaan. Status tetap **plan only**: tidak ada perintah runnable,
+> script, perubahan profile, build, atau implementasi animasi.
+
+## 1. Hasil audit dan keputusan cakupan
+
+Plan awal sudah tepat untuk membedakan terminal, command line, dan shell, tetapi
+belum cukup menjawab “apa yang sebenarnya dikerjakan shell?” Shell bukan hanya
+penerjemah satu command. Ia mengelola input interaktif, parsing, expansion,
+pencarian executable, environment, redirection, pipeline, job control, exit
+status, konfigurasi, dan scripting.
+
+Tidak aman maupun realistis memasukkan semua detail itu menjadi satu tutorial
+singkat. Content 48 harus menjadi **peta mental shell** dengan urutan belajar
+yang jelas. Materi mendalam tetap dipecah agar pemula tidak menghafal sintaks
+tanpa memahami model eksekusinya.
+
+## 2. Empat istilah yang tidak boleh tertukar
+
+| Istilah | Definisi | Bukan berarti |
+|---|---|---|
+| Terminal emulator | Aplikasi yang menggambar jendela teks dan meneruskan input/output melalui pseudo-terminal. | Shell, prompt, atau semua hal yang diketik di dalamnya. |
+| Command line / CLI | Antarmuka teks dan bentuk input berbasis baris. | Satu aplikasi atau satu bahasa tertentu. |
+| Shell | Program command interpreter yang membaca input, mengurai, lalu mengatur proses dan I/O. | Sistem operasi, terminal emulator, atau selalu Bash. |
+| TTY / PTY | Kanal terminal; PTY biasanya pasangan virtual antara terminal emulator dan program shell. | Sekadar nama lain untuk jendela terminal. |
+
+Tambahan penting: terminal emulator dapat menjalankan shell yang berbeda; shell
+dapat berjalan tanpa terminal dalam script atau otomasi; dan aplikasi lain juga
+dapat menyediakan CLI tanpa menjadi shell penuh.
+
+## 3. Peta arsitektur input sampai output
+
+```
+Terminal emulator → PTY → shell → parsing/expansion → builtin atau executable
+                 ← I/O ← process + filesystem + kernel
+```
+
+| Lapisan | Peran | Bukti visual yang disarankan |
+|---|---|---|
+| Terminal emulator | Menampilkan prompt, input, output, warna, dan shortcut. | Window terminal yang persistent. |
+| PTY | Jalur karakter dan terminal semantics antara emulator dan shell/program. | Kabel virtual tipis, bukan node “sistem”. |
+| Shell | Membaca baris dan menentukan langkah berikutnya. | Hub shell persistent. |
+| Parser/expander | Mengurai kata/operator serta melakukan expansion sesuai aturan shell. | Conveyor berurutan; bukan satu kotak “magic”. |
+| Builtin | Perintah yang ditangani shell sendiri, misalnya perubahan directory atau variable. | Jalur pendek yang tidak perlu proses eksternal. |
+| External executable | Program yang dicari, biasanya melalui PATH, lalu dijalankan sebagai process. | Kartu executable lahir dari PATH map. |
+| Kernel dan resources | Menjalankan process serta menghubungkan file, device, network, dan memory. | Node sistem menerima process. |
+| Standard streams | stdin, stdout, stderr yang membawa data masuk, hasil biasa, dan error. | Tiga jalur berlabel berbeda. |
+
+## 4. Apa saja yang shell lakukan
+
+| Kemampuan | Penjelasan konseptual | Level | Content lanjutan yang sesuai |
+|---|---|---|---|
+| Prompt dan input interaktif | Membaca command line, history, editing, completion, dan feedback. | Beginner | 48 / shell UX lanjutan. |
+| Working directory | Shell menyimpan current directory; builtin diperlukan karena directory milik shell harus berubah. | Beginner | Navigasi filesystem. |
+| Command lookup | Membedakan keyword, alias, function, builtin, dan executable yang ditemukan lewat PATH. | Beginner–intermediate | PATH dan command lookup. |
+| Parsing | Memahami operator, word boundaries, quoting, dan struktur command. | Intermediate | Bash syntax. |
+| Expansion | Parameter, command substitution, arithmetic, pathname/glob, brace, dan tilde expansion bergantung shell. | Intermediate | Expansion dan quoting. |
+| Environment | Menurunkan environment ke child process; variable shell tidak selalu otomatis menjadi environment. | Intermediate | Environment/PATH. |
+| Streams dan redirection | Mengatur stdin, stdout, stderr ke file, device, atau process lain. | Intermediate | Content 51. |
+| Pipeline | Mengalirkan stdout sebuah process ke stdin process berikutnya. | Intermediate | Content 52. |
+| Exit status dan condition | Nilai hasil process memandu chaining, condition, dan automation. | Intermediate | Control flow/error handling. |
+| Job control | Menjalankan foreground/background, suspend/resume, dan mengelola process group pada sesi interaktif. | Intermediate–advanced | Process & job control. |
+| Functions, aliases, completion | Membuat shortcut dan reusable behavior pada scope shell. | Intermediate | Shell productivity. |
+| Scripting | Menjalankan file shell dengan variables, conditions, loops, functions, error policy, dan traps. | Advanced | Shell scripting series. |
+| Portability | Perbedaan POSIX shell dan extension Bash/zsh/fish/dash. | Advanced | Portable scripting. |
+
+## 5. Shell yang perlu dikenal
+
+| Shell | Posisi dan karakter | Pesan untuk pemula |
+|---|---|---|
+| sh / POSIX shell | Nama antarmuka standar; pada sistem tertentu mengarah ke shell implementasi tertentu. | Jangan menganggap `sh` selalu Bash. |
+| Bash | Shell populer dengan scripting dan interactive feature luas. | Satu contoh shell, bukan definisi shell. |
+| zsh | Shell interaktif kaya fitur dan sering dipasangkan dengan framework prompt/completion. | Konfigurasi dan compatibility dapat berbeda dari Bash. |
+| fish | Mengutamakan UX interaktif dan sintaks yang sengaja berbeda dari POSIX/Bash. | Script fish tidak otomatis portable ke shell lain. |
+| dash / ash | Shell ringan, kerap dipakai untuk tugas sistem atau lingkungan minimal. | Feature interaktif/scripting tidak selalu sama dengan Bash. |
+| ksh | Keluarga shell berpengaruh dengan variasi implementasi. | Pilihan shell mengikuti sistem dan kebutuhan tim. |
+
+Tidak perlu membuat ranking. Pemilihan shell dipengaruhi portability script,
+standar proyek, kebutuhan interaktif, dan default distribusi.
+
+## 6. Lifecycle satu command
+
+| Tahap | Apa yang diperiksa shell | Salah paham yang dicegah |
+|---|---|---|
+| Read | Baris input atau statement script dibaca. | Terminal tidak “menjalankan” teks sendiri. |
+| Parse | Kata, operator, quotes, grouping, dan struktur dibentuk. | Spasi dan operator tidak selalu diperlakukan sebagai teks biasa. |
+| Expand | Variable, glob, substitution, atau expansion lain diterapkan sesuai aturan shell. | Shell tidak mengganti semua teks dengan urutan sembarang. |
+| Resolve | Shell menentukan apakah nama itu alias/function/builtin/executable. | Semua command bukan executable file eksternal. |
+| Prepare I/O | Redirection, pipeline, heredoc, dan file descriptor disiapkan bila diminta. | Output biasa dan error bukan satu jalur yang sama. |
+| Execute | Builtin berjalan di shell atau external program dibuat sebagai process. | Builtin yang mengubah shell tidak dapat diperlakukan persis seperti child process. |
+| Wait / job control | Shell menunggu foreground job atau mengelola background job. | Background bukan berarti task pasti sukses. |
+| Collect result | Output ditampilkan/diteruskan dan exit status disimpan. | Ada output bukan bukti bahwa command sukses. |
+
+Urutan detail expansion berbeda menurut shell dan konstruknya. Visual harus
+menyatakan model umum, bukan mengklaim satu urutan Bash sebagai hukum semua
+shell.
+
+## 7. Tiga streams dan dataflow
+
+| Stream | Arah default | Peran |
+|---|---|---|
+| stdin | Masuk ke program | Data atau input yang diterima program. |
+| stdout | Keluar ke terminal/pipeline/file | Hasil normal yang dapat diteruskan. |
+| stderr | Keluar ke terminal/pipeline/file sesuai aturan | Pesan error/diagnostik, dipisahkan dari hasil normal. |
+
+Redirection dan pipe adalah perubahan rute stream, bukan “fitur terminal”.
+Terminal hanya salah satu tujuan/sumber default. File descriptor lebih lanjut,
+here-document, process substitution, dan tee layak berada pada materi
+lanjutan setelah model tiga stream dipahami.
+
+## 8. Interactive shell, login shell, dan non-interactive shell
+
+| Mode | Tujuan | Dampak pembelajaran |
+|---|---|---|
+| Interactive | Menerima input pengguna, memiliki prompt, history, editing, dan job control. | Fokus awal Content 48. |
+| Login | Shell awal pada sesi login yang dapat membaca konfigurasi khusus login. | Jangan mengandalkan file startup tertentu tanpa tahu mode sesi. |
+| Non-interactive | Menjalankan script atau command terarah tanpa prompt manusia. | Automation harus eksplisit tentang environment, input, exit status, dan error. |
+| Remote shell | Shell di host lain yang dibawa koneksi remote. | Terminal lokal dapat menampilkan shell remote; terminal dan shell tetap berbeda. |
+
+File startup dan nama tepatnya sangat tergantung shell dan sistem. Plan ini
+hanya mengenalkan alasannya: konfigurasi dapat menyebabkan perilaku command
+berbeda antara terminal baru, login, dan script.
+
+## 9. Shell scripting dan reliability
+
+| Topik | Mengapa penting | Guardrail |
+|---|---|---|
+| Shebang/interpreter choice | Menentukan interpreter yang diharapkan untuk script. | Bahasa script harus cocok dengan shell yang ditargetkan. |
+| Variables dan scope | Data lokal shell, environment child, dan scope function tidak sama. | Quote data; jangan perlakukan input sebagai code. |
+| Conditions/loops/functions | Membentuk workflow berulang dan dapat diuji. | Pecah tugas besar menjadi fungsi jelas. |
+| Exit status | Menentukan sukses/gagal untuk control flow dan caller. | Selalu rancang error path, bukan hanya happy path. |
+| Error policy | Perilaku terhadap failure, unset data, dan pipeline perlu sengaja dipilih. | Jangan menganggap satu opsi error handling menyelesaikan semua kasus. |
+| Traps/cleanup | Menangani signal/exit untuk melepas resource sementara. | Cleanup harus aman bila dijalankan lebih dari sekali. |
+| Quoting/escaping | Memisahkan data dari syntax shell. | Ini adalah pertahanan utama terhadap word splitting, glob tak sengaja, dan injection. |
+| Portability | POSIX versus feature spesifik shell. | Tetapkan target shell sebelum memakai syntax. |
+| Testing/linting | Memeriksa parsing dan perilaku dalam lingkungan terkontrol. | Tidak menggantikan test dengan data nyata/berisiko. |
+
+## 10. Keamanan dan pitfall yang wajib tampil
+
+| Risiko | Mengapa terjadi | Pesan aman |
+|---|---|---|
+| Shell injection | Data tak tepercaya diperlakukan sebagai syntax. | Hindari membangun command sebagai teks; quote dan gunakan interface terstruktur bila tersedia. |
+| Word splitting/globbing | Data tanpa quote dapat berubah menjadi banyak argumen atau nama file. | Data harus diperlakukan sebagai data. |
+| PATH hijacking | Nama executable bisa merujuk ke program yang tidak dimaksud. | Pahami asal command dan PATH, khususnya pada automation/admin. |
+| Alias/function shadowing | Nama yang sama dapat berarti hal berbeda di shell berbeda. | Gunakan inspeksi command dan lingkungan yang konsisten. |
+| Secret leakage | History, environment, process list, log, atau output dapat menyimpan secret. | Jangan menaruh secret pada command line atau profile sembarang. |
+| Unsafe cleanup/redirection | Wildcard atau target salah dapat mengubah/menghapus data keliru. | Validasi target dan pisahkan dry-run/test dari operasi nyata. |
+| Startup file side effect | Profile dapat mengubah PATH, alias, prompt, atau menjalankan program. | Review konfigurasi sebagai code. |
+| Privilege confusion | Shell yang berjalan sebagai admin memperbesar dampak kesalahan. | Least privilege dan scope task kecil. |
+
+## 11. Storyboard revisi: enam Act
+
+| Act | Pertanyaan | Visual utama | Konsep pulang |
+|---|---|---|---|
+| 1 — Empat lapisan | `Terminal, CLI, shell, atau PTY?` | Empat kartu bertransformasi menjadi rangkaian. | Istilah terkait tetapi bukan sinonim. |
+| 2 — Dari ketikan ke process | `Siapa yang menjalankan command?` | Input melewati PTY dan shell ke builtin/executable, lalu kernel. | Terminal menampilkan; shell mengatur eksekusi. |
+| 3 — Shell mengambil keputusan | `Mengapa baris command tidak selalu literal?` | Conveyor read → parse → expand → resolve → I/O → execute → status. | Shell memiliki aturan sebelum process berjalan. |
+| 4 — Data punya jalur | `Ke mana input, output, dan error pergi?` | stdin/stdout/stderr bercabang, lalu pipe/redirection muncul sebagai rute. | Streams bukan dekorasi terminal. |
+| 5 — Mode dan produktivitas | `Mengapa terminal baru dan script bisa berbeda?` | Interactive/login/non-interactive/remote serta config, history, alias, job control. | Konteks shell memengaruhi perilaku. |
+| 6 — Script aman dan portable | `Apa yang perlu dijaga saat mengotomasi?` | Quote shield, exit-status check, target-shell badge, log/cleanup. | Shell kuat, tetapi syntax dan data perlu disiplin. |
+
+Target satu video 90–110 detik, atau Content 48 inti menggunakan Act 1–3
+dalam 55–65 detik dan Act 4–6 menjadi seri lanjutan. Jangan mengorbankan
+pembedaan terminal versus shell hanya untuk memasukkan daftar fitur.
+
+## 12. Copy dan continuity
+
+Anchor persisten: terminal emulator, PTY cable, shell hub, command packet, dan
+three-stream rail. Satu command packet harus berubah secara jelas menjadi
+argument/process packet, kemudian output dan status token; jangan mengganti
+objek secara tiba-tiba.
+
+| Beat | Copy |
+|---|---|
+| Foundation | `Terminal menampilkan; shell mengatur command` |
+| PTY | `PTY menghubungkan terminal dan program` |
+| Parse | `Shell membaca struktur, bukan hanya teks` |
+| Resolve | `Builtin dan executable punya jalur berbeda` |
+| Streams | `Input, output, dan error terpisah` |
+| Modes | `Konteks shell dapat mengubah perilaku` |
+| Script | `Data perlu quote, status perlu diperiksa` |
+| Closing | `Shell adalah bahasa dan pengelola proses` |
+
+## 13. Acceptance criteria implementasi nanti
+
+- [ ] Membedakan terminal emulator, CLI, shell, dan TTY/PTY secara akurat.
+- [ ] Menjelaskan builtin versus external executable serta peran PATH tanpa mengklaim semua command adalah program eksternal.
+- [ ] Menampilkan lifecycle read → parse → expand → resolve → I/O → execute → status sebagai model konseptual.
+- [ ] Memisahkan stdin, stdout, stderr, redirection, dan pipeline.
+- [ ] Memetakan Bash, zsh, fish, sh/POSIX, dan shell ringan tanpa menganggap semuanya kompatibel.
+- [ ] Menyebut interactive, login, non-interactive, dan remote shell beserta dampak config/environment.
+- [ ] Memetakan scripting, portability, exit status, quoting, dan security pitfall sebagai materi lanjut.
+- [ ] Tidak ada command runnable, perubahan dotfile/profile, secret, atau operasi filesystem.
+- [ ] Bila video tunggal terlalu padat, dipecah sesuai urutan Act tanpa kehilangan fondasi.
+
+## 14. Rencana pecahan seri bila perlu diproduksi
+
+| Content lanjutan | Fokus |
+|---|---|
+| 48a — Shell Execution Model | PTY, parser, expansion, builtins, PATH, process dan exit status. |
+| 48b — Streams and Job Control | stdin/stdout/stderr, redirect, pipe, process group, foreground/background. |
+| 48c — Shell Environment | Variables, environment, PATH, startup file, prompt, history, alias, completion. |
+| 48d — Reliable Shell Scripts | Target interpreter, quoting, conditions, loops, errors, traps, testing, portability. |
+| 48e — Shell Safety | Injection, secrets, PATH risk, privileges, review dan operational guardrails. |
+
+Tidak ada file implementasi yang diubah oleh revisi ini; hanya dokumen plan ini yang diperbarui.
+
+
+## 15. Log Eksekusi
+
+### EKSEKUSI-01 (2026-09-18)
+- User mengonfirmasi eksplisit: **full 6-Act dalam satu video (~90-110 detik)**, bukan versi inti Act 1-3, bukan storyboard 4-Act awal (lihat §11).
+- File ditulis: `manifest.js`, `metadata.json` (title/subtitle/tags/color diisi), `data.js` (lengkap, lolos `node --check`), `Animation.jsx` (541 baris, lolos syntax check `esbuild` dan bundle-resolve penuh terhadap semua import lokal — data.js, sfxLoader, shared/scene-ui/v1).
+- Referensi pola yang dipakai: `26-terminal-navigation` (paling lengkap & valid, pakai ContentBodyV1 penuh). **Catatan:** `44-ssh/Animation.jsx` yang disebut di §3 sebagai referensi awal ternyata TIDAK lengkap (terpotong sebelum penutup `</svg>`, tidak ada navigator/body/caption) — tidak dipakai sebagai acuan struktur akhir.
+- Simplifikasi yang diambil dari desain awal: Act 1 (empat kartu istilah) TIDAK di-morph literal jadi elemen Act 2 (window/hub) — kontinuitas dijaga lewat kode warna konsisten per konsep (terminal=sky #38BDF8, shell=amber #FBBF24, pty=violet #A78BFA), bukan morph DOM/shape literal.
+- Command packet (`ls -la`) bergerak lewat `travelPacket()` (tween x/y tiap frame via GSAP `onUpdate`) dari terminal → PTY → shell hub → fork exec → kernel → area Act 3 (lifecycle) — tidak pernah teleport, sesuai continuity map §12.
+- `registry.js` yang disebut di §14 tabel "Rencana file saat eksekusi" **sudah tidak ada** di project (dihapus di iterasi lain) — `resolveTopic.js` sekarang membaca `metadata.json` langsung. Tabel §14 tidak diperbarui, catatan ini sebagai pengganti.
+- Durasi 6 Act di `PHASES` (data.js) adalah **estimasi pra-eksekusi** (16/19/18/15/15/16 detik), belum diukur dari timeline nyata.
+
+### Belum dikerjakan (di luar kapasitas sesi ini — perlu browser/preview tool)
+- Preview manual di dev server (tidak ada akses jaringan/browser dari sesi ini untuk menjalankan `npm run dev` dan melihat hasil visual).
+- Pengukuran ulang durasi total timeline nyata vs estimasi `PHASES`.
+- QA acceptance criteria §13 (istilah, builtin vs executable, exit status, dsb) — perlu ditinjau visual.
+- Export MP4 (`scripts/export-lib.js` atau pipeline serupa) — belum disentuh, tidak ada file di `scripts/` yang mereferensikan topic ini sebelumnya.
+- `status` di `metadata.json` sengaja dibiarkan `"draft"` sampai preview manual dan QA selesai.
+
+
+### EKSEKUSI-02 (2026-09-18, lanjutan sesi yang sama)
+- Revisi diterapkan dari `revisi/2026-09-18-1712-revisi-01.md` ("Act 1 Harus Memperlihatkan Command Bekerja").
+- **Act 1 ditulis ulang total**: LAYER_CARDS/narration-bubble-per-istilah dihapus. Sekarang: terminal idle → command `pwd` diketik (typewriter, `steps(3)` ease) → Enter → capsule lahir dari command line → travel PTY → shell hub (ring decoder CSS `shellSpin` aktif) → system task node (glow) → apply → capsule bertransformasi jadi output `/home/adib` → travel kembali shell→PTY→terminal → ditulis sebagai hasil (typewriter) → tiga highlight pendek (terminal, command line, shell) → caption penutup singkat "Terminal menampilkan. Shell mengatur."
+- **Tidak ada reset canvas** di seam Act 1 → Act 2 sesuai aturan keras revisi: `terminalWin`, `ptyCable`, `shellHub`, `systemNode` (pop state) tidak pernah di-`popOut` sampai `archDim` (opacity 0.4) menandai transisi setelah Act 2 selesai — mereka tetap ter-mount sepanjang video.
+- **Act 2 ditulis ulang**: dari "membangun arsitektur dari nol" menjadi "mengurai apa yang sudah terlihat" — command kontras `ls -la` (external, lewat PATH) diketik menyusul `pwd` (builtin) yang sudah ditunjukkan Act 1, memakai command-line & capsule yang sama (bukan elemen baru), lalu fork builtin/executable muncul untuk pertama kali di sini.
+- **Act 4** disesuaikan: stream stdin/stdout/stderr sekarang bercabang langsung dari `systemNode` persisten (bukan kotak "PROCESS" baru yang saya buat di EKSEKUSI-01) — lebih konsisten dengan continuity map revisi.
+- Layout lokal diganti total mengikuti tabel revisi §"Perubahan Layout": terminal y135-355, PTY y355-440, shell hub y475, system node y640; area Act 3/5/6 mulai y700, Act 4 stream row y760.
+- Label pendek (`ARCH_LABELS.commandLine`, `.shell`, `.system`) ditempel langsung ke objek (bukan card terpisah), sesuai instruksi "objek harus memperoleh arti dari gerakannya".
+- Bash-mark opsional dari revisi (Simple Icons, CC0) **tidak dieksekusi** — semua tetap inline SVG murni untuk first pass, sesuai opsi "jangan generate/download" yang eksplisit diperbolehkan revisi jika tidak diperlukan.
+- File ditulis ulang penuh: `data.js` (197 baris) dan `Animation.jsx` (622 baris). Keduanya lolos `node --check` / `esbuild --bundle` (51.3kb, tanpa error) dan verifikasi manual cross-reference field (`ACT1_BEATS`, `ACT2_BEATS`, dll — semua field yang dipakai di komponen cocok dengan yang diekspor data.js).
+- Checklist tindak lanjut dari revisi (`preview frame idle/transit/apply/return`, `audit safe-zone`, dsb) **belum dikerjakan** — sama seperti EKSEKUSI-01, butuh browser/dev-server yang tidak tersedia di sesi ini.

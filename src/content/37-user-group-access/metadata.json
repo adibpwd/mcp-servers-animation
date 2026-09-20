@@ -1,9 +1,9 @@
 {
   "id": "user-group-access",
   "title": "User Group Access",
-  "subtitle": "",
+  "subtitle": "Identitas, group, dan izin admin sementara",
   "category": "Linux Fundamentals",
-  "tags": [],
+  "tags": ["Linux", "User", "Group", "Ownership", "sudo", "Beginner"],
   "color": "#38BDF8",
   "status": "draft",
   "priority": 37

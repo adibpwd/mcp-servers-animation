@@ -56,7 +56,7 @@ export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
 // ── Intro header — scene-ui V1 IntroHeaderMorphV1. ──
 export const INTRO_CATEGORY_LABEL = 'DEV TOOLS'
-export const INTRO_DOMAIN = 'DEVNOTES'
+export const INTRO_DOMAIN = 'ADIB-DEV.COM'
 export const INTRO_TITLE_A = 'OAUTH2'
 export const INTRO_TITLE_B = ' DELEGATED LOGIN'
 export const INTRO_SUBTITLE = 'Provider pilih, akses dibatasi, password tetap aman'
@@ -98,7 +98,7 @@ export const FLOW_NODES = [
   { n: 6, label: 'DATA', physical: 'client' },
 ]
 
-export const APP_LABEL = 'DEVNOTES'
+export const APP_LABEL = 'ADIB-DEV.COM'
 export const PROVIDER_LABEL = 'GITHUB'
 
 // ═══════════════════════════════════════════════

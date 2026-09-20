@@ -1,10 +1,17 @@
 {
   "id": "ssh",
-  "title": "Ssh",
-  "subtitle": "",
+  "title": "SSH",
+  "subtitle": "Terminal aman menuju komputer jauh",
   "category": "Linux Fundamentals",
-  "tags": [],
-  "color": "#FBBF24",
+  "tags": [
+    "SSH",
+    "Remote Access",
+    "Encryption",
+    "Authentication",
+    "Networking",
+    "Security"
+  ],
+  "color": "#22D3EE",
   "status": "draft",
   "priority": 44
 }

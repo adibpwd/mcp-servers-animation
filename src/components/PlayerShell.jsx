@@ -4,6 +4,7 @@ import { useExportSettings } from '../hooks/useExportSettings'
 import { SettingsModal } from './SettingsModal'
 import { TimelineProgressBar } from './TimelineProgressBar'
 import { ProgressIndicator } from './ProgressIndicator'
+import { FloatingControls } from './FloatingControls'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
@@ -11,7 +12,7 @@ const getExportServerUrl = () => {
   return `http://${window.location.hostname}:3373`
 }
 
-export function PlayerShell({ content, onBack }) {
+export function PlayerShell({ content, onBack, isFocused = true, onPlayerStateChange, windowed = false }) {
   const [isPaused, setIsPaused] = useState(true)
   const [exportStatus, setExportStatus] = useState(null)
   const [isExporting, setIsExporting] = useState(false)
@@ -30,22 +31,49 @@ export function PlayerShell({ content, onBack }) {
   // yang bikin GSAP timeline benar-benar play, dan SFX yang sempat ke-trigger
   // saat itu TIDAK berhenti walau timeline di-pause lagi setelahnya (Audio/
   // WebAudio node berjalan independen dari GSAP), sehingga bocor ke rekaman.
+  //
+  // PLAN-19 §8: di dashboard windowed, beberapa PlayerShell bisa mounted
+  // bersamaan. Fungsi ini di-namespace per content.id supaya window lain
+  // tidak saling menimpa, plus alias global yang hanya diisi oleh window
+  // yang sedang focused (kompatibel dengan export script single-page lama).
   useEffect(() => {
-    window.__forceUnlockAudio = async () => {
+    const scopedKey = `__forceUnlockAudio__${content.id}`
+    const unlock = async () => {
       if (audioUnlocked) return true
       try {
         const silent = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA')
         await silent.play()
         setAudioUnlocked(true)
-        console.log('[Audio] ✅ Unlocked silently (animation tetap paused)')
+        console.log(`[Audio] ✅ Unlocked silently (${content.id}, animation tetap paused)`)
         return true
       } catch (err) {
         console.error('[Audio] ❌ Silent unlock failed:', err)
         return false
       }
     }
-    return () => { delete window.__forceUnlockAudio }
-  }, [audioUnlocked])
+    window[scopedKey] = unlock
+    if (isFocused) window.__forceUnlockAudio = unlock
+    return () => {
+      delete window[scopedKey]
+      if (window.__forceUnlockAudio === unlock) delete window.__forceUnlockAudio
+    }
+  }, [audioUnlocked, content.id, isFocused])
+
+  // Background/minimized window tidak boleh autoplay atau mengeluarkan
+  // audio (PLAN-19 §8 baris "Background normal/Minimized"). Saat window
+  // kehilangan fokus, paksa pause.
+  useEffect(() => {
+    if (!isFocused && !isPaused) setIsPaused(true)
+  }, [isFocused, isPaused])
+
+  // Laporkan playerState ke WorkspaceContext supaya dock/close-confirm
+  // (export sedang berjalan) tahu status window ini (PLAN-19 §5.1, §10).
+  useEffect(() => {
+    if (!onPlayerStateChange) return
+    const next = isExporting ? 'exporting' : (isPaused ? 'paused' : 'playing')
+    onPlayerStateChange(next)
+  }, [isExporting, isPaused, onPlayerStateChange])
+
 
   const togglePlayPause = async () => {
     // If playing, just pause
@@ -99,12 +127,13 @@ export function PlayerShell({ content, onBack }) {
     return () => clearInterval(interval)
   }, [isExporting, content.id])
 
-  // Save export status to localStorage whenever it changes
+  // Update page title — hanya focused window yang boleh mengubah title
+  // dokumen (background window mengubah title akan flicker/menimpa window
+  // fokus lain). PLAN-19 §8.
   useEffect(() => {
-    if (exportStatus) {
+    if (exportStatus && isFocused) {
       localStorage.setItem(`export_${content.id}_status`, JSON.stringify(exportStatus))
-      
-      // Update page title
+
       if (exportStatus.status === 'running') {
         document.title = `⟳ Exporting ${exportStatus.progress}% - MCP Servers Animation`
       } else if (exportStatus.status === 'done') {
@@ -114,8 +143,11 @@ export function PlayerShell({ content, onBack }) {
       } else {
         document.title = `MCP Servers Animation`
       }
+    } else if (exportStatus) {
+      // Tetap simpan status export walau tidak focused, tapi jangan sentuh title.
+      localStorage.setItem(`export_${content.id}_status`, JSON.stringify(exportStatus))
     }
-  }, [exportStatus, content.id])
+  }, [exportStatus, content.id, isFocused])
 
   const isParallel = settings.exportMode === 'parallel'
 
@@ -222,7 +254,8 @@ export function PlayerShell({ content, onBack }) {
   return (
     <div className="player-shell">
 
-      {/* Top bar */}
+      {/* Top bar — disembunyikan di mode window, digantikan FloatingControls */}
+      {!windowed && (
       <div className="player-topbar">
         <button className="back-btn" onClick={onBack}>
           ← Back
@@ -238,7 +271,8 @@ export function PlayerShell({ content, onBack }) {
           <button
             className={`control-btn ${isPaused ? 'paused' : 'playing'}`}
             onClick={togglePlayPause}
-            title={isPaused ? "Play Animation" : "Pause Animation"}
+            disabled={!isFocused}
+            title={!isFocused ? 'Focus window ini dulu untuk play' : (isPaused ? "Play Animation" : "Pause Animation")}
           >
             <span className="control-icon">{isPaused ? '▶' : '⏸'}</span>
             <span>{isPaused ? 'Play' : 'Pause'}</span>
@@ -315,6 +349,7 @@ export function PlayerShell({ content, onBack }) {
           </button>
         </div>
       </div>
+      )}
 
       {/* Settings Modal */}
       {isLoaded && (
@@ -335,17 +370,36 @@ export function PlayerShell({ content, onBack }) {
           </div>
         }>
           <AnimationComponent 
-            paused={isPaused} 
+            paused={isPaused || !isFocused} 
             speed={settings.speed}
             volume={settings.volume}
-            previewSfx={settings.previewSfx && audioUnlocked}
-            audioUnlocked={audioUnlocked}
+            previewSfx={settings.previewSfx && audioUnlocked && isFocused}
+            audioUnlocked={audioUnlocked && isFocused}
           />
         </Suspense>
       </div>
 
-      {/* Timeline Progress Bar */}
-      <TimelineProgressBar isExporting={showProgress} />
+      {/* Timeline Progress Bar — disembunyikan di mode window (pakai global
+          window.__animationTimeline, tidak scoped per-window, lihat audit
+          PLAN-19 §2.5) */}
+      {!windowed && <TimelineProgressBar isExporting={showProgress} />}
+
+      {/* Floating controls ala AssistiveTouch — hanya mode window */}
+      {windowed && (
+        <FloatingControls
+          isPaused={isPaused}
+          onTogglePlay={togglePlayPause}
+          isFocused={isFocused}
+          isExporting={isExporting}
+          onExport={startExport}
+          canDownload={canDownload}
+          downloadHref={canDownload ? `${getExportServerUrl()}/videos/${content.id}.mp4?t=${Date.now()}` : '#'}
+          downloadName={`${content.id}.mp4`}
+          copiedCaption={copiedCaption}
+          onCopyCaption={handleCopyCaption}
+          onOpenSettings={() => setShowSettings(true)}
+        />
+      )}
 
       {/* Floating Progress Indicator */}
       {showProgress && exportStatus && (

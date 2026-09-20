@@ -74,12 +74,41 @@ else
   ok "Tidak ada container orphan"
 fi
 
-# ── Step 4: Build image ─────────────────────────────────────
-step "Build image container (ini bisa lama di pertama kali / pertama running)..."
-if docker compose build 2>&1 | tail -5; then
-  ok "Image berhasil di-build"
-else
-  warn "Build mengembalikan pesan non-zero (kadang normal karena cache). Lanjut start..."
+# ── Step 4: Build image (skip kalau sudah jalan / tidak ada perubahan) ──
+step "Build image container (bisa di-skip jika sudah siap / tidak ada perubahan)..."
+DOCKER_HASH_FILE="$SCRIPT_DIR/.docker-build-hash"
+
+services_ready() {
+  curl -sf -o /dev/null --max-time 2 http://localhost:3373 \
+    && curl -sf -o /dev/null --max-time 2 http://localhost:3300/api/health
+}
+
+build_context_hash() {
+  sha256sum \
+    "$SCRIPT_DIR/docker-compose.yml" \
+    "$SCRIPT_DIR/Dockerfile.frontend" \
+    "$SCRIPT_DIR/Dockerfile.export" \
+    "$SCRIPT_DIR/package.json" \
+    "$SCRIPT_DIR/package-lock.json" 2>/dev/null \
+    | sha256sum | awk '{print $1}'
+}
+
+NEED_BUILD=1
+if services_ready; then
+  ok "Semua service sudah merespons — skip build"
+  NEED_BUILD=0
+elif [ -f "$DOCKER_HASH_FILE" ] && [ "$(cat "$DOCKER_HASH_FILE")" = "$(build_context_hash)" ]; then
+  ok "Build context tidak berubah — skip build"
+  NEED_BUILD=0
+fi
+
+if [ $NEED_BUILD -eq 1 ]; then
+  if docker compose build 2>&1 | tail -5; then
+    ok "Image berhasil di-build"
+    build_context_hash > "$DOCKER_HASH_FILE"
+  else
+    warn "Build mengembalikan pesan non-zero (kadang normal karena cache). Lanjut start..."
+  fi
 fi
 
 # ── Step 5: Start containers ────────────────────────────────
@@ -88,19 +117,19 @@ docker compose up -d 2>&1 | tail -10
 ok "Container berhasil di-start"
 
 # ── Step 6: Tunggu sampai service siap ──────────────────────
-step "Menunggu semua service siap (max ~60 detik)..."
+step "Menunggu semua service siap (max ~30 detik)..."
 wait_for_http() {
   local name="$1" url="$2"
   local waited=0
-  while [ $waited -lt 60 ]; do
-    if curl -sf -o /dev/null "$url" 2>/dev/null; then
+  while [ $waited -lt 30 ]; do
+    if curl -sf -o /dev/null --max-time 5 "$url" 2>/dev/null; then
       ok "$name siap ($url)"
       return 0
     fi
     sleep 2
     waited=$((waited + 2))
   done
-  warn "$name belum merespons setelah 60 detik: $url"
+  warn "$name belum merespons setelah 30 detik: $url"
   return 1
 }
 

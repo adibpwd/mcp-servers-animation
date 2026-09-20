@@ -25,9 +25,10 @@ export function resolveTopicById(id) {
     if (isMatch) {
       const animKey = `./${folder}/Animation.jsx`
       const loader = animModules[animKey]
+      const folderNumber = folder.match(/^(\d+)-/)?.[1] || null
 
       return {
-        meta,
+        meta: { ...meta, folderNumber },
         hasAnimation: !!loader,
         component: loader ? () => loader() : null,
       }

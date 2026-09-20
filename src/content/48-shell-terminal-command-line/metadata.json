@@ -1,10 +1,10 @@
 {
   "id": "shell-terminal-command-line",
-  "title": "Shell Terminal Command Line",
-  "subtitle": "",
+  "title": "Shell, Terminal, Command Line",
+  "subtitle": "Tiga istilah, tiga peran berbeda",
   "category": "Linux Fundamentals",
-  "tags": [],
-  "color": "#A78BFA",
+  "tags": ["Shell", "Terminal", "Command Line", "PTY", "Bash", "Scripting"],
+  "color": "#38BDF8",
   "status": "draft",
   "priority": 48
 }

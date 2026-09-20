@@ -3,7 +3,7 @@
 | Item | Nilai |
 |---|---|
 | Content | 60 — Linux Processes |
-| Status | 📝 PLAN ONLY — jangan dieksekusi |
+| Status | 🟡 KODE + DATA FIRST PASS — data.js, manifest.js, Animation.jsx, caption.md sudah ada & lolos esbuild compile check (`--bundle=false`). BELUM preview manual (`npm run dev` / `/player/linux-processes`) dan BELUM export MP4 — lihat checklist eksekusi di bawah. |
 | Target audiens | Pemula Linux dan junior developer |
 | Tujuan belajar | Memahami process sebagai program yang sedang berjalan, memiliki PID, memakai resource, dan dapat terlihat dari terminal |
 | Prasyarat | 07 Process vs Thread, 48 Shell/Terminal/Command Line |
@@ -130,20 +130,61 @@ Sebelum eksekusi, audit asset audio shared untuk semantik, loudness, provenance,
 
 ## Checklist eksekusi
 
-- [ ] Kunci metadata dan title segments cyan/blue → emerald.
-- [ ] Buat data.js sebelum Animation.jsx.
-- [ ] Buat manifest, caption, dan kontrak folder icons.
-- [ ] Gunakan satu IntroHeaderMorphV1 yang tetap mounted setelah morph.
-- [ ] Gunakan ActBadgeNavigatorV1 dari satu array PHASES.
-- [ ] Render seluruh visual dalam ContentBodyV1 local coordinate.
-- [ ] Buat handoff file program → process card dengan overlap visual.
-- [ ] Jadikan browser process dan PID tag anchor sesuai continuity map.
-- [ ] Pastikan resource meter melekat ke process yang benar.
-- [ ] Batasi tabel ps agar tetap terbaca pada portrait.
-- [ ] Reset semua state pada repeat timeline.
-- [ ] Wire SFX_MAP serta export schedule dengan kategori eksplisit.
-- [ ] Audit dead field, teks in-video, collision, dan coverage SFX.
-- [ ] Compile, preview intro/morph/semua Act/replay, lalu export MP4.
+- [x] Kunci metadata dan title segments cyan/blue → emerald (INTRO_TITLE_A/B, lihat data.js).
+- [x] Buat data.js sebelum Animation.jsx.
+- [x] Buat manifest, caption. **Folder `icons/` sengaja TIDAK dibuat** — first pass
+      tetap inline SVG (semua card/meter/terminal render langsung sebagai path/rect/text
+      di Animation.jsx), jadi kontrak icons.json/default-icon/loader (docs/06) tidak
+      relevan untuk topic ini kecuali nanti ada revisi yang butuh asset image.
+- [x] Gunakan satu IntroHeaderMorphV1 yang tetap mounted setelah morph.
+- [x] Gunakan ActBadgeNavigatorV1 dari satu array PHASES.
+- [x] Render seluruh visual dalam ContentBodyV1 local coordinate.
+- [x] Buat handoff file program → process card dengan overlap visual (state `handoff` 0→1,
+      lerp posisi program-lane → arena slot browser, crossfade dengan file card).
+- [x] Jadikan browser process dan PID tag anchor sesuai continuity map (browser persistent
+      Act 1→4, PID browser/editor/music muncul bersamaan Act 2, tetap sampai tabel ps Act 4).
+- [x] Pastikan resource meter melekat ke process yang benar (ResourceMeter dikunci per
+      `PROCESSES[i].slotX`, warna border ikut warna process masing-masing).
+- [x] Batasi tabel ps agar tetap terbaca pada portrait (3 kolom: PID/CMD/STAT, font 12.5,
+      panel tunggal 640×170 di zona 795–965 termasuk baris takeaway).
+- [x] Reset semua state pada repeat timeline (lihat `tl.add(..., 0)` di awal Animation.jsx).
+- [x] Wire SFX_MAP serta export schedule dengan kategori eksplisit — SFX_MAP di data.js
+      lengkap & semua nama file audio (`ui/pop`, `ui/pop-2`, `ui/tick`,
+      `transitions/light-swoosh-quick`, `ui/number-tally`, `ui/paper-arrive`,
+      `success/ding`, `success/shimmer`) dikonfirmasi ADA di `public/audio/`. Entry
+      `scripts/export-lib.js` SFX_TIMELINE['linux-processes'] (16 cue, timestamp diambil
+      langsung dari `tl.add`/`tl.to` di Animation.jsx) sudah ditambahkan & lolos
+      `node --check`. Cue ini pasti akurat TERHADAP KODE (deterministik dari `at` yang
+      sama), tapi belum diverifikasi enak-tidaknya secara telinga/visual — itu bagian
+      audit di bawah.
+- [ ] Audit dead field, teks in-video, collision, dan coverage SFX — belum dijalankan
+      (butuh preview manual/browser, tidak bisa dilakukan dari sesi ini).
+- [ ] Compile, preview intro/morph/semua Act/replay, lalu export MP4 — esbuild syntax
+      check (`--bundle=false`) DAN bundle-resolution check (`--bundle`, resolve
+      data.js + shared/scene-ui/v1 + shared/audio/sfxLoader, external react/gsap) SUDAH
+      lolos untuk Animation.jsx/data.js/manifest.js. `npm run build` (vite, full project)
+      GAGAL tapi karena error pre-existing di topic LAIN yang belum jadi
+      (`src/content/65-systemd/Animation.jsx` — JSX tidak closed dengan benar,
+      metadata.json-nya juga masih draft/kosong seperti topic WIP lain), TIDAK terkait
+      modul ini — sengaja tidak diperbaiki dari sesi ini (bukan scope task, dan kontrak
+      §8 bilang jangan buru-buru refactor topic lain gara-gara build gabungan gagal).
+      Preview manual (`npm run dev`) dan export MP4 BELUM dilakukan — perlu dijalankan
+      dan diverifikasi visual oleh Adib sebelum status metadata.json naik dari "draft"
+      ke "ready".
+
+## Catatan eksekusi (2026-09-18)
+
+- `src/content/registry.js` yang disebut di tabel "Rencana file saat eksekusi" di atas
+  **sudah tidak ada** — project sudah migrasi ke resolver berbasis folder
+  (`src/content/resolveTopic.js`, baca `metadata.json` + `Animation.jsx` tiap folder
+  langsung). Topic ini otomatis terdeteksi begitu `metadata.json` (sudah ada) dan
+  `Animation.jsx` (baru dibuat) sama-sama ada di folder — tidak ada file pusat yang
+  perlu diedit.
+- `metadata.json` sudah diisi subtitle + tags, status tetap `"draft"` (bukan `"ready"`)
+  sampai preview manual & audit di atas selesai.
+- Durasi tiap Act (9.5/10.5/9.5/10.5 detik) dan seluruh timestamp `tl.add`/`tl.to` di
+  Animation.jsx adalah estimasi pertama — belum divalidasi terhadap hasil render nyata
+  (tidak ada akses browser/preview dari sesi eksekusi ini).
 
 ## Batasan
 

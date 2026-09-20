@@ -1,11 +1,11 @@
-# PLAN — 37 User, Group, dan Siapa Boleh Apa
+# PLAN — 37 User, Group, dan Izin Admin
 
 | Item | Nilai |
 |---|---|
-| Content | 37 — User, Group, and Access |
-| Status | 📝 PLAN ONLY — jangan dieksekusi |
+| Content | 37 — User, Group, and Admin Access (gabungan Content 38 — sudo) |
+| Status | 📝 PLAN ONLY — belum ada kode/animasi yang dieksekusi |
 | Target audiens | Pemula Linux dan pengguna komputer umum |
-| Tujuan belajar | Memahami user sebagai identitas, group sebagai tim akses, dan ownership sebagai dasar sebelum permission/chmod |
+| Tujuan belajar | Memahami user, group/ownership, serta sudo sebagai izin admin sementara untuk satu command |
 | Prasyarat | 25 Linux Filesystem dan 34 Install Applications |
 | Scene shell | scene-ui V1, portrait 820 × 1340 |
 
@@ -20,8 +20,8 @@ Setelah menonton, audiens memahami bahwa Linux tidak hanya melihat nama file: Li
 | Kategori | Linux Fundamentals |
 | Title A | USER — cyan atau blue |
 | Title B | ACCESS — emerald |
-| Subtitle | Identitas, tim, dan file bersama |
-| Tone | Gedung kerja bersama: kartu identitas membuka ruang sesuai peran |
+| Subtitle | Identitas, group, dan izin admin sementara |
+| Tone | Gedung kerja: kartu identitas, roster team, file bersama, lalu penjaga admin untuk satu pekerjaan sistem |
 | Shell | Scene UI V1 dengan hero-to-header, empat Act, badge, dan dot navigator |
 
 ## Batas akurasi
@@ -144,4 +144,117 @@ Sebelum implementasi, audit aset audio shared untuk semantik, loudness, provenan
 
 ## Batasan
 
-Content ini tidak mengajarkan sudo, root, chmod, chown, ACL, atau angka 755/644. Sudo dibahas pada content 38; permission, chmod, dan chown dibahas pada content 40–42.
+Content ini mengajarkan sudo hanya sebagai izin admin sementara untuk satu command setelah policy mengizinkan. Content ini tidak mengajarkan password, sudoers, root shell, chmod, chown, ACL, atau angka 755/644. Permission, chmod, dan chown tetap berada pada content 40–42; root user tetap pada content 39.
+
+---
+
+# Kontrak Gabungan 37 + 38 — Sumber Kebenaran Produksi
+
+> Bagian ini menggantikan ringkasan lama di atas bila ada perbedaan. Status
+> tetap plan-only. Content 38 telah dikonsolidasikan ke plan utama ini.
+
+## Keputusan editorial dan batas akurasi
+
+Alur final: **user → group dan ownership → perubahan sistem → sudo → review aman**. Group `project-team` menjelaskan konteks file bersama, **bukan** pemberi izin sudo. Izin admin ditentukan policy sistem; beberapa distro dapat memakai group admin seperti `sudo` atau `wheel`, tetapi hal itu bukan aturan universal dan tidak perlu diajarkan mendetail di sini.
+
+| Dibahas | Tidak dibahas |
+|---|---|
+| User aktif, group, owner dan group owner file | chmod, chown, ACL, angka 755/644. |
+| Tugas biasa versus perubahan sistem | Root shell, sudoers, atau password. |
+| Sudo request, policy check, grant tepat satu command | Command destruktif atau command tidak jelas yang dapat disalin. |
+| Checklist source, target, impact | Klaim semua group dapat menjalankan sudo. |
+
+## Struktur empat Act
+
+| Act | Cerita | Entry state | Exit state | Durasi |
+|---|---|---|---|---:|
+| 1 — Siapa yang bekerja? | adib dan nisa memakai mesin yang sama; adib dipilih sebagai user aktif | Dua card idle | adib active | 11,0s |
+| 2 — Siapa memiliki file? | project-team terbentuk; `proposal.md` menerima owner dan group tag | User active, file belum tagged | owner `adib`, group `project-team` | 13,0s |
+| 3 — Kapan perlu izin admin? | Status biasa berhasil; perubahan sistem berhenti pada gate | Ownership dipahami | Request sudo waiting | 13,0s |
+| 4 — Satu izin, tetap diperiksa | Policy memeriksa user; key menempel satu command lalu hilang; checklist menutup | Request waiting | User tetap normal | 16,0s |
+
+Target total 55–60 detik termasuk intro/closing. Tidak ada Act kelima berupa daftar command; takeaway muncul sesudah key dilepas dan gate tertutup.
+
+## State dan continuity contract
+
+| Actor | Lahir | Persist | Handoff wajib |
+|---|---|---|---|
+| User `adib` | Act 1 | Act 1–4 | idle → active → policy checked → tetap normal. |
+| User `nisa` | Act 1 | Act 1–2, lalu redup | Anggota team, bukan contoh user gagal. |
+| Group `project-team` | Act 2 | Act 2–4, redup | Connector dari dua user; tidak punya path ke gate. |
+| File `proposal.md` | Act 2 | Act 2 sampai teaser | File muncul → owner tag → group tag. |
+| Terminal | Act 1 | Act 1–4 | Command normal → request sudo → output aman. |
+| Gate/policy/key | Act 3 | Act 3–4 | Request → waiting → scan → attached → released. |
+
+| State | Yang tampak | Yang belum boleh tampak | Trigger | Bukti |
+|---|---|---|---|---|
+| `identity` | adib/nisa dan adib active | Group/file/admin key | User dipilih | Linux mengenal user aktif. |
+| `team` | project-team + connector | Tag file/sudo grant | Members arrive | Group adalah konteks bersama. |
+| `ownership` | proposal + owner/group tag | Read/write final/admin grant | Tags attach | File punya dua konteks ownership. |
+| `normal-task` | Command baca status berhasil | Key/gate | Command commit | Tidak semua task perlu sudo. |
+| `admin-request` | Command sudo berhenti di gate | Output/key attached | Intent request | Izin belum diberikan. |
+| `temporary-grant` | Policy scan dan key ke command | Root/permanent access | Policy approved | Privilege satu action. |
+| `safe-complete` | Output aman, key hilang | Gate terbuka | Command apply | User normal kembali. |
+
+## Causal Motion Contract — Before → Action → After
+
+| Action | Before | Intent/source | Travel/process | Apply | After/explain | Hold | SFX | Audit |
+|---|---|---|---|---|---|---:|---|---|
+| `select-user` | adib/nisa idle | Focus memilih adib | Ring ke card adib | adib active | `Linux mengenal user aktif` | 0,8s | pop | cards / focus / active |
+| `form-group` | Tanpa team | Connector dari dua card | Garis menuju project-team | Avatar masuk capsule | `Group menyatukan tim` | 0,9s | connector-snap | before / connector / team |
+| `tag-ownership` | proposal tanpa metadata | File muncul | Owner lalu group tag travel | Tags attach sesudah file hadir | `File punya owner dan group` | 1,0s | arrive + tick | file / tag / tagged |
+| `normal-command` | User normal | `$ systemctl status demo` commit | Pulse ke status read-only | Status tampil | `Tugas biasa tidak perlu sudo` | 0,7s | tick | prompt / pulse / status |
+| `request-sudo` | System change belum boleh | `$ sudo apt install editor-lite` commit | Pulse ke gate dan berhenti | Gate waiting | `sudo meminta izin admin` | 0,8s | lock | command / wait / gate |
+| `verify-policy` | Gate waiting | Policy membaca adib + command | Scan gate → policy → command | Approved visible | `Policy memeriksa user` | 0,8s | paper-open | wait / scan / approved |
+| `grant-once` | Approved, command belum jalan | Key keluar gate | Key attach pada satu command | Output aman; key release | `Izin berlaku untuk satu tugas` | 1,1s | unlock + confirm | gate / attached / released |
+| `review-safety` | Command selesai | Checklist dari result | Pill source → target → impact | Semua visible | `Pahami dahulu, lalu sudo` | 1,2s | pop + ding | result / pills / takeaway |
+
+Aturan keras: key tidak pernah menempel pada user card; password tidak ditampilkan/dikirim ke command; group `project-team` tidak terhubung ke gate; command tidak jelas harus abstrak tanpa command nyata berbahaya.
+
+## Layout dan komponen
+
+| Zona local `ContentBodyV1` | Rentang y | Isi | Guardrail |
+|---|---:|---|---|
+| Caption | 18–68 | Satu copy deklaratif | Maks. 8 kata, fade saat transit. |
+| Identity + terminal | 96–282 | User cards, terminal 1–3 rows | Terminal tumbuh ke atas dan tidak menutup cards. |
+| Group / ownership | 316–520 | Team capsule, connector, file, tags | Tag relatif terhadap file, bukan coordinate absolut. |
+| Admin transit | 552–710 | Request, key, policy/gate | Maks. satu request/key aktif. |
+| Result / safety | 744–850 | Output aman atau checklist | Gate/policy tidak penuh bersamaan dengan checklist. |
+| Closing | 878–946 | Takeaway | Sesudah key release. |
+
+| Komponen | State | Kontrak |
+|---|---|---|
+| `UserCard` | idle, active, policy-checked | adib persist; nisa bukan user gagal. |
+| `GroupCapsule` | hidden, forming, ready | Team context, tidak memberi permission otomatis. |
+| `OwnershipFile` | hidden, ready, tagged | File hadir sebelum tags attach. |
+| `TerminalPanel` | normal, sudo-request, output | Source setiap action; history bergerak ke atas. |
+| `AdminGate` | hidden, waiting, scanning, approved, closed | Context policy ringkas, bukan tutorial sudoers. |
+| `TemporaryKey` | hidden, travelling, attached, released | Tepat satu command, tidak global. |
+| `SafetyChecklist` | hidden, entering, visible | Source, target, impact; abstrak dan aman. |
+
+## Data, copy, audio, dan acceptance
+
+```js
+USERS = [{ id: 'adib', active: true }, { id: 'nisa' }]
+GROUP = { id: 'project-team', members: ['adib', 'nisa'] }
+FILE = { id: 'proposal', owner: 'adib', group: 'project-team' }
+SAFE_SYSTEM_ACTION = '$ sudo apt install editor-lite'
+```
+
+`SAFE_SYSTEM_ACTION` adalah bridge dengan Content 34, tetapi Content 37 menjelaskan otorisasi—bukan repository/dependency.
+
+Copy: `Linux mengenal user aktif`; `Group menyatukan tim`; `File punya owner dan group`; `Tugas biasa tidak perlu sudo`; `sudo meminta izin admin`; `Izin berlaku untuk satu tugas`; `Pahami dahulu, lalu sudo`.
+
+Palette: user/info `#38BDF8`; group/ownership `#A78BFA`; success `#34D399`; waiting `#FBBF24`; unsafe abstract card `#F43F5E`. Title wajib sky blue → emerald. Audio: pop user/group, `connector-snap` team, `paper-arrive` file, lock request, `paper-open` policy, unlock grant, confirm result, ding closing. Seluruh cue masuk `SFX_MAP` pada beat Apply.
+
+### Checklist penerimaan
+
+- [ ] Empat Act menghasilkan ±55–60 detik tanpa hold kosong.
+- [ ] User, group ownership, permission context, dan temporary admin grant dapat dibedakan.
+- [ ] `project-team` tidak pernah divisualkan sebagai pemberi sudo.
+- [ ] Semua action memiliki before, source, travel, apply, after, hold, SFX, dan audit frame.
+- [ ] Owner/group tags muncul sesudah file; key hanya satu command lalu hilang.
+- [ ] Tidak ada password, root mode, sudoers detail, atau command berbahaya.
+- [ ] Tidak ada overlap pada terminal tiga baris, ownership, gate, checklist, atau closing.
+- [ ] Loop kedua reset users, team, tags, history, request, gate, policy scan, key, output, checklist, caption, dan SFX.
+- [ ] Preview intro, before/transit/after, replay, dan export test lulus sebelum content ditandai ready.

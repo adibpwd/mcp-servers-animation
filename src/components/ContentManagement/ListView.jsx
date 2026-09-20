@@ -1,7 +1,16 @@
 import React, { useState } from 'react'
 import { STATUS_META } from '../../data/contentManagement'
 
-export default function ListView({ items, onItemClick, onPriorityChange }) {
+// Phase 4.3 — open-state indicator. windows = map dari useWorkspace().
+function getOpenState(windows, itemId) {
+  const win = windows?.[`content:${itemId}`]
+  if (!win) return null
+  if (win.isFocused) return { label: 'Focused', mode: 'focused' }
+  if (win.mode === 'minimized') return { label: 'Minimized', mode: 'minimized' }
+  return { label: 'Open', mode: 'open' }
+}
+
+export default function ListView({ items, windows, onOpenWindow, onPriorityChange }) {
   const [editingId, setEditingId] = useState(null)
   const [inputValue, setInputValue] = useState('')
 
@@ -56,24 +65,17 @@ export default function ListView({ items, onItemClick, onPriorityChange }) {
             <th className="col-title">Title</th>
             <th className="col-status">Status</th>
             <th className="col-category">Category</th>
+            <th className="col-actions">Actions</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => {
             const statusMeta = STATUS_META[item.status]
             const isEditing = editingId === item.id
+            const openState = getOpenState(windows, item.id)
 
             return (
-              <tr 
-                key={item.id} 
-                className="list-row"
-                onClick={(e) => {
-                  // Don't navigate if clicking priority controls
-                  if (!e.target.closest('.priority-controls')) {
-                    onItemClick(item.id)
-                  }
-                }}
-              >
+              <tr key={item.id} className="list-row">
                 <td className="col-priority">
                   <div className="priority-controls" onClick={(e) => e.stopPropagation()}>
                     <div className="priority-buttons">
@@ -124,7 +126,14 @@ export default function ListView({ items, onItemClick, onPriorityChange }) {
                       style={{ backgroundColor: item.color }}
                     />
                     <div className="title-text">
-                      <div className="title-main">{item.title}</div>
+                      <div className="title-main">
+                        {item.title}
+                        {openState && (
+                          <span className={`open-state-badge is-${openState.mode}`} title={`Window: ${openState.label}`}>
+                            <span className="open-state-dot" /> {openState.label}
+                          </span>
+                        )}
+                      </div>
                       <div className="title-subtitle">{item.subtitle}</div>
                     </div>
                   </div>
@@ -144,6 +153,16 @@ export default function ListView({ items, onItemClick, onPriorityChange }) {
 
                 <td className="col-category">
                   <span className="category-text">{item.category}</span>
+                </td>
+
+                <td className="col-actions">
+                  <button
+                    className={`open-window-btn ${openState ? 'is-open' : ''}`}
+                    onClick={() => onOpenWindow(item.id)}
+                    title={openState ? `Fokuskan window (${openState.label})` : 'Buka dalam window'}
+                  >
+                    {openState ? (openState.mode === 'minimized' ? 'Restore window' : 'Focus window') : 'Open window'}
+                  </button>
                 </td>
               </tr>
             )

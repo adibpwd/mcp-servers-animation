@@ -1,9 +1,9 @@
 {
   "id": "network-ports",
   "title": "Network Ports",
-  "subtitle": "",
+  "subtitle": "Pintu layanan, bukan pintu mesin",
   "category": "Linux Fundamentals",
-  "tags": [],
+  "tags": ["Networking", "TCP", "UDP", "Firewall", "Socket", "NAT"],
   "color": "#A78BFA",
   "status": "draft",
   "priority": 84

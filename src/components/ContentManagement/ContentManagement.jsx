@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import ListView from './ListView'
 import KanbanView from './KanbanView'
 import { 
@@ -9,14 +9,35 @@ import {
   fetchContentList,
   saveItemChanges 
 } from '../../data/contentManagement'
+import { WorkspaceProvider, useWorkspace } from '../workspace/WorkspaceContext'
+import WorkspaceSurface from '../workspace/WorkspaceSurface'
+import WindowDock from '../workspace/WindowDock'
+import { resolveTopicById } from '../../content/resolveTopic'
 import './ContentManagement.css'
 
+// PLAN-19 §9.3 — batas jumlah content pada deep link (align dengan
+// MAX_RESTORED_WINDOWS di WorkspaceContext).
+const MAX_DEEP_LINK_WINDOWS = 10
+
 export default function ContentManagement() {
+  return (
+    <WorkspaceProvider>
+      <ContentManagementInner />
+    </WorkspaceProvider>
+  )
+}
+
+function ContentManagementInner() {
   const [view, setView] = useState('list')
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [openNowOnly, setOpenNowOnly] = useState(false)
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { windows, order, focusedId, openContent, focusWindow, hydrated } = useWorkspace()
+  const deepLinkAppliedRef = useRef(false)
 
   // Fetch all items from API on mount
   useEffect(() => {
@@ -34,6 +55,89 @@ export default function ContentManagement() {
     loadItems()
   }, [])
 
+  // PLAN-19 §9.3 / Phase 4.4 — deep link `/?open=id1,id2&focus=id2`.
+  // Dijalankan sekali setelah items ter-load dan workspace ter-hydrate,
+  // supaya tidak menimpa layout yang sudah dipulihkan dari localStorage
+  // dan supaya validasi id memakai daftar item yang benar-benar ada.
+  useEffect(() => {
+    if (deepLinkAppliedRef.current) return
+    if (loading || !hydrated) return
+    if (items.length === 0) return
+
+    const openParam = searchParams.get('open')
+    if (!openParam) {
+      deepLinkAppliedRef.current = true
+      return
+    }
+
+    const validIds = new Set(items.map((i) => i.id))
+    const requestedIds = openParam
+      .split(',')
+      .map((id) => id.trim())
+      .filter((id) => id && validIds.has(id))
+      .slice(0, MAX_DEEP_LINK_WINDOWS)
+
+    requestedIds.forEach((id) => {
+      const item = items.find((i) => i.id === id)
+      const resolved = resolveTopicById(id)
+      openContent(id, item?.title, resolved?.meta?.folderNumber)
+    })
+
+    const focusParam = searchParams.get('focus')
+    if (focusParam && requestedIds.includes(focusParam)) {
+      focusWindow(`content:${focusParam}`)
+    }
+
+    deepLinkAppliedRef.current = true
+  }, [loading, hydrated, items, searchParams, openContent, focusWindow])
+
+  // Filter list/kanban berdasar search query + toggle "open now" (Phase 4.2).
+  const filteredItems = useMemo(() => {
+    let result = items
+
+    const query = searchQuery.trim().toLowerCase()
+    if (query) {
+      result = result.filter((item) => {
+        const haystack = [
+          item.title,
+          item.subtitle,
+          item.category,
+          item.id,
+          ...(item.tags || []),
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
+        return haystack.includes(query)
+      })
+    }
+
+    if (openNowOnly) {
+      result = result.filter((item) => Boolean(windows[`content:${item.id}`]))
+    }
+
+    return result
+  }, [items, searchQuery, openNowOnly, windows])
+
+  // Share workspace saat ini sebagai link (Phase 4.4 — fitur eksplisit,
+  // bukan otomatis, sesuai PLAN-19 §9.3).
+  const handleCopyWorkspaceLink = async () => {
+    if (order.length === 0) return
+    const openIds = order.map((windowId) => windows[windowId].contentId)
+    const params = new URLSearchParams()
+    params.set('open', openIds.slice(0, MAX_DEEP_LINK_WINDOWS).join(','))
+    if (focusedId && windows[focusedId]) {
+      params.set('focus', windows[focusedId].contentId)
+    }
+    setSearchParams(params, { replace: true })
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch (err) {
+      console.warn('[ContentManagement] Gagal copy ke clipboard, link tetap di URL bar.', err)
+    }
+  }
+
   // Handle priority update → update local state + save API
   const handlePriorityChange = async (itemId, newPriority) => {
     // Optimistic update local state
@@ -50,9 +154,12 @@ export default function ContentManagement() {
     await saveItemChanges(itemId, { status: newStatus })
   }
 
-  // Navigate to preview page
-  const handleItemClick = (itemId) => {
-    navigate(`/preview/${itemId}`)
+  // Buka content sebagai window internal (PLAN-19).
+  // Direct route /preview/:id tetap ada & dipakai handleQuickPreview/bookmark.
+  const handleOpenWindow = (itemId) => {
+    const item = items.find((i) => i.id === itemId)
+    const resolved = resolveTopicById(itemId)
+    openContent(itemId, item?.title, resolved?.meta?.folderNumber)
   }
 
   if (loading) {
@@ -113,24 +220,74 @@ export default function ContentManagement() {
         </div>
       </div>
 
+      {/* Search / filter toolbar — Phase 4.2 */}
+      <div className="cm-toolbar">
+        <div className="cm-search-wrapper">
+          <span className="cm-search-icon">🔍</span>
+          <input
+            type="text"
+            className="cm-search-input"
+            placeholder="Cari title, subtitle, category, atau tag…"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button
+              className="cm-search-clear"
+              onClick={() => setSearchQuery('')}
+              title="Bersihkan pencarian"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        <button
+          className={`cm-filter-chip ${openNowOnly ? 'active' : ''}`}
+          onClick={() => setOpenNowOnly((v) => !v)}
+          title="Tampilkan hanya content yang sedang punya window terbuka"
+        >
+          <span className="cm-filter-dot" />
+          Open now {order.length > 0 ? `(${order.length})` : ''}
+        </button>
+
+        <button
+          className="cm-share-btn"
+          onClick={handleCopyWorkspaceLink}
+          disabled={order.length === 0}
+          title={order.length === 0 ? 'Buka minimal satu window dulu' : 'Copy link workspace saat ini'}
+        >
+          🔗 Copy workspace link
+        </button>
+
+        <span className="cm-result-count">
+          {filteredItems.length} dari {items.length} konten
+        </span>
+      </div>
+
       {/* Main Content Area */}
       <div className="cm-content">
         {view === 'list' && (
           <ListView
-            items={items}
-            onItemClick={handleItemClick}
+            items={filteredItems}
+            windows={windows}
+            onOpenWindow={handleOpenWindow}
             onPriorityChange={handlePriorityChange}
           />
         )}
 
         {view === 'kanban' && (
           <KanbanView
-            items={items}
-            onItemClick={handleItemClick}
+            items={filteredItems}
+            windows={windows}
+            onOpenWindow={handleOpenWindow}
             onStatusChange={handleStatusChange}
           />
         )}
       </div>
+
+      <WorkspaceSurface />
+      <WindowDock />
     </div>
   )
 }

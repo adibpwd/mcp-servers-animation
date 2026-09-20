@@ -1,0 +1,18 @@
+{
+  "name": "linux-processes",
+  "description": "Icon aksen untuk topic 60 Linux Processes (revisi-01). Draft image grid BELUM digenerate — loader.js masih fallback ke default-icon.png untuk semua id sampai Adib generate grid via ChatGPT lalu upload+crop lewat /api/icons/generate.",
+  "icons": [
+    { "id": "icon-browser", "name": "Browser App", "label": "Browser", "description": "Ikon browser minimalis outline, monokrom, mewakili aplikasi browser sebagai process" },
+    { "id": "icon-editor", "name": "Editor App", "label": "Editor", "description": "Ikon text editor/code editor minimalis outline, monokrom" },
+    { "id": "icon-music", "name": "Music App", "label": "Music", "description": "Ikon musik/note pemutar audio minimalis outline, monokrom" },
+    { "id": "icon-launch-cursor", "name": "Launch Cursor", "label": "Launch", "description": "Ikon cursor/klik dengan simbol play kecil, menandakan aksi menjalankan program" },
+    { "id": "icon-warning-load", "name": "Warning Load", "label": "Warning", "description": "Ikon indikator beban tinggi/warning ringan (gauge condong ke merah), tanpa teks di dalam gambar" }
+  ],
+  "generation": {
+    "rows": 2,
+    "cols": 4,
+    "prompt": "Generate a 2x4 grid of 8 minimalist grayscale monochrome icons on transparent background (PNG), flat design, black/gray colors only:\n1. Browser app icon (outline window + globe)\n2. Text/code editor icon (outline document + cursor)\n3. Music player icon (outline note)\n4. Launch/run cursor icon (mouse cursor + small play triangle)\n5. Warning/high-load gauge icon (dial condong ke kanan, tanpa angka/teks)\n6. [EMPTY - leave this slot blank/transparent]\n7. [EMPTY - leave this slot blank/transparent]\n8. [EMPTY - leave this slot blank/transparent]\n\nStyle: flat design, black/gray colors only, transparent background, grid 2 rows x 4 columns, no text/labels baked into image.",
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/60-linux-processes/icons"
+  }
+}

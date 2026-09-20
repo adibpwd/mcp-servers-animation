@@ -232,7 +232,13 @@ export default function IntroHeaderMorphV1({
   // eksplisit override lewat hero.thumbWidth (lihat komentar estimateTextWidth
   // di PortraitSceneLayoutV1.js).
   const estimatedWidth = h.thumbWidth ?? estimateTextWidth(fullTitleText, h.titleFontSize)
-  const heroStartX = (layout.canvas.width / 2) - (estimatedWidth / 2)
+  // Safety-clamp ke margin kiri (sama marginX dengan clamp titleLines di
+  // bawah): kalau title terlalu lebar untuk 1 baris sehingga heroStartX jadi
+  // negatif, tagline & subtitle ikut kepotong di sisi kiri (mis. "OAUTH2
+  // DELEGATED LOGIN" → heroStartX ≈ -6px pada 72px, canvas 820). Clamp ini
+  // hanya aktif untuk title sebesar itu, tidak mengubah output topic lain.
+  const heroMarginX = 16
+  const heroStartX = Math.max(heroMarginX, (layout.canvas.width / 2) - (estimatedWidth / 2))
   const endX = layout.header.x
 
   const taglineX = lerp(heroStartX, endX, mp)

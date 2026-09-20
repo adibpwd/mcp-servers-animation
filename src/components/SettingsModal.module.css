@@ -178,6 +178,62 @@
   color: #0B1A41;
 }
 
+.modeToggleGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.modeBtn {
+  padding: 10px;
+  border: 2px solid #38BCF8;
+  background: transparent;
+  color: #38BCF8;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.modeBtn:hover {
+  background: rgba(56, 188, 248, 0.1);
+}
+
+.modeBtn.active {
+  background: linear-gradient(135deg, #2CD1A8 0%, #38BCF8 100%);
+  border-color: #2CD1A8;
+  color: #0B1A41;
+}
+
+.workersSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 12px;
+  background: rgba(44, 209, 168, 0.05);
+  border: 1px solid rgba(44, 209, 168, 0.2);
+  border-radius: 8px;
+}
+
+.workersHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #E8F0FF;
+  font-size: 13px;
+}
+
+.workersHeader strong {
+  color: #2CD1A8;
+}
+
+.workersRange {
+  color: #8FA3C8;
+  font-size: 11px;
+}
+
 .checkboxLabel {
   display: flex;
   align-items: center;

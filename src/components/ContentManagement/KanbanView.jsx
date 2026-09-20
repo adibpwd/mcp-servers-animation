@@ -1,7 +1,16 @@
 import React, { useState } from 'react'
 import { STATUS, STATUS_META, getItemsByStatus } from '../../data/contentManagement'
 
-export default function KanbanView({ items, onItemClick, onStatusChange }) {
+// Phase 4.3 — open-state indicator (sama seperti ListView).
+function getOpenState(windows, itemId) {
+  const win = windows?.[`content:${itemId}`]
+  if (!win) return null
+  if (win.isFocused) return { label: 'Focused', mode: 'focused' }
+  if (win.mode === 'minimized') return { label: 'Minimized', mode: 'minimized' }
+  return { label: 'Open', mode: 'open' }
+}
+
+export default function KanbanView({ items, windows, onOpenWindow, onStatusChange }) {
   const [draggedItem, setDraggedItem] = useState(null)
   const [dragOverColumn, setDragOverColumn] = useState(null)
 
@@ -78,14 +87,15 @@ export default function KanbanView({ items, onItemClick, onStatusChange }) {
                   {isDragging ? 'Drop here' : 'No items'}
                 </div>
               ) : (
-                column.items.map((item) => (
+                column.items.map((item) => {
+                  const openState = getOpenState(windows, item.id)
+                  return (
                   <div
                     key={item.id}
-                    className={`kanban-card ${draggedItem?.id === item.id ? 'dragging' : ''}`}
+                    className={`kanban-card ${draggedItem?.id === item.id ? 'dragging' : ''} ${openState ? 'has-open-window' : ''}`}
                     draggable
                     onDragStart={(e) => handleDragStart(e, item)}
                     onDragEnd={handleDragEnd}
-                    onClick={() => onItemClick(item.id)}
                   >
                     {/* Card Header */}
                     <div className="card-header">
@@ -93,6 +103,11 @@ export default function KanbanView({ items, onItemClick, onStatusChange }) {
                         className="card-color-dot" 
                         style={{ backgroundColor: item.color }}
                       />
+                      {openState && (
+                        <span className={`open-state-badge is-${openState.mode}`} title={`Window: ${openState.label}`}>
+                          <span className="open-state-dot" /> {openState.label}
+                        </span>
+                      )}
                       <div className="card-priority">
                         <span className="priority-label">Pri</span>
                         <span className="priority-value">{item.priority}</span>
@@ -117,8 +132,19 @@ export default function KanbanView({ items, onItemClick, onStatusChange }) {
                         )}
                       </div>
                     </div>
+
+                    <div className="card-open-row">
+                      <button
+                        className={`open-window-btn ${openState ? 'is-open' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); onOpenWindow(item.id) }}
+                        title={openState ? `Fokuskan window (${openState.label})` : 'Buka dalam window'}
+                      >
+                        {openState ? (openState.mode === 'minimized' ? 'Restore window' : 'Focus window') : 'Open window'}
+                      </button>
+                    </div>
                   </div>
-                ))
+                  )
+                })
               )}
             </div>
           </div>

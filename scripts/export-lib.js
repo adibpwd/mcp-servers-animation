@@ -224,6 +224,71 @@ const SFX_SCHEDULES = {
     { at: 30.85, category: 'ui', name: 'pop-2' },               // absolute path card pop-in
     { at: 32.65, category: 'success', name: 'ding' },           // target file ditemukan
     { at: 34.85, category: 'success', name: 'ding' }            // takeaway
+  ],
+
+  'linux-processes': [
+    { at: 1.15, category: 'success', name: 'shimmer' },         // content start (header compact)
+    { at: 1.30, category: 'ui', name: 'tick' },                 // caption HOOK muncul
+    { at: 2.45, category: 'ui', name: 'pop' },                  // launch-cursor pop-in
+    { at: 3.15, category: 'ui', name: 'tick' },                 // "klik" pada file
+    { at: 4.05, category: 'ui', name: 'tick' },                 // caption LAUNCH muncul
+    { at: 4.15, category: 'transitions', name: 'light-swoosh-quick' }, // handoff file -> process mulai
+    { at: 5.20, category: 'ui', name: 'pop' },                  // browser process settle
+    { at: 8.15, category: 'ui', name: 'tick' },                 // caption CLIFFHANGER muncul
+    { at: 10.80, category: 'ui', name: 'tick' },                // caption PID muncul
+    { at: 10.95, category: 'ui', name: 'pop' },                 // editor card pop-in
+    { at: 11.55, category: 'ui', name: 'pop-2' },                // music-app card pop-in
+    { at: 12.25, category: 'ui', name: 'tick' },                 // PID tag attach (browser/editor/music)
+    { at: 13.85, category: 'ui', name: 'tick' },                 // caption CLONE muncul
+    { at: 14.05, category: 'ui', name: 'pop-2' },                // clone PID chip pop-in
+    { at: 17.85, category: 'ui', name: 'pop-2' },                // caption PID_REUSE + chip reuse pop-in
+    { at: 21.30, category: 'ui', name: 'tick' },                 // caption RESOURCE muncul
+    { at: 21.45, category: 'ui', name: 'pop' },                  // resource meter panels pop-in
+    { at: 22.05, category: 'ui', name: 'number-tally' },         // CPU/MEM bar tally mulai
+    { at: 24.65, category: 'success', name: 'ding' },            // highlight process paling berat
+    { at: 24.65, category: 'ui', name: 'tick' },                 // caption RESOURCE_DIFF muncul
+    { at: 25.65, category: 'warnings', name: 'alert-pulse' },    // warning-load icon pop-in
+    { at: 25.85, category: 'ui', name: 'number-tally' },         // resource-spike tally browser
+    { at: 27.05, category: 'ui', name: 'tick' },                 // caption SPIKE muncul
+    { at: 30.80, category: 'ui', name: 'tick' },                 // caption PS muncul
+    { at: 30.95, category: 'ui', name: 'pop' },                  // terminal pop-in
+    { at: 31.75, category: 'ui', name: 'tick' },                 // "$ ps" diketik
+    { at: 32.55, category: 'ui', name: 'paper-arrive' },         // baris ps: browser
+    { at: 33.15, category: 'ui', name: 'paper-arrive' },         // baris ps: editor
+    { at: 33.75, category: 'ui', name: 'paper-arrive' },         // baris ps: music-app
+    { at: 34.15, category: 'success', name: 'ding' },            // highlight baris PID 1042 (culprit)
+    { at: 34.55, category: 'ui', name: 'tick' }                  // caption PS_PID muncul
+  ],
+
+  'domain-to-server': [
+    // Intro (0 - 2.1s)
+    { at: 0.0, category: 'transitions', name: 'whoosh' },   // intro morph start
+
+    // ACT 1: Resolve Domain (2.1 - 9.9s)
+    { at: 2.1, category: 'transitions', name: 'whoosh' },   // act 1 start
+    { at: 2.1, category: 'ui', name: 'pop' },               // browser pop-in
+    { at: 3.6, category: 'ui', name: 'pop' },               // domain chip pop-in
+    { at: 4.4, category: 'ui', name: 'plink' },             // dns query berangkat
+    { at: 5.6, category: 'impacts', name: 'impact' },       // dns query tiba di resolver
+    { at: 6.6, category: 'success', name: 'confirm' },      // dns answer
+    { at: 7.1, category: 'ui', name: 'pop' },               // domain chip -> ip chip
+
+    // ACT 2: Connect ke Edge (9.9 - 17.7s)
+    { at: 9.9, category: 'transitions', name: 'whoosh' },   // act 2 start
+    { at: 10.1, category: 'ui', name: 'pop' },              // edge gate pop-in
+    { at: 11.4, category: 'transitions', name: 'swoosh' },  // https packet berangkat
+    { at: 14.7, category: 'impacts', name: 'impact' },      // packet tiba di edge
+
+    // ACT 3: Proxy ke App (17.7 - 26.2s)
+    { at: 17.7, category: 'transitions', name: 'whoosh' },  // act 3 start
+    { at: 17.7, category: 'ui', name: 'pop' },              // proxy gate pop-in
+    { at: 21.0, category: 'impacts', name: 'impact' },      // proxy mulai baca host/path
+    { at: 22.2, category: 'transitions', name: 'slide-in' }, // routing beam menyala
+
+    // ACT 4: Halaman Kembali (26.2 - 36.1s)
+    { at: 26.2, category: 'transitions', name: 'whoosh' },  // act 4 start
+    { at: 27.7, category: 'transitions', name: 'swoosh' },  // response dikirim dari backend
+    { at: 34.1, category: 'success', name: 'confirm' }      // halaman dirender
   ]
 }
 

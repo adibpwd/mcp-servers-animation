@@ -1,0 +1,61 @@
+{
+  "name": "install-applications",
+  "description": "Icon set untuk install-applications, sesuai revisi/2026-09-18-revisi-02-hybrid-icon-assets.md. Dua batch icon konsep generik (AI-generated, tanpa brand shape) untuk repository/lifecycle install, plus 6 logo distro asli (disource manual dari official brand page / Wikimedia / Simple Icons CC0 -- BUKAN AI-generated, lihat 'distro_logos' di bawah).",
+  "distro_logos": [
+    { "id": "ubuntu-logo", "distro": "Ubuntu", "beat": "apt / Debian family", "status": "DONE (2026-09-19)", "source_plan": "Simple Icons ubuntu.svg CC0, hex resmi #E95420", "fallback": "Text chip 'Ubuntu'" },
+    { "id": "debian-logo", "distro": "Debian", "beat": ".deb / apt context", "status": "DONE (2026-09-19)", "source_plan": "Simple Icons debian.svg CC0, hex resmi #A81D33", "fallback": "Text chip 'Debian'" },
+    { "id": "fedora-logo", "distro": "Fedora", "beat": "dnf / RPM family", "status": "DONE (2026-09-19)", "source_plan": "Simple Icons fedora.svg CC0, hex resmi #51A2DA", "fallback": "Text chip 'Fedora'" },
+    { "id": "arch-logo", "distro": "Arch Linux", "beat": "pacman", "status": "DONE (2026-09-19)", "source_plan": "Simple Icons archlinux.svg CC0, hex resmi #1793D1", "fallback": "Text chip 'Arch'" },
+    { "id": "opensuse-logo", "distro": "openSUSE", "beat": "zypper", "status": "DONE (2026-09-19)", "source_plan": "Simple Icons opensuse.svg CC0, hex resmi #73BA25", "fallback": "Text chip 'openSUSE'" },
+    { "id": "alpine-logo", "distro": "Alpine Linux", "beat": "apk / minimal system", "status": "DONE (2026-09-19)", "source_plan": "Simple Icons alpinelinux.svg CC0, hex resmi #0D597F", "fallback": "Text chip 'Alpine'" }
+  ],
+  "distro_logo_decisions": {
+    "color": "Warna asli sesuai brand guideline (bukan monochrome)",
+    "count": "Semua 6 distro (Ubuntu, Debian, Fedora, Arch, openSUSE, Alpine)",
+    "originals_storage": "Original file disimpan di icons/_originals/, dicatat di icons/_originals/LICENSE-LOGOS.md",
+    "runtime_format": "PNG (raster) untuk semua logo distro"
+  },
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "Repository dan planning (1/2)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "package-box", "category": "structural", "color": "#38BDF8", "name": "Package Box", "label": "Candidate/Download Package", "description": "Archive box dengan label kosong", "usage": "Candidate/download package" },
+        { "id": "repo-shelf", "category": "structural", "color": "#A78BFA", "name": "Repo Shelf", "label": "Repository Source", "description": "Rak repository tiga slot", "usage": "Official/community/vendor source" },
+        { "id": "mirror-server", "category": "structural", "color": "#94A3B8", "name": "Mirror Server", "label": "Official Mirror", "description": "Rack server + panah sync", "usage": "Official mirror internet" },
+        { "id": "metadata-catalog", "category": "accent", "color": "#38BDF8", "name": "Metadata Catalog", "label": "Metadata Lookup", "description": "Index card tiga baris", "usage": "Metadata lookup" },
+        { "id": "dependency-nodes", "category": "accent", "color": "#A78BFA", "name": "Dependency Nodes", "label": "Dependency Resolver", "description": "Tiga node bundle", "usage": "Dependency resolver" },
+        { "id": "cache-tray", "category": "accent", "color": "#94A3B8", "name": "Cache Tray", "label": "Local Cache", "description": "Tray lokal dengan archive", "usage": "Cache versus download" },
+        { "id": "trust-key", "category": "accent", "color": "#34D399", "name": "Trust Key", "label": "Trust/Signature", "description": "Sigil/key trust generik (bukan padlock)", "usage": "Trust/signature context" }
+      ],
+      "prompt": "Generate a 2x4 grid of flat-design generic Linux package-management icons on a transparent PNG background, numbered left to right, top to bottom: 1 package archive box with blank label strip; 2 repository shelf with three slots; 3 mirror server rack with two synchronization arrows; 4 metadata catalog card with three rows; 5 three connected dependency nodes; 6 local cache tray with one archive; 7 generic trust key/sigil, not a padlock; 8 empty.\nColors: #38BDF8, #A78BFA, #94A3B8, #38BDF8, #A78BFA, #94A3B8, #34D399.\nNo text, letters, logos, or gradients. Transparent background. Bold, consistent silhouette. 4096x2048 canvas."
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "Lifecycle instalasi (2/2)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "download-arrow", "category": "accent", "color": "#FB923C", "name": "Download Arrow", "label": "Download", "description": "Archive menuju tray", "usage": "Download" },
+        { "id": "verify-seal", "category": "accent", "color": "#34D399", "name": "Verify Seal", "label": "Verification", "description": "Check seal + scan line", "usage": "Verification" },
+        { "id": "unpack-box", "category": "structural", "color": "#FB923C", "name": "Unpack Box", "label": "Unpack/Stage", "description": "Box terbuka -> tiga file", "usage": "Unpack/stage" },
+        { "id": "configure-gear", "category": "accent", "color": "#FBBF24", "name": "Configure Gear", "label": "Configure", "description": "Gear + check", "usage": "Configure/triggers" },
+        { "id": "package-ledger", "category": "structural", "color": "#34D399", "name": "Package Ledger", "label": "Record Installed", "description": "Ledger/database + stamp", "usage": "Record installed" }
+      ],
+      "prompt": "Generate a 2x4 grid of flat-design generic software-installation lifecycle icons on a transparent PNG background, numbered left to right, top to bottom: 1 download arrow carrying a package archive to local tray; 2 verification seal with check and one scan line; 3 open archive box with three generic file sheets; 4 configuration gear with small check; 5 package ledger/database with installed stamp; slots 6-8 empty. Colors: #FB923C, #34D399, #FB923C, #FBBF24, #34D399.\nNo text, letters, logos, or gradients. Transparent background, bold consistent silhouette, 4096x2048 canvas."
+    }
+  ],
+  "generation": {
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/34-install-applications/icons"
+  },
+  "next_steps": [
+    "1. Jalankan extension vm-icon-generator di ChatGPT web untuk batch-1 dan batch-2 (12 icon konsep generik) -> hasil PNG masuk ke icons/.",
+    "2. Source 6 logo distro asli satu per satu (prioritas official brand page, fallback Simple Icons CC0 / Wikimedia Commons) -> simpan original di icons/_originals/, isi provenance di icons/_originals/LICENSE-LOGOS.md.",
+    "3. Setelah file fisik ada, update loader.js (static import + ICONS map, ikuti pola src/content/11-tailscale/icons/loader.js) -- jangan import file yang belum ada, akan bikin Vite error.",
+    "4. Wire ke Animation.jsx: logo distro hanya muncul di stasiun distro masing-masing lalu collapse jadi badge kecil (tidak boleh tampil bersamaan); icon konsep dipasang di titik yang disebut di kolom 'usage'.",
+    "5. Preview semua state termasuk fallback (asset belum ada -> text chip / null, tidak boleh crash build)."
+  ]
+}

@@ -1,0 +1,8 @@
+# Revisi — 65-systemd
+
+| File | Tanggal | Ringkasan | Status |
+|---|---|---|---|
+| `2026-09-18-revisi-01-implementasi-awal.md` | 2026-09-18 | Implementasi awal: `data.js` + `Animation.jsx`, 6 Act sesuai `_docs/SYSTEMD_SERVICES_LOGS_PLAN.md`. | ✅ SUDAH DIEKSEKUSI (compile lolos; preview manual & export MP4 belum) |
+| `2026-09-20-revisi-02-peta-sistem-flowchart-icon-path.md` | 2026-09-20 | Diagnosis 3 feedback: icon minim, tidak ada info path Linux, kotak muncul tiba-tiba tanpa garis alur. Mengunci keputusan: peta 7 stasiun tersebar, Path Bar + path tag, Aturan Asal-Usul (objek baru wajib lahir dari garis/peristiwa/redup). Berhenti di §3.5 (durasi Act), §4 ke atas belum ditulis. | ✅ Plan dilanjutkan di revisi-03, dieksekusi di revisi-04 |
+| `2026-09-20-revisi-03-lengkapi-peta-sistem-icon-path.md` | 2026-09-20 | Melengkapi revisi-02: koordinat 7 stasiun + cek jarak, Path Atlas (path Linux nyata per stasiun), alur garis per Act 1-6, spesifikasi 9 icon (2 batch), migrasi caption ke `IconCaption`/`PathLabel`, perbaikan teks diagnosis (pertanyaan→pernyataan), pengaktifan SFX `SLIDE_IN`/`LOCK`, checklist eksekusi 12 poin. | ✅ Dieksekusi di revisi-04 (kecuali icon PNG 11.8 dan cek manual 11.10–11.12) |
+| `2026-09-20-revisi-04-eksekusi-peta-sistem.md` | 2026-09-20 | Dokumen eksekusi revisi-02 + revisi-03: `data.js` (STATIONS, LINES, PATH_ATLAS), `Animation.jsx` ditulis ulang (FlowLine, PathBar, IconCaption/PathLabel), fix bug ref SFX, sync `metadata.json`. Icon memakai pictogram SVG inline sebagai pengganti sementara PNG. | ✅ SUDAH DIEKSEKUSI (compile lolos; icon PNG, preview manual, ukur durasi, export MP4 belum) |

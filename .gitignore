@@ -27,6 +27,7 @@ Thumbs.db
 
 # Docker
 *.log
+.docker-build-hash
 
 # Exports
 export/output/

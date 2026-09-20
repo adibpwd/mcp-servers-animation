@@ -1,0 +1,91 @@
+{
+  "name": "linux-server",
+  "description": "Icon set untuk 91-linux-server sesuai revisi/2026-09-19-revisi-01-flow-kausal-icon-chatgpt.md. 28 icon PNG generik (AI-generated, tanpa logo brand, tanpa maskot, tanpa wajah, tanpa teks) dalam 4 batch grid 2x4. Elemen dengan gerak/state internal dan semua teks dinamis dirender sebagai inline SVG di Animation.jsx.",
+  "style": {
+    "look": "flat design, siluet tebal, garis luar terang, tanpa gradient, terbaca di background navy gelap #070913",
+    "view": "tampak depan datar, tanpa perspektif",
+    "forbidden": ["teks/huruf/angka di dalam icon", "logo brand", "maskot", "wajah atau ekspresi", "fill hitam", "gradient"]
+  },
+  "batches": [
+    {
+      "batch_id": "batch-1",
+      "name": "Actor inti: client, server, bentuk compute (Act 1-2)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "client-phone", "category": "structural", "color": "#38BDF8", "name": "Client Phone", "label": "Client", "description": "Smartphone tampak depan, layar kosong gelap", "usage": "Client persisten Act 1-6; layar diisi overlay SVG (address bar, halaman)" },
+        { "id": "server-rack", "category": "structural", "color": "#FBBF24", "name": "Server Rack", "label": "Server", "description": "Unit server rack dengan tiga bay drive dan LED mati", "usage": "Server anchor persisten Act 1-7; LED dan glow dari overlay SVG" },
+        { "id": "laptop-machine", "category": "structural", "color": "#38BDF8", "name": "Laptop", "label": "Laptop sebagai server", "description": "Laptop terbuka tampak depan, layar kosong", "usage": "Bentuk compute Act 1" },
+        { "id": "vm-partition", "category": "structural", "color": "#A78BFA", "name": "Virtual Machine", "label": "Virtual machine", "description": "Satu kotak server besar terbagi tiga kompartemen kecil menyala", "usage": "Bentuk compute Act 1" },
+        { "id": "cloud-instance", "category": "structural", "color": "#22D3EE", "name": "Cloud Instance", "label": "Cloud instance", "description": "Awan berisi satu blok server kecil", "usage": "Bentuk compute Act 1" },
+        { "id": "mini-pc", "category": "structural", "color": "#FB923C", "name": "Mini PC", "label": "Mini-PC / edge", "description": "Komputer mini kompak dengan tombol power kecil", "usage": "Bentuk compute Act 1" },
+        { "id": "web-app-card", "category": "structural", "color": "#34D399", "name": "Web App", "label": "Aplikasi toko-web", "description": "Jendela aplikasi dengan title bar dan tiga blok konten abstrak", "usage": "Aplikasi sumber Act 1; app tile Act 1-6" }
+      ],
+      "prompt": "Generate a 2x4 grid of flat-design icons on a transparent PNG background, landscape 2:1 aspect ratio, numbered left to right, top to bottom, each icon centered in its own cell with generous padding: 1 front-facing smartphone with a blank dark screen; 2 rack server unit with three drive bays and unlit indicator lights; 3 open laptop, front view, blank screen; 4 one large server box divided internally into three small glowing compartments; 5 cloud shape containing one small server block; 6 compact mini desktop computer with a tiny power button; 7 application window with a title bar and three abstract content blocks; 8 [EMPTY - leave this slot blank and transparent].\nColors per icon: 1 #38BDF8, 2 #FBBF24, 3 #38BDF8, 4 #A78BFA, 5 #22D3EE, 6 #FB923C, 7 #34D399.\nBold consistent silhouette and line weight, bright light outlines readable on a dark navy background. No text, letters, numbers, logos, mascots, faces, gradients, or black fills. Front view, no perspective."
+    },
+    {
+      "batch_id": "batch-2",
+      "name": "Jalur masuk dan service (Act 2-3)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "dns-book", "category": "structural", "color": "#22D3EE", "name": "DNS Book", "label": "DNS", "description": "Buku direktori dengan dua baris entri abstrak", "usage": "Lookup DNS Act 2; baris record diisi overlay SVG" },
+        { "id": "internet-cloud", "category": "structural", "color": "#94A3B8", "name": "Internet Cloud", "label": "Internet", "description": "Awan jaringan dengan tiga node terhubung", "usage": "Rute jaringan Act 2" },
+        { "id": "router-hop", "category": "accent", "color": "#94A3B8", "name": "Router Hop", "label": "Router / hop", "description": "Router kecil dengan dua antena dan tiga port", "usage": "Dua titik hop rute Act 2" },
+        { "id": "firewall-wall", "category": "structural", "color": "#FB923C", "name": "Firewall Wall", "label": "Firewall / edge", "description": "Segmen tembok bata dengan celah pintu di tengah dan perisai kecil di atas", "usage": "Gate edge Act 2; palang buka/tutup dari overlay SVG" },
+        { "id": "listening-socket", "category": "accent", "color": "#FBBF24", "name": "Listening Socket", "label": "Port 443 listen", "description": "Jack port jaringan dalam pelat persegi membulat", "usage": "Pintu masuk di anchor Act 2-3" },
+        { "id": "service-manager", "category": "structural", "color": "#FBBF24", "name": "Service Manager", "label": "Service manager", "description": "Panel kontrol dengan tiga baris toggle dan roda gigi di atas", "usage": "Manager Act 3" },
+        { "id": "dependency-chain", "category": "accent", "color": "#A78BFA", "name": "Dependency Chain", "label": "Dependency", "description": "Tiga node membulat terhubung panah kiri ke kanan", "usage": "Urutan start Act 3" }
+      ],
+      "prompt": "Generate a 2x4 grid of flat-design generic network and service icons on a transparent PNG background, landscape 2:1 aspect ratio, numbered left to right, top to bottom, each icon centered in its own cell with generous padding: 1 address directory book with two abstract entry lines; 2 network cloud with three small connected nodes; 3 small router with two antennas and three ports; 4 brick wall segment with a doorway opening in the middle and a small shield on top; 5 network port jack inside a rounded square plate; 6 control panel with three toggle rows and a gear on top; 7 three rounded nodes linked in a chain by left-to-right arrows; 8 [EMPTY - leave this slot blank and transparent].\nColors per icon: 1 #22D3EE, 2 #94A3B8, 3 #94A3B8, 4 #FB923C, 5 #FBBF24, 6 #FBBF24, 7 #A78BFA.\nBold consistent silhouette and line weight, bright light outlines readable on a dark navy background. No text, letters, numbers, logos, faces, gradients, or black fills. Front view, no perspective."
+    },
+    {
+      "batch_id": "batch-3",
+      "name": "Identity, data, dan bukti (Act 4-5)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "user-badge", "category": "structural", "color": "#A78BFA", "name": "User Badge", "label": "User", "description": "Siluet setengah badan tanpa wajah di dalam lencana bundar", "usage": "Admin dan guest Act 4" },
+        { "id": "user-group", "category": "accent", "color": "#A78BFA", "name": "User Group", "label": "Group", "description": "Tiga siluet tanpa wajah saling menumpuk", "usage": "Badge group `ops` Act 4" },
+        { "id": "service-account", "category": "structural", "color": "#A78BFA", "name": "Service Account", "label": "Service account", "description": "Lencana ID persegi dengan roda gigi menggantikan siluet", "usage": "Identitas toko-web Act 4" },
+        { "id": "data-vault", "category": "structural", "color": "#34D399", "name": "Data Vault", "label": "Data pesanan", "description": "Silinder database di dalam bingkai brankas persegi membulat", "usage": "Data Act 4-6" },
+        { "id": "ssh-key", "category": "accent", "color": "#FBBF24", "name": "SSH Key", "label": "SSH key", "description": "Kunci klasik dengan pola sirkuit digital di kepalanya", "usage": "Kredensial admin Act 4" },
+        { "id": "log-scroll", "category": "structural", "color": "#F472B6", "name": "Log Scroll", "label": "Logs", "description": "Gulungan kertas vertikal dengan enam garis abstrak", "usage": "Logs Act 5; baris teks dari overlay SVG" },
+        { "id": "alert-bell", "category": "accent", "color": "#F87171", "name": "Alert Bell", "label": "Alert", "description": "Lonceng notifikasi dengan titik kecil di sudut", "usage": "Alert Act 5, pilar Documentation Act 7" }
+      ],
+      "prompt": "Generate a 2x4 grid of flat-design generic identity, data and monitoring icons on a transparent PNG background, landscape 2:1 aspect ratio, numbered left to right, top to bottom, each icon centered in its own cell with generous padding: 1 faceless person bust silhouette inside a round badge; 2 three overlapping faceless person silhouettes; 3 square ID badge with a gear in place of a person; 4 database cylinder inside a rounded square vault frame; 5 classic key with a small digital circuit pattern on the bow; 6 vertical paper scroll with six abstract horizontal dashes; 7 notification bell with a small dot at the corner; 8 [EMPTY - leave this slot blank and transparent].\nColors per icon: 1 #A78BFA, 2 #A78BFA, 3 #A78BFA, 4 #34D399, 5 #FBBF24, 6 #F472B6, 7 #F87171.\nBold consistent silhouette and line weight, bright light outlines readable on a dark navy background. No text, letters, numbers, logos, facial features, gradients, or black fills. Front view, no perspective."
+    },
+    {
+      "batch_id": "batch-4",
+      "name": "Operasi, kapasitas, dan pemulihan (Act 3, 5-7)",
+      "rows": 2,
+      "cols": 4,
+      "icons": [
+        { "id": "monitor-dashboard", "category": "structural", "color": "#F472B6", "name": "Monitor Dashboard", "label": "Metrics dashboard", "description": "Monitor lebar dengan tiga slot panel kosong", "usage": "Dashboard Act 5; grafik dari overlay SVG; recall Act 7" },
+        { "id": "release-package", "category": "structural", "color": "#FB923C", "name": "Release Package", "label": "Rilis", "description": "Kotak paket dengan panah kecil di sisi dan strip label kosong", "usage": "Versi v2/v1 Act 6" },
+        { "id": "staging-pad", "category": "structural", "color": "#94A3B8", "name": "Staging Pad", "label": "Staging", "description": "Landasan datar dengan garis luar putus-putus untuk uji coba", "usage": "Staging Act 6" },
+        { "id": "backup-vault", "category": "structural", "color": "#34D399", "name": "Backup Vault", "label": "Backup", "description": "Tiga cakram bertumpuk dalam kotak tertutup dengan jam kecil", "usage": "Backup Act 6" },
+        { "id": "restore-cycle", "category": "accent", "color": "#38BDF8", "name": "Restore Cycle", "label": "Restore", "description": "Panah melingkar berlawanan arah jarum jam mengelilingi dokumen kecil", "usage": "Restore test Act 6" },
+        { "id": "runbook-doc", "category": "structural", "color": "#A78BFA", "name": "Runbook", "label": "Runbook", "description": "Dokumen checklist dengan tiga baris centang abstrak", "usage": "Runbook Act 6; pilar Documentation Act 7" },
+        { "id": "cpu-chip", "category": "accent", "color": "#FBBF24", "name": "CPU Chip", "label": "CPU / capacity", "description": "Chip persegi dengan pin di keempat sisi", "usage": "Resource Act 3; pilar Cost/Capacity Act 7" }
+      ],
+      "prompt": "Generate a 2x4 grid of flat-design generic operations and recovery icons on a truly transparent PNG background (real alpha channel: NO checkerboard pattern, NO white or gray background fill, every empty pixel fully transparent), landscape 2:1 aspect ratio, numbered left to right, top to bottom, each icon centered in its own cell with generous padding: 1 wide monitor with three blank rectangular panel slots; 2 shipping package box with a small arrow on its side and a blank label strip; 3 flat test platform with a dotted outline; 4 three stacked disks inside a sealed box with a small clock symbol; 5 circular counter-clockwise arrow around a small document; 6 checklist document with three abstract check rows; 7 square CPU chip with pins on all four sides; 8 [EMPTY - leave this slot blank and transparent].\nColors per icon: 1 #F472B6, 2 #FB923C, 3 #94A3B8, 4 #34D399, 5 #38BDF8, 6 #A78BFA, 7 #FBBF24.\nBold consistent silhouette and line weight, bright light outlines readable on a dark navy background. No text, letters, numbers, logos, faces, gradients, or black fills. Front view, no perspective."
+    }
+  ],
+  "inline_svg_only": [
+    "request-packet", "query-pulse", "address-pill (breadcrumb nama)", "ip-plate (breadcrumb IP)", "access-gate (closed/checking/granted/denied)", "padlock",
+    "resource-bars", "metric-graph-lines", "health-probe-heartbeat", "status-LED", "seal-check",
+    "role-badge", "connector-lines", "posture-ring", "address-bar", "case-strip"
+  ],
+  "generation": {
+    "api_endpoint": "http://localhost:3373/api/icons/generate",
+    "output_path": "src/content/91-linux-server/icons"
+  },
+  "next_steps": [
+    "1. Setelah revisi disetujui, salin blok ini menjadi icons/icons.json.",
+    "2. Jalankan extension vm-icon-generator di ChatGPT web untuk batch-1 sampai batch-4 (28 icon), hasil PNG masuk ke icons/.",
+    "3. Setelah file fisik ada, isi loader.js dengan static import + ICONS map (pola 11-tailscale); jangan import file yang belum ada.",
+    "4. Wire ke Animation.jsx sesuai kolom usage; pasang fallback SVG bila getIcon(id) null.",
+    "5. Preview semua state termasuk fallback sebelum dianggap selesai."
+  ]
+}

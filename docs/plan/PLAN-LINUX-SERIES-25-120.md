@@ -13,7 +13,7 @@ Urutan ini paling ramah untuk membangun mental model tanpa membuat pemula kewala
 | Tahap | Content | Alasan |
 |---|---|---|
 | 1. Kenal tempat kerja | 25–30 | Penonton mengenali struktur file dan nyaman memakai terminal sebelum belajar command yang lebih berisiko. |
-| 2. Memasang software dan akses | 34, 37–38 | Menjelaskan cara aplikasi masuk ke sistem serta batas user, group, dan admin. |
+| 2. Memasang software dan akses | 34, 37 | Menjelaskan cara aplikasi masuk ke sistem serta batas user, group, dan admin. |
 | 3. Akses jarak jauh dan shell | 44, 48, 51 | Memberi fondasi untuk memakai server dan memahami aliran data terminal. |
 | 4. Sistem yang sedang bekerja | 60, 65, 67 | Memperkenalkan process, service, dan log sebagai dasar troubleshooting. |
 | 5. Koneksi jaringan | 81, 84 | Menjelaskan jalan aplikasi menuju jaringan dan makna port. |
@@ -40,8 +40,7 @@ Urutan ini paling ramah untuk membangun mental model tanpa membuat pemula kewala
 
 | No. | Judul | Deskripsi singkat |
 |---|---|---|
-| 37 | User, Group, dan Siapa Boleh Apa | Memahami akun pengguna, grup, dan pembagian akses dalam satu komputer atau server. |
-| 38 | sudo: Kunci Master yang Dipinjamkan | Mengapa perintah admin perlu izin khusus dan kapan jangan asal memakai sudo. |
+| 37 | User, Group, dan Izin Admin | Memahami akun, group ownership, dan izin sudo sementara untuk satu command yang sudah diperiksa. |
 | 39 | Root User: Raja yang Tidak Perlu Dipakai Terus | Risiko login sebagai root dan kebiasaan aman untuk pengguna biasa. |
 | 40 | Permission Linux dalam Kehidupan Nyata | Pendalaman read, write, execute sebagai aturan pintu rumah, lemari, dan ruang kerja. |
 | 41 | chmod: Mengubah Izin File | Membaca angka 755 dan 644 serta mengatur izin tanpa membuat file terlalu terbuka. |

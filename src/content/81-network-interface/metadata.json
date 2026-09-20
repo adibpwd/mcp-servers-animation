@@ -1,10 +1,10 @@
 {
   "id": "network-interface",
   "title": "Network Interface",
-  "subtitle": "",
+  "subtitle": "Titik koneksi OS ke jaringan",
   "category": "Linux Fundamentals",
-  "tags": [],
-  "color": "#FBBF24",
+  "tags": ["Network Interface", "Link", "MAC", "IP", "DHCP", "Route", "DNS", "Networking"],
+  "color": "#38BDF8",
   "status": "draft",
   "priority": 81
 }

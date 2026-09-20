@@ -147,6 +147,189 @@
 }
 
 /* ========================================
+   Toolbar — Search / Filter / Share (Phase 4.2, 4.4)
+   ======================================== */
+.cm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cm-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 260px;
+  min-width: 220px;
+  padding: 8px 14px;
+  background: #0F172A;
+  border: 1.5px solid #334155;
+  border-radius: 8px;
+}
+
+.cm-search-wrapper:focus-within {
+  border-color: #38BDF8;
+}
+
+.cm-search-icon {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.cm-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #E2E8F0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+.cm-search-input::placeholder {
+  color: #475569;
+}
+
+.cm-search-clear {
+  background: transparent;
+  border: none;
+  color: #64748B;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 4px;
+}
+
+.cm-search-clear:hover {
+  color: #F43F5E;
+}
+
+.cm-filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1.5px solid #334155;
+  border-radius: 999px;
+  color: #94A3B8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cm-filter-chip:hover {
+  border-color: #38BDF8;
+  color: #38BDF8;
+}
+
+.cm-filter-chip.active {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: #34D399;
+  color: #34D399;
+}
+
+.cm-filter-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.cm-filter-chip.active .cm-filter-dot {
+  opacity: 1;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.cm-share-btn {
+  padding: 8px 14px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1.5px solid #334155;
+  border-radius: 8px;
+  color: #A78BFA;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cm-share-btn:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: #8B5CF6;
+}
+
+.cm-share-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cm-result-count {
+  font-size: 12px;
+  color: #64748B;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ========================================
+   Open-state indicator (Phase 4.3)
+   ======================================== */
+.open-state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+}
+
+.open-state-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.open-state-badge.is-focused {
+  color: #34D399;
+  background: rgba(52, 211, 153, 0.15);
+}
+
+.open-state-badge.is-focused .open-state-dot {
+  box-shadow: 0 0 6px currentColor;
+}
+
+.open-state-badge.is-open {
+  color: #38BDF8;
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.open-state-badge.is-minimized {
+  color: #94A3B8;
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.open-window-btn.is-open {
+  border-color: #34D399;
+  color: #34D399;
+}
+
+.kanban-card.has-open-window {
+  box-shadow: inset 0 0 0 1.5px rgba(52, 211, 153, 0.5);
+}
+
+/* ========================================
    List View
    ======================================== */
 .list-view {
@@ -554,4 +737,31 @@
   .list-table {
     min-width: 700px;
   }
+}
+
+/* PLAN-19 Phase 1 — tombol Open window (ListView) */
+.col-actions {
+  width: 1%;
+  white-space: nowrap;
+}
+
+.open-window-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #333a46;
+  background: #262a33;
+  color: #c4c9d2;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.open-window-btn:hover {
+  border-color: #4a90ff;
+  color: #fff;
+}
+
+.card-open-row {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
 }

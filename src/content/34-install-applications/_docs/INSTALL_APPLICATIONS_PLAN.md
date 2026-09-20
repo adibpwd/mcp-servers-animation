@@ -174,7 +174,7 @@ bahwa app tidak boleh terlihat terpasang sebelum prosesnya selesai.
 
 Content 34 hanya menyatakan **perubahan sistem memerlukan izin**. Penjelasan
 siapa yang memiliki izin dan bagaimana `sudo` bekerja harus tetap dimiliki
-Content 37–38 setelah kedua plan tersebut digabung.
+Content 37 setelah plan gabungan user, group, dan admin diimplementasikan.
 
 ## B. Series identity dan visual language
 
@@ -387,5 +387,148 @@ Apply. Audio tidak boleh menjadi satu-satunya penanda perubahan.
   moving object, persistent actor, dan deterministic timeline.
 - `docs/standardizations/05-svg-layout-asset-pipeline.md` — palette,
   typography, clipping, asset matrix, dan collision audit.
-- Plan Content 37 dan 38 — batas materi user/group/admin sebelum keduanya
-  digabung pada revisi terpisah.
+- Plan Content 37 — batas materi user/group/admin setelah konsolidasi plan.
+
+
+---
+
+# Revisi Plan 2026-09-16 — Repository dan Proses Instalasi Lengkap
+
+> Bagian ini menggantikan batas konsep, storyboard, copy, dan acceptance criteria sebelumnya bila ada perbedaan. Dokumen tetap **plan only**: tidak ada command untuk dijalankan, implementasi, build, preview, atau instalasi.
+
+## 1. Mengapa plan perlu diperluas
+
+Rencana sebelumnya terlalu cepat melompat dari nama package ke app terpasang, dan secara praktis menjadikan `apt` serta satu official repository sebagai seluruh cerita. Instalasi aplikasi Linux lebih tepat dijelaskan sebagai satu *transaction*: package manager memilih sumber dan versi, menyelesaikan dependency, menyusun perubahan, lalu baru memproses arsip package sampai sistem mencatat hasilnya.
+
+Revisi perlu membuat tiga hal terlihat jelas:
+
+1. Repository dapat berasal dari beberapa saluran, bukan satu situs atau satu gudang.
+2. Nama manager berbeda antar keluarga distro, tetapi fungsi utamanya serupa.
+3. Download, verifikasi, unpack, konfigurasi, dan pencatatan package adalah tahap berbeda—bukan satu tombol magis bernama “install”.
+
+## 2. Janji materi dan batas aman
+
+Setelah menonton, penonton mampu menyimpulkan: “package manager membaca metadata dari repository yang dikonfigurasi, membuat rencana perubahan, mengunduh dan memeriksa arsip, memasangnya ke sistem, lalu mencatatnya sebagai package terpasang.”
+
+| Dibahas | Tidak dibahas |
+|---|---|
+| Jenis repository, package manager distro, metadata, dependency, transaction, dan lifecycle instalasi. | Menambah/menghapus repository, PPA, konfigurasi source, atau cara memperbaiki error. |
+| Izin perubahan sistem sebagai gerbang konseptual. | Password, root shell, `sudo`, policy, atau privilege escalation. |
+| Package native distro sebagai fokus; alternatif lintas distro disebut hanya sebagai konteks. | Tutorial Flatpak, Snap, AppImage, skrip installer web, atau installer acak. |
+
+Repository tepercaya tidak boleh diklaim “pasti aman”. Yang perlu diajarkan adalah: sistem mempercayai sumber yang dikonfigurasi dan mekanisme verifikasi yang sesuai; pengguna tetap perlu memahami asal sumber tersebut.
+
+## 3. Peta repository
+
+Repository adalah kumpulan sumber package **dan metadata** yang dikonfigurasi untuk sistem. Package manager biasanya mencocokkan nama package ke metadata (nama, versi, arsitektur, dependency, ukuran, checksum, signature, dan lokasi arsip) sebelum mengunduh arsip package.
+
+| Sumber | Fungsi | Pesan visual | Nuansa yang wajib dijaga |
+|---|---|---|---|
+| Official/base | Package inti yang dipelihara distro. | `Official repository` | Titik awal yang direkomendasikan untuk pemula. |
+| Updates/security | Perbaikan bug dan keamanan untuk saluran distro. | `Security updates` | Bagian dari saluran distro, bukan file terpisah dari internet. |
+| Mirror | Salinan tersinkron dari repository resmi. | `Official mirror` | Mirror mendistribusikan salinan; bukan otomatis pengembang package. |
+| Community/extra | Package tambahan dari komunitas distro. | `Community repository` | Kurasi dan kebijakan dapat berbeda per distro. |
+| Vendor pihak ketiga | Source dari pembuat aplikasi/organisasi lain. | `Vendor repository` | Perlu asal, kebijakan update, dan trust key yang jelas. |
+| Local/offline/corporate | Mirror internal, media lokal, atau repository organisasi. | `Local repository` | Berguna pada jaringan terbatas dan lingkungan perusahaan. |
+
+Visual Act repository harus memperlihatkan katalog metadata lebih dulu, lalu arsip package. Dengan demikian penonton tidak mendapat kesan bahwa package manager “menjelajah web” dan memasang file pertama yang ditemukan.
+
+## 4. Manager berbeda menurut distro
+
+| Keluarga distro | Manager umum | Format/layer package | Perbedaan yang layak dijelaskan |
+|---|---|---|---|
+| Debian, Ubuntu, Linux Mint | `apt` | `.deb`, dengan `dpkg` | `apt` mengatur repository, dependency, dan transaction; `dpkg` memasang arsip `.deb`. |
+| Fedora, RHEL, Rocky, AlmaLinux | `dnf` | `.rpm`, dengan RPM | Ekosistem RPM dengan manager dan kebijakan repository berbeda. |
+| Arch, Manjaro | `pacman` | `.pkg.tar.*` | Satu alat utama untuk sinkronisasi repository dan pemasangan package Arch. |
+| openSUSE, SUSE Linux Enterprise | `zypper` | `.rpm`, dengan RPM | Sama-sama RPM, tetapi tool, repository, dan kebijakan distro tidak identik dengan Fedora/RHEL. |
+| Alpine Linux | `apk` | `.apk` Alpine | Ringan dan umum pada sistem minimal/container; bukan Android APK. |
+
+Pesan utama layar: **jangan menyalin langkah dari distro lain**. Aplikasi yang sama dapat berbeda nama package, versi, dependency, dan sumbernya. Kesamaan format RPM juga bukan jaminan kompatibilitas penuh antar distro.
+
+## 5. Anatomi satu transaction instalasi
+
+| Tahap | Yang sebenarnya terjadi | Bukti visual | Kesalahan persepsi yang dicegah |
+|---|---|---|---|
+| Intent | Manager menerima nama package dan konteks sistem. | Kartu target `editor-lite`. | Aplikasi bukan sekadar nama file unduhan. |
+| Metadata | Indeks repository dibaca untuk mencari kandidat. | Katalog mengirim nama, versi, dependency. | Repository tidak langsung mengirim app tanpa keputusan. |
+| Candidate selection | Versi dan source dipilih menurut kebijakan sistem. | Badge versi dan source menyatu ke card. | Satu nama package belum tentu hanya punya satu kandidat. |
+| Dependency resolve | Library/runtime pendukung, konflik, dan perubahan terkait dihitung. | Bundle utama + maksimal tiga chip dependency. | Dependency bukan dekorasi atau tambahan setelah app jadi. |
+| Transaction plan | Daftar package baru/berubah/dihapus, ukuran unduhan, dan ruang disk disusun. | Panel `plan ready`. | Sistem tidak semestinya berubah sebelum ada rencana. |
+| Authorization | Perubahan area sistem memperoleh izin. | Gerbang “system change approval”. | Izin bukan proses pencarian package. |
+| Download | Arsip dibawa dari repository atau cache. | Arsip bergerak ke inbox/cache. | Download belum berarti aplikasi sudah terpasang. |
+| Verification | Integrity dan/atau signature diperiksa sesuai repository. | Seal `verified`. | File yang selesai diunduh belum otomatis layak dipasang. |
+| Unpack/stage | Arsip diekstrak dan file ditempatkan di lokasi sistem. | Arsip terbuka menjadi binary, library, desktop entry, docs. | Unpack berbeda dari download. |
+| Configure/triggers | Langkah deklaratif package dan indeks sistem terkait diselesaikan. | Gear `configure`, lalu `refresh indexes`. | Install bukan hanya menyalin file. |
+| Record result | Database package lokal menyimpan status, versi, dan file. | Ledger `installed: editor-lite`. | Sistem perlu tahu apa yang nanti diperbarui/dihapus. |
+| Ready | Transaction lengkap; aplikasi dapat dipakai. | Kartu app aktif. | Jangan klaim aplikasi selalu langsung dibuka atau service selalu langsung berjalan. |
+
+Service tidak selalu otomatis dimulai dan aplikasi tidak selalu langsung membuka jendela; hasil yang aman untuk ditampilkan adalah **“siap dipakai”**.
+
+## 6. Storyboard baru: enam Act
+
+| Act | Pertanyaan | Visual/cerita | Konsep pulang |
+|---|---|---|---|
+| 1 — Pilih package | “Apa yang diminta?” | `editor-lite` belum ada, lalu berubah menjadi kartu target. | Aplikasi punya nama package. |
+| 2 — Kenali manager | “Siapa yang mengurus?” | Hub berganti label `apt`, `dnf`, `pacman`, `zypper`, dan `apk` pada jalur keluarga distro. | Tool berbeda, fungsi inti serupa. |
+| 3 — Telusuri repository | “Datangnya dari mana?” | Request melihat official, security, mirror, community, vendor, dan local; metadata sumber aktif kembali ke card. | Repository adalah sumber yang dikonfigurasi. |
+| 4 — Susun rencana | “Mengapa belum download?” | Resolver membentuk dependency bundle dan panel transaction plan. | Perubahan dihitung sebelum sistem berubah. |
+| 5 — Pasang bertahap | “Apa arti install?” | Bundle melewati izin → download → verify → unpack → configure/triggers. | Instalasi adalah rangkaian proses. |
+| 6 — Catat dan siap | “Apa hasilnya?” | Database mencatat result; kartu bertransformasi menjadi app ready; rantai proses ditutup. | Sistem tahu apa yang telah dipasang. |
+
+Target ritme: 75–90 detik. Act 5 memperoleh waktu terpanjang karena ia memisahkan tahap yang sebelumnya disederhanakan menjadi satu progress bar.
+
+## 7. Kontrak state dan continuity
+
+| State | Yang terlihat | Yang belum boleh muncul |
+|---|---|---|
+| `need` | Target package + manager | Source, dependency, app ready. |
+| `catalog` | Repository dan metadata | Arsip download atau final app. |
+| `planned` | Kandidat, dependency, transaction plan | Progress instalasi. |
+| `authorized` | Plan melewati gate izin | File sistem atau check final. |
+| `downloading` | Arsip masuk cache/inbox | App terpasang. |
+| `verified` | Seal pemeriksaan | Record database final. |
+| `unpacking` | Arsip menjadi file sistem | App status success. |
+| `configuring` | Gear dan trigger | Check final. |
+| `installed` | Ledger + app ready | Gate atau progress aktif. |
+
+Kartu `editor-lite` adalah anchor wajib: request → kandidat repository → bundle → arsip → file + database record → installed. Tidak boleh di-unmount dan diganti dengan app baru tanpa handoff visual.
+
+## 8. Copy in-video yang disarankan
+
+| Beat | Copy |
+|---|---|
+| Target | `Aplikasi punya nama package` |
+| Manager | `Setiap distro memakai manager berbeda` |
+| Repository | `Repository adalah sumber terkonfigurasi` |
+| Metadata | `Metadata memilih versi dan kebutuhan` |
+| Plan | `Rencana dibuat sebelum sistem berubah` |
+| Download | `Download mengambil arsip` |
+| Verify | `Arsip diperiksa sebelum dipasang` |
+| Unpack | `File dibongkar ke sistem` |
+| Configure | `Konfigurasi dan trigger diselesaikan` |
+| Record | `Database mencatat package terpasang` |
+| Closing | `Pilih sumber tepercaya untuk distro` |
+
+Copy deklaratif, singkat, dan satu state per layar. Narasi boleh memberi konteks lebih lengkap tanpa berubah menjadi instruksi runnable.
+
+## 9. Acceptance criteria implementasi nanti
+
+- [ ] Menampilkan `apt`, `dnf`, `pacman`, `zypper`, dan `apk` beserta keluarga distro secara akurat.
+- [ ] Membedakan official, security/updates, mirror, community, vendor, dan local/corporate repository.
+- [ ] Menampilkan metadata dan transaction plan sebelum tahap download.
+- [ ] Memisahkan download, verify, unpack, configure/triggers, serta pencatatan database package secara visual.
+- [ ] Status installed hanya muncul setelah seluruh transaction selesai.
+- [ ] Tidak ada command runnable, perubahan source repository, atau tutorial privilege escalation.
+- [ ] Kartu package tetap memiliki continuity dari request sampai installed.
+- [ ] Narasi menyebut bahwa detail dapat berbeda menurut distro dan package.
+
+## 10. Rencana file saat implementasi disetujui
+
+| File | Perubahan yang direncanakan, belum dilakukan |
+|---|---|
+| `src/content/34-install-applications/data.js` | Data distro/manager, sumber repository, lifecycle transaction, copy, palette. |
+| `src/content/34-install-applications/Animation.jsx` | Enam Act, package handoff, repository map, dan konveyor tahap instalasi. |
+| `src/content/34-install-applications/manifest.js` | Metadata yang selaras dengan materi revisi. |
+| `src/content/34-install-applications/caption.md` | Caption sosial yang mengikuti penjelasan baru. |
+
+Tidak ada file implementasi yang diubah oleh rencana ini; hanya dokumen plan ini yang direvisi.

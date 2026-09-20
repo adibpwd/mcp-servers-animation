@@ -70,6 +70,29 @@ src/
 
 ## Folder Pendukung Lainnya
 
+### Konvensi Dokumentasi per Content
+
+Setiap folder content memakai dua lokasi dokumentasi dengan peran yang berbeda:
+
+```
+src/content/<nomor-nama-topic>/
+├── _docs/                         ← plan utama dan referensi teknis topic
+│   └── <TOPIC>_PLAN.md
+└── revisi/                        ← analisis/revisi terpisah yang berjejak waktu
+    ├── README.md                   ← indeks seluruh revisi topic
+    └── YYYY-MM-DD-revisi-NN-<deskripsi>.md
+```
+
+Aturan wajib:
+
+1. Buat plan utama topic di `_docs/`; jangan membuat subfolder `_docs/revisions/`.
+2. Buat revisi atau analisis lanjutan di `revisi/` (lowercase) pada root folder topic.
+3. Setiap `revisi/` wajib memiliki `README.md` yang mengindeks file, tanggal, ringkasan, dan status.
+4. Gunakan nama file `YYYY-MM-DD-revisi-NN-deskripsi-singkat.md` agar urutan serta riwayat mudah diaudit.
+5. Dokumen revisi berstatus plan only tidak mengubah `Animation.jsx`, `data.js`, asset, manifest, registry, atau hasil export sampai ada persetujuan eksekusi eksplisit.
+
+Contoh: `src/content/34-install-applications/revisi/2026-09-16-revisi-01-rich-install-flow.md`.
+
 ### `docs/` — Dokumentasi & Panduan Internal
 
 Berisi panduan lengkap untuk develop & membuat topic baru:

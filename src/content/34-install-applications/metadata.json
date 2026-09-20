@@ -1,10 +1,19 @@
 {
   "id": "install-applications",
   "title": "Install Applications",
-  "subtitle": "",
+  "subtitle": "Dari repository ke aplikasi siap pakai",
   "category": "Linux Fundamentals",
-  "tags": [],
-  "color": "#22D3EE",
+  "tags": [
+    "Linux",
+    "Package Manager",
+    "apt",
+    "dnf",
+    "pacman",
+    "Repository",
+    "Beginner",
+    "CLI"
+  ],
+  "color": "#34D399",
   "status": "draft",
   "priority": 34
 }

@@ -1,0 +1,321 @@
+/* src/components/workspace/workspace.css — PLAN-19 Phase 1 chrome dasar */
+
+.workspace-surface {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 500;
+}
+
+.content-window {
+  position: fixed;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  background: #1c1f26;
+  border: 1px solid #2e333d;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  min-width: 320px;
+  min-height: 220px;
+  will-change: transform;
+}
+
+.content-window.is-hidden {
+  display: none;
+}
+
+.content-window.is-focused {
+  border-color: #4a90ff;
+  box-shadow: 0 16px 40px rgba(74, 144, 255, 0.25);
+}
+
+.content-window.is-maximized {
+  border-radius: 0;
+}
+
+.window-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #262a33;
+  border-bottom: 1px solid #2e333d;
+  cursor: move;
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.window-header:active {
+  cursor: grabbing;
+}
+
+.window-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.window-title-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.window-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0f2f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.window-number {
+  font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #8a8f98;
+}
+
+.window-subtitle {
+  font-size: 11px;
+  color: #8a8f98;
+}
+
+.window-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.window-controls.traffic-lights {
+  gap: 8px;
+  padding-right: 2px;
+}
+
+.window-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #c4c9d2;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.window-btn:hover {
+  background: #333a46;
+}
+
+.window-btn.close:hover {
+  background: #e5484d;
+  color: #fff;
+}
+
+/* Traffic-light bullets ala macOS: bulat, tanpa background kotak,
+   glyph (×, —, +) hanya muncul saat hover/focus pada grup kontrol. */
+.window-btn.dot {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.25);
+}
+
+.window-btn.dot:hover {
+  filter: brightness(1.12);
+}
+
+.window-btn.dot.close {
+  background: #ff5f57;
+}
+
+.window-btn.dot.minimize {
+  background: #febc2e;
+}
+
+.window-btn.dot.maximize {
+  background: #28c840;
+}
+
+.dot-glyph {
+  font-size: 9px;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.1s ease;
+  pointer-events: none;
+}
+
+.traffic-lights:hover .dot-glyph,
+.window-btn.dot:focus-visible .dot-glyph {
+  opacity: 1;
+}
+
+.window-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+  background: #14161b;
+}
+
+.window-body .player-shell {
+  width: 100%;
+  height: 100%;
+}
+
+.window-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: #c4c9d2;
+}
+
+.window-state h4 {
+  margin: 0;
+  color: #f0f2f5;
+}
+
+.window-state .hint {
+  font-size: 12px;
+  color: #8a8f98;
+}
+
+.window-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 600;
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #1c1f26;
+  border-top: 1px solid #2e333d;
+  overflow-x: auto;
+}
+
+.dock-item {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #333a46;
+  background: #262a33;
+  color: #c4c9d2;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dock-item.is-active {
+  border-color: #4a90ff;
+  color: #fff;
+}
+
+.dock-item.is-minimized {
+  opacity: 0.6;
+}
+
+.dock-item.dock-minimize-all {
+  margin-left: auto;
+  background: transparent;
+  border-style: dashed;
+}
+
+.dock-export-badge {
+  margin-left: 6px;
+  color: #f5a623;
+  display: inline-block;
+  animation: dock-spin 1s linear infinite;
+}
+
+@keyframes dock-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.window-resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nwse-resize;
+  touch-action: none;
+  z-index: 10;
+}
+
+.window-resize-handle::after {
+  content: '';
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid #6b7280;
+  border-bottom: 2px solid #6b7280;
+}
+
+.window-resize-edge {
+  position: absolute;
+  touch-action: none;
+  z-index: 9;
+}
+
+.window-resize-edge.edge-e {
+  right: 0;
+  top: 0;
+  bottom: 16px;
+  width: 8px;
+  cursor: e-resize;
+}
+
+.window-resize-edge.edge-s {
+  bottom: 0;
+  left: 0;
+  right: 16px;
+  height: 8px;
+  cursor: s-resize;
+}
+
+.window-header {
+  touch-action: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-export-badge {
+    animation: none;
+  }
+  .content-window {
+    transition: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-window {
+    border-radius: 0;
+    min-width: 0;
+    min-height: 0;
+  }
+  .window-resize-handle {
+    display: none;
+  }
+}

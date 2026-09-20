@@ -313,7 +313,7 @@ export default function OAuth2DelegatedLoginAnimation({
             progress={morphP}
             categorySegments={[
               { label: INTRO_CATEGORY_LABEL + ' · ', color: COLORS.MUTED },
-              { label: INTRO_DOMAIN, color: COLORS.PROVIDER },
+              { label: INTRO_DOMAIN, color: COLORS.APP },
             ]}
             titleSegments={[
               { label: INTRO_TITLE_A, color: COLORS.APP },
