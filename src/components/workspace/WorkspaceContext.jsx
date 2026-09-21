@@ -367,7 +367,7 @@ function loadPersistedPins() {
 }
 
 export function WorkspaceProvider({ children }) {
-  const [state, dispatch] = useReducer(workspaceReducer, initialState, initWorkspaceState)
+  const [state, dispatch] = useReducer(reducer, initialState)
   const persistTimer = useRef(null)
   const { showToast } = useToast()
 
