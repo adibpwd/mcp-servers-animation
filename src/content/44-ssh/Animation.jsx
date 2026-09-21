@@ -33,10 +33,11 @@ import gsap from 'gsap'
 import {
   VW, VH, COLORS, PHASES, SFX_MAP,
   INTRO_CATEGORY_LABEL, INTRO_TITLE_A, INTRO_TITLE_B, INTRO_SUBTITLE,
-  AXIS_X, CLIENT_Y, SERVER_Y, CHANNEL_TOP, CHANNEL_BOTTOM,
-  CLIENT_LABEL, SERVER_LABEL, HOST_LABEL,
   ACT1_BEATS, ACT2_CASE, ACT3_CASE, ACT4_CASE, ACT5_CASE, CLOSING_CAPTION,
+  NEAR_CLIENT, MID, NEAR_SERVER, ALT_METHODS_PT, GATE_PT, SCOPE_PT,
+  SHELL_OUTPUT_CARD_PT, LISTENER_PT, AUDIT_PT,
 } from './data'
+import { ACT_SCENES } from './acts'
 import sfxLoader from '../../shared/audio/sfxLoader'
 import { IntroHeaderMorphV1, ActBadgeNavigatorV1, ContentBodyV1 } from '../../shared/scene-ui/v1'
 
@@ -76,8 +77,6 @@ export default function SshAnimation({
   const [allowShown, setAllowShown] = useState(false)   // Act 5: audit timeline — event allow
   const [denyShown, setDenyShown] = useState(false)     // Act 5: audit timeline — event deny
   const [alertOn, setAlertOn] = useState(false)         // Act 5: alert dot berdenyut
-
-  const P = (id) => pop[id] || { scale: 0, opacity: 0, x: 0, y: 0 }
 
   useEffect(() => {
     const shouldEnable = previewSfx && audioUnlocked
@@ -130,8 +129,15 @@ export default function SshAnimation({
     }, time)
   }
 
+  // ── travel — payload bergerak dari `from` ke `to` (koordinat absolut
+  // local ContentBodyV1), fade-in di awal. EKSEKUSI-03 (lihat
+  // revisi/2026-09-21-revisi-03-payload-read-hold-pauses.md): kalau
+  // hold=false, payload TIBA dulu dalam kondisi penuh terlihat, ditahan
+  // (`readHold` detik, default 1.5s) supaya sempat dibaca, baru fade-out —
+  // bukan fade-out di dalam durasi travel itu sendiri. Caller tetap
+  // memajukan `t` manual; readHold TIDAK otomatis ditambahkan ke `t`. ──
   const travel = (tl, time, id, opts = {}) => {
-    const { from, to, duration = 0.9, ease = 'power2.inOut', hold = true,
+    const { from, to, duration = 0.9, ease = 'power2.inOut', hold = true, readHold = 1.5,
       sfx = true, sfxName = SFX_MAP.WHOOSH.name, sfxCategory = 'transitions' } = opts
     tl.add(() => setPop(prev => ({ ...prev, [id]: { scale: 0.85, opacity: 0, x: from.x, y: from.y } })), time)
     const o = { t: 0 }
@@ -142,26 +148,21 @@ export default function SshAnimation({
         const x = from.x + (to.x - from.x) * o.t
         const y = from.y + (to.y - from.y) * o.t
         const fadeIn = Math.min(1, o.t / 0.18)
-        const fadeOut = hold ? 1 : Math.min(1, (1 - o.t) / 0.18)
-        setPop(prev => ({ ...prev, [id]: { scale: 0.85 + 0.15 * fadeIn, opacity: Math.min(fadeIn, fadeOut), x, y } }))
+        setPop(prev => ({ ...prev, [id]: { scale: 0.85 + 0.15 * fadeIn, opacity: fadeIn, x, y } }))
       },
     }, time)
+    if (!hold) {
+      const fo = { v: 1 }
+      tl.to(fo, {
+        v: 0, duration: 0.35, ease: 'power1.in',
+        onUpdate: () => setPop(prev => ({ ...prev, [id]: { ...(prev[id] || {}), scale: fo.v, opacity: fo.v } })),
+      }, time + duration + readHold)
+    }
   }
 
   const say = (tl, time, text) => tl.add(() => setCaption(text), time)
   const sfxOn = (tl, time, fn) => tl.add(() => audioUnlockedRef.current && fn(), time)
   const goStage = (tl, time, id) => tl.add(() => setStage(id), time)
-
-  // ── titik anchor absolut bersama Act 2–5 (local ContentBodyV1) ──
-  const NEAR_CLIENT = { x: AXIS_X, y: 300 }
-  const MID = { x: AXIS_X, y: 500 }
-  const NEAR_SERVER = { x: AXIS_X, y: 740 }
-  const ALT_METHODS_PT = { x: AXIS_X, y: 230 }
-  const GATE_PT = { x: AXIS_X, y: 560 }
-  const SCOPE_PT = { x: AXIS_X, y: 610 }
-  const SHELL_OUTPUT_CARD_PT = { x: AXIS_X, y: 340 }
-  const LISTENER_PT = { x: AXIS_X, y: 360 }
-  const AUDIT_PT = { x: AXIS_X, y: 640 }
 
   // ═══════════════════════════════════════════════════════════════════════
   // MASTER TIMELINE — 5 Act tanpa jeda kosong.
@@ -240,13 +241,13 @@ export default function SshAnimation({
     sfxOn(tl, t + 0.9, () => sfxLoader.ui(SFX_MAP.TICK.name, { volume: volumeRef.current, speed: speedRef.current }))
     tl.add(() => setVerifiedOn(true), t + 1.0)
     sfxOn(tl, t + 1.0, () => sfxLoader.success(SFX_MAP.CONFIRM.name, { volume: volumeRef.current, speed: speedRef.current }))
-    t += 1.7
+    t += 2.9 // EKSEKUSI-03: +1.2s baca hasil verifikasi (readHold, sebelumnya 1.7)
 
     goStage(tl, t, 'id-authorize')
     appear(tl, t + 0.05, 'policyGate', GATE_PT, {})
     appear(tl, t + 0.25, 'scopeToken', SCOPE_PT, { sfx: false })
     say(tl, t + 0.1, ACT2_CASE.copy.authorize)
-    t += 1.8
+    t += 3.3 // EKSEKUSI-03: +1.5s baca "scope: release only" (readHold, sebelumnya 1.8)
 
     goStage(tl, t, 'id-apply')
     say(tl, t + 0.05, ACT2_CASE.copy.apply)
@@ -254,9 +255,9 @@ export default function SshAnimation({
     t += 1.8
 
     goStage(tl, t, 'id-after')
-    travel(tl, t, 'receipt', { from: MID, to: NEAR_CLIENT, duration: 0.9, hold: false, sfxName: SFX_MAP.SWOOSH.name })
+    travel(tl, t, 'receipt', { from: MID, to: NEAR_CLIENT, duration: 0.9, hold: false, readHold: 1.5, sfxName: SFX_MAP.SWOOSH.name })
     say(tl, t + 0.1, ACT2_CASE.copy.after)
-    t += 1.8
+    t += 2.8 // EKSEKUSI-03: tunggu travel+readHold+fade selesai sebelum popOut
     popOut(tl, t, 'identityCard', {})
     popOut(tl, t, 'altMethods', {})
     popOut(tl, t, 'verifierRing', {})
@@ -270,26 +271,25 @@ export default function SshAnimation({
     goStage(tl, t, 'ch-shell-out')
     appear(tl, t + 0.05, 'shellPromptOut', NEAR_CLIENT, {})
     say(tl, t + 0.1, ACT3_CASE.shell.copy)
-    travel(tl, t + 0.3, 'cmdCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 0.9, hold: false })
-    t += 1.5
+    travel(tl, t + 0.3, 'cmdCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 0.9, hold: false, readHold: 1.5 })
+    t += 3.1 // EKSEKUSI-03: tunggu command capsule tiba + dibaca 1.5s + fade
     popOut(tl, t, 'shellPromptOut', {})
 
     goStage(tl, t, 'ch-shell-in')
-    travel(tl, t, 'outputCapsule', { from: NEAR_SERVER, to: NEAR_CLIENT, duration: 0.9, hold: false, sfxName: SFX_MAP.CHIME.name, sfxCategory: 'ui' })
-    t += 1.1
-    appear(tl, t, 'shellOutputCard', SHELL_OUTPUT_CARD_PT, { sfx: false })
-    t += 1.6
+    travel(tl, t, 'outputCapsule', { from: NEAR_SERVER, to: NEAR_CLIENT, duration: 0.9, hold: false, readHold: 2.0, sfxName: SFX_MAP.CHIME.name, sfxCategory: 'ui' })
+    appear(tl, t + 0.9, 'shellOutputCard', SHELL_OUTPUT_CARD_PT, { sfx: false })
+    t += 3.5 // EKSEKUSI-03: output dibaca 2.0s di client (sebelumnya total 2.7)
     popOut(tl, t, 'shellOutputCard', {})
     t += 0.3
 
     goStage(tl, t, 'ch-task-out')
     say(tl, t + 0.05, ACT3_CASE.task.copy)
-    travel(tl, t + 0.1, 'taskCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 0.9, hold: false })
-    t += 1.4
+    travel(tl, t + 0.1, 'taskCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 0.9, hold: false, readHold: 1.5 })
+    t += 2.9 // EKSEKUSI-03: dibaca 1.5s sebelum fade
 
     goStage(tl, t, 'ch-task-in')
-    travel(tl, t, 'statusCapsule', { from: NEAR_SERVER, to: NEAR_CLIENT, duration: 0.9, hold: false, sfxName: SFX_MAP.CHIME.name, sfxCategory: 'ui' })
-    t += 1.3
+    travel(tl, t, 'statusCapsule', { from: NEAR_SERVER, to: NEAR_CLIENT, duration: 0.9, hold: false, readHold: 1.5, sfxName: SFX_MAP.CHIME.name, sfxCategory: 'ui' })
+    t += 2.8 // EKSEKUSI-03: dibaca 1.5s sebelum fade
 
     goStage(tl, t, 'ch-file')
     say(tl, t + 0.05, ACT3_CASE.file.copy)
@@ -297,10 +297,10 @@ export default function SshAnimation({
     t += 0.7
     travel(tl, t, 'fileCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 1.0, hold: true })
     popOut(tl, t, 'fileTile', {})
-    t += 1.3
+    t += 1.0 // EKSEKUSI-03: tunggu capsule benar-benar tiba sebelum fileTray muncul (perbaikan overlap)
     appear(tl, t, 'fileTray', NEAR_SERVER, { sfx: false })
     sfxOn(tl, t, () => sfxLoader.success(SFX_MAP.DING.name, { volume: volumeRef.current, speed: speedRef.current }))
-    t += 1.8
+    t += 2.2 // EKSEKUSI-03: dibaca 2.2s dengan highlight kontras (sebelumnya 1.8)
     say(tl, t, ACT3_CASE.after)
     t += 1.6
     popOut(tl, t, 'fileTray', {})
@@ -324,13 +324,13 @@ export default function SshAnimation({
     goStage(tl, t, 'fw-travel')
     appear(tl, t + 0.05, 'dbNode', NEAR_SERVER, {})
     say(tl, t + 0.1, ACT4_CASE.copy.travel)
-    travel(tl, t + 0.2, 'queryCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 1.0, hold: false })
-    t += 1.7
+    travel(tl, t + 0.2, 'queryCapsule', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 1.0, hold: false, readHold: 1.5 })
+    t += 3.1 // EKSEKUSI-03: query dibaca 1.5s di Private DB sebelum fade
 
     goStage(tl, t, 'fw-apply')
-    travel(tl, t, 'resultCapsule', { from: NEAR_SERVER, to: NEAR_CLIENT, duration: 1.0, hold: false, sfxName: SFX_MAP.CHIME.name, sfxCategory: 'ui' })
+    travel(tl, t, 'resultCapsule', { from: NEAR_SERVER, to: NEAR_CLIENT, duration: 1.0, hold: false, readHold: 1.8, sfxName: SFX_MAP.CHIME.name, sfxCategory: 'ui' })
     say(tl, t + 0.1, ACT4_CASE.copy.apply)
-    t += 1.7
+    t += 3.2 // EKSEKUSI-03: result dibaca 1.8s di Local App sebelum fade
     say(tl, t, ACT4_CASE.copy.after)
     t += 1.6
     popOut(tl, t, 'localApp', {})
@@ -342,8 +342,12 @@ export default function SshAnimation({
     appear(tl, t + 0.05, 'bastionNode', MID, {})
     appear(tl, t + 0.1, 'targetNode', NEAR_SERVER, {})
     say(tl, t + 0.15, ACT4_CASE.bastion.copy)
-    travel(tl, t + 0.3, 'bastionPacket', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 1.1, hold: false, sfxName: SFX_MAP.WHOOSH.name })
-    t += 1.8
+    // EKSEKUSI-03: packet singgah 1.2s di node bastion sebelum lanjut ke target
+    // (dua leg travel, bukan satu lompatan client→server langsung).
+    travel(tl, t + 0.3, 'bastionPacket', { from: NEAR_CLIENT, to: MID, duration: 0.9, hold: true, sfxName: SFX_MAP.WHOOSH.name })
+    const bastionLeg2 = t + 0.3 + 0.9 + 1.2
+    travel(tl, bastionLeg2, 'bastionPacket', { from: MID, to: NEAR_SERVER, duration: 0.9, hold: false, readHold: 1.2, sfxName: SFX_MAP.WHOOSH.name })
+    t = bastionLeg2 + 0.9 + 1.2 + 0.35 + 0.3
     say(tl, t, ACT4_CASE.bastion.note)
     t += 1.6
     popOut(tl, t, 'bastionNode', {})
@@ -357,8 +361,8 @@ export default function SshAnimation({
     goStage(tl, t, 'ops-valid')
     appear(tl, t + 0.05, 'keyCard', NEAR_CLIENT, {})
     say(tl, t + 0.1, ACT5_CASE.copy.valid)
-    travel(tl, t + 0.3, 'connEvent', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 0.9, hold: false })
-    t += 1.4
+    travel(tl, t + 0.3, 'connEvent', { from: NEAR_CLIENT, to: NEAR_SERVER, duration: 0.9, hold: false, readHold: 1.3 })
+    t += 1.6 // EKSEKUSI-03: beri sedikit ruang lebih sebelum audit timeline muncul
     tl.add(() => setAllowShown(true), t)
     appear(tl, t, 'auditTimeline', AUDIT_PT, { sfx: false })
     sfxOn(tl, t, () => sfxLoader.ui(SFX_MAP.TICK.name, { volume: volumeRef.current, speed: speedRef.current }))
@@ -379,7 +383,7 @@ export default function SshAnimation({
     say(tl, t + 0.05, ACT5_CASE.copy.deny)
     tl.add(() => { setDenyShown(true); setAlertOn(true) }, t + 0.3)
     sfxOn(tl, t + 0.3, () => sfxLoader.impact(SFX_MAP.LOCK.name, { volume: volumeRef.current, speed: speedRef.current }))
-    t += 1.8
+    t += 2.0 // EKSEKUSI-03: indikator deny merah dibaca 2.0s (sebelumnya 1.8)
     say(tl, t, ACT5_CASE.copy.after)
     sfxOn(tl, t, () => sfxLoader.success(SFX_MAP.DING.name, { volume: volumeRef.current, speed: speedRef.current }))
     t += 1.8
@@ -404,19 +408,6 @@ export default function SshAnimation({
     tlRef.current.timeScale(speed)
     if (paused) tlRef.current.pause(); else tlRef.current.resume()
   }, [speed, paused])
-
-  // ── render helpers ──
-  const T = (id, cx, cy) => {
-    const p = P(id)
-    return `translate(${cx + p.x}, ${cy + p.y}) scale(${p.scale})`
-  }
-  const O = (id) => P(id).opacity
-  const A = (id) => T(id, 0, 0) // Act 2–5: posisi absolut, hasil appear()/travel()
-
-  const channelColor = tunnelActive ? COLORS.TUNNEL : COLORS.BORDER
-  const channelOpacity = tunnelActive ? (channelDim ? 0.35 : 1) : 0.5
-  const channelWidth = tunnelActive ? 5 : 2
-  const channelDash = tunnelActive ? undefined : '6 8'
 
   return (
     <svg ref={svgRef} viewBox={`0 0 ${VW} ${VH}`}
@@ -453,6 +444,8 @@ export default function SshAnimation({
             ]}
             subtitle={INTRO_SUBTITLE}
             titleFilter="url(#glow)"
+            bg={2}
+            bgScenes={ACT_SCENES}
             testId="ssh-intro-header"
           />
         </g>
@@ -468,268 +461,11 @@ export default function SshAnimation({
               {caption}
             </text>
 
-            {/* ── channel line persisten (public → encrypted → dim) ── */}
-            <line x1={AXIS_X} y1={CHANNEL_TOP} x2={AXIS_X} y2={CHANNEL_BOTTOM}
-              stroke={channelColor} strokeWidth={channelWidth} strokeDasharray={channelDash}
-              opacity={channelOpacity} filter={tunnelActive && !channelDim ? 'url(#glow)' : undefined} />
-
-            {/* ── client anchor (persisten) ── */}
-            <g transform={T('client', AXIS_X, CLIENT_Y)} opacity={O('client')}>
-              <rect x={-55} y={-38} width={110} height={70} rx={10} fill={COLORS.PANEL} stroke={COLORS.CLIENT} strokeWidth={2} />
-              <rect x={-42} y={-28} width={84} height={44} rx={4} fill={COLORS.BG} stroke={COLORS.CLIENT} strokeWidth={1} />
-              <text x={0} y={-2} textAnchor="middle" fontSize={16} fill={COLORS.CLIENT} fontFamily="monospace">&gt;_</text>
-              <text x={0} y={52} textAnchor="middle" fontSize={12} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TEXT}>{CLIENT_LABEL}</text>
-            </g>
-
-            {/* ── server anchor (persisten) + trust badge handoff dari fingerprint card ── */}
-            <g transform={T('server', AXIS_X, SERVER_Y)} opacity={O('server')}>
-              <rect x={-60} y={-40} width={120} height={80} rx={10} fill={COLORS.PANEL} stroke={COLORS.SERVER} strokeWidth={2} />
-              <rect x={-46} y={-26} width={92} height={10} rx={2} fill={COLORS.SERVER} opacity={0.7} />
-              <rect x={-46} y={-10} width={92} height={10} rx={2} fill={COLORS.SERVER} opacity={0.45} />
-              <rect x={-46} y={6} width={92} height={10} rx={2} fill={COLORS.SERVER} opacity={0.25} />
-              <text x={0} y={58} textAnchor="middle" fontSize={12} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TEXT}>{SERVER_LABEL}</text>
-              {trustBadgeOn && (
-                <g transform="translate(48, -44)">
-                  <circle r={14} fill={COLORS.TRUST} filter="url(#glow)" />
-                  <path d="M -6 0 L -1 5 L 7 -6" stroke={COLORS.BG} strokeWidth={2.5} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                </g>
-              )}
-            </g>
-
-            {/* ── host label chip (dekat channel atas) ── */}
-            <g transform={T('hostLabel', AXIS_X, CHANNEL_TOP + 20)} opacity={O('hostLabel')}>
-              <rect x={-140} y={-14} width={280} height={28} rx={14} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={1} />
-              <text x={0} y={5} textAnchor="middle" fontSize={11} fontFamily="monospace" fill={COLORS.MUTED}>{HOST_LABEL}</text>
-            </g>
-
-            {/* ── ACT 1: fingerprint card (tidak berubah) ── */}
-            {stage === 'fingerprint' && (
-              <g transform={T('fingerprintCard', AXIS_X, 480)} opacity={O('fingerprintCard')}>
-                <rect x={-170} y={-50} width={340} height={100} rx={12} fill={COLORS.PANEL} stroke={COLORS.TRUST} strokeWidth={2} filter="url(#shadow)" />
-                <text x={0} y={-22} textAnchor="middle" fontSize={12} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TRUST}>HOST KEY FINGERPRINT</text>
-                <text x={0} y={2} textAnchor="middle" fontSize={10} fontFamily="monospace" fill={COLORS.MUTED}>{ACT1_BEATS.fingerprint.knownHosts}</text>
-                <text x={0} y={22} textAnchor="middle" fontSize={10} fontFamily="monospace" fill={COLORS.TEXT}>{ACT1_BEATS.fingerprint.seenHost}</text>
-              </g>
-            )}
-
-            {/* ── ACT 2: identity card deploy-bot (studi kasus, EKSEKUSI-02) ── */}
-            {(stage === 'id-identity' || stage === 'id-authenticate' || stage === 'id-authorize' || stage === 'id-apply' || stage === 'id-after') && (
-              <g transform={A('identityCard')} opacity={O('identityCard')}>
-                <rect x={-90} y={-34} width={180} height={68} rx={12} fill={COLORS.PANEL} stroke={COLORS.AUTH} strokeWidth={2} />
-                <text x={0} y={-6} textAnchor="middle" fontSize={12} fontWeight={700} fontFamily="monospace" fill={COLORS.AUTH}>{ACT2_CASE.identityLabel}</text>
-                <text x={0} y={16} textAnchor="middle" fontSize={9.5} fontFamily="sans-serif" fill={COLORS.MUTED}>{ACT2_CASE.proofLabel}</text>
-                {verifiedOn && (
-                  <g transform="translate(66, -26)">
-                    <circle r={11} fill={COLORS.TUNNEL} />
-                    <path d="M -4 0 L -1 4 L 5 -5" stroke={COLORS.BG} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  </g>
-                )}
-              </g>
-            )}
-
-            {stage === 'id-identity' && (
-              <g transform={A('altMethods')} opacity={O('altMethods')}>
-                <text x={0} y={0} textAnchor="middle" fontSize={9.5} fontFamily="sans-serif" fill={COLORS.MUTED}>
-                  alternatif: {ACT2_CASE.altMethods.join(' · ')}
-                </text>
-              </g>
-            )}
-
-            {stage === 'id-authenticate' && (
-              <g transform={A('verifierRing')} opacity={O('verifierRing')}>
-                <circle r={46} fill="none" stroke={COLORS.AUTH} strokeWidth={2} strokeDasharray="6 5" />
-                <text x={0} y={64} textAnchor="middle" fontSize={10} fontFamily="sans-serif" fill={COLORS.MUTED}>{ACT2_CASE.verifierLabel}</text>
-              </g>
-            )}
-
-            {(stage === 'id-authorize' || stage === 'id-apply' || stage === 'id-after') && (
-              <>
-                <g transform={A('policyGate')} opacity={O('policyGate')}>
-                  <rect x={-110} y={-24} width={220} height={48} rx={10} fill={COLORS.PANEL} stroke={COLORS.AUTHZ} strokeWidth={2} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="sans-serif" fill={COLORS.AUTHZ}>{ACT2_CASE.policyLabel}</text>
-                </g>
-                <g transform={A('scopeToken')} opacity={O('scopeToken')}>
-                  <text x={0} y={0} textAnchor="middle" fontSize={10} fontFamily="monospace" fill={COLORS.MUTED}>scope: {ACT2_CASE.scopeToken}</text>
-                </g>
-                {ACT2_CASE.outcomes.map((oc, i) => {
-                  const lit = oc.selected && (stage === 'id-apply' || stage === 'id-after')
-                  const x = AXIS_X + (i - 1) * 190
-                  return (
-                    <g key={oc.id} transform={`translate(${x}, 670)`}>
-                      <rect x={-82} y={-22} width={164} height={44} rx={10}
-                        fill={lit ? COLORS.AUTHZ : COLORS.PANEL}
-                        stroke={COLORS.AUTHZ} strokeWidth={lit ? 0 : 1.5} opacity={lit ? 1 : 0.4} />
-                      <text x={0} y={5} textAnchor="middle" fontSize={10} fontWeight={700}
-                        fontFamily="sans-serif" fill={lit ? COLORS.BG : COLORS.MUTED}>{oc.label}</text>
-                    </g>
-                  )
-                })}
-              </>
-            )}
-
-            {stage === 'id-after' && (
-              <g transform={A('receipt')} opacity={O('receipt')}>
-                <rect x={-60} y={-18} width={120} height={36} rx={8} fill={COLORS.OPS} />
-                <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="sans-serif" fill={COLORS.BG}>{ACT2_CASE.receiptLabel}</text>
-              </g>
-            )}
-
-            {/* ── ACT 3: remote shell (uptime) — EKSEKUSI-02 ── */}
-            {stage === 'ch-shell-out' && (
-              <>
-                <g transform={A('shellPromptOut')} opacity={O('shellPromptOut')}>
-                  <rect x={-150} y={-30} width={300} height={60} rx={10} fill={COLORS.BG} stroke={COLORS.SERVER} strokeWidth={1.5} />
-                  <text x={0} y={6} textAnchor="middle" fontSize={12} fontFamily="monospace" fill={COLORS.TUNNEL}>{ACT3_CASE.shell.prompt}</text>
-                </g>
-                <g transform={A('cmdCapsule')} opacity={O('cmdCapsule')}>
-                  <rect x={-46} y={-16} width={92} height={32} rx={16} fill={COLORS.CLIENT} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>{ACT3_CASE.shell.command}</text>
-                </g>
-              </>
-            )}
-            {stage === 'ch-shell-in' && (
-              <>
-                <g transform={A('outputCapsule')} opacity={O('outputCapsule')}>
-                  <rect x={-50} y={-16} width={100} height={32} rx={16} fill={COLORS.SERVER} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>{ACT3_CASE.shell.outputBadge}</text>
-                </g>
-                <g transform={A('shellOutputCard')} opacity={O('shellOutputCard')}>
-                  <rect x={-150} y={-26} width={300} height={52} rx={10} fill={COLORS.PANEL} stroke={COLORS.SERVER} strokeWidth={1.5} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={11} fontFamily="monospace" fill={COLORS.TEXT}>{ACT3_CASE.shell.output}</text>
-                </g>
-              </>
-            )}
-
-            {/* ── ACT 3: remote task (check-service) ── */}
-            {stage === 'ch-task-out' && (
-              <g transform={A('taskCapsule')} opacity={O('taskCapsule')}>
-                <rect x={-56} y={-16} width={112} height={32} rx={16} fill={COLORS.AUTH} />
-                <text x={0} y={5} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>{ACT3_CASE.task.command}</text>
-              </g>
-            )}
-            {stage === 'ch-task-in' && (
-              <g transform={A('statusCapsule')} opacity={O('statusCapsule')}>
-                <rect x={-50} y={-16} width={100} height={32} rx={16} fill={COLORS.TUNNEL} />
-                <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>{ACT3_CASE.task.statusToken}</text>
-              </g>
-            )}
-
-            {/* ── ACT 3: file transfer (release.tar) ── */}
-            {stage === 'ch-file' && (
-              <>
-                <g transform={A('fileTile')} opacity={O('fileTile')}>
-                  <rect x={-70} y={-24} width={140} height={48} rx={8} fill={COLORS.PANEL} stroke={COLORS.TEXT} strokeWidth={1.5} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={11} fontFamily="monospace" fill={COLORS.TEXT}>{ACT3_CASE.file.fileName}</text>
-                </g>
-                <g transform={A('fileCapsule')} opacity={O('fileCapsule')}>
-                  <rect x={-70} y={-20} width={140} height={40} rx={20} fill={COLORS.AUTHZ} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>{ACT3_CASE.file.fileName}</text>
-                </g>
-                <g transform={A('fileTray')} opacity={O('fileTray')}>
-                  <rect x={-160} y={-30} width={320} height={60} rx={10} fill={COLORS.PANEL} stroke={COLORS.OPS} strokeWidth={2} />
-                  <text x={0} y={-6} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="sans-serif" fill={COLORS.OPS}>FILE TRAY</text>
-                  <text x={0} y={14} textAnchor="middle" fontSize={9} fontFamily="sans-serif" fill={COLORS.MUTED}>
-                    contoh transfer: {ACT3_CASE.file.mechanisms.join(' · ')}
-                  </text>
-                </g>
-              </>
-            )}
-
-            {/* ── ACT 4: local app → listener → tunnel → private DB (EKSEKUSI-02) ── */}
-            {(stage === 'fw-before' || stage === 'fw-listener' || stage === 'fw-travel' || stage === 'fw-apply') && (
-              <g transform={A('localApp')} opacity={O('localApp')}>
-                <rect x={-70} y={-24} width={140} height={48} rx={10} fill={COLORS.PANEL} stroke={COLORS.CLIENT} strokeWidth={2} />
-                <text x={0} y={5} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TEXT}>{ACT4_CASE.localApp.label}</text>
-              </g>
-            )}
-            {(stage === 'fw-listener' || stage === 'fw-travel' || stage === 'fw-apply') && (
-              <g transform={A('listenerRing')} opacity={O('listenerRing')}>
-                <circle r={26} fill="none" stroke={COLORS.FORWARD} strokeWidth={2} strokeDasharray="5 4" />
-                <text x={0} y={44} textAnchor="middle" fontSize={9.5} fontFamily="monospace" fill={COLORS.MUTED}>{ACT4_CASE.listenerLabel}</text>
-              </g>
-            )}
-            {(stage === 'fw-travel' || stage === 'fw-apply') && (
-              <g transform={A('dbNode')} opacity={O('dbNode')}>
-                <rect x={-80} y={-28} width={160} height={56} rx={10} fill={COLORS.PANEL} stroke={COLORS.SERVER} strokeWidth={2} />
-                <text x={0} y={6} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TEXT}>{ACT4_CASE.dbNode.label}</text>
-              </g>
-            )}
-            {stage === 'fw-travel' && (
-              <g transform={A('queryCapsule')} opacity={O('queryCapsule')}>
-                <rect x={-50} y={-16} width={100} height={32} rx={16} fill={COLORS.FORWARD} />
-                <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>query</text>
-              </g>
-            )}
-            {stage === 'fw-apply' && (
-              <g transform={A('resultCapsule')} opacity={O('resultCapsule')}>
-                <rect x={-50} y={-16} width={100} height={32} rx={16} fill={COLORS.TUNNEL} />
-                <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>result</text>
-              </g>
-            )}
-
-            {/* ── ACT 4: bastion / jump host — packet sama, tujuan bergeser ── */}
-            {stage === 'fw-bastion' && (
-              <>
-                <g transform={A('bastionNode')} opacity={O('bastionNode')}>
-                  <rect x={-90} y={-28} width={180} height={56} rx={10} fill={COLORS.PANEL} stroke={COLORS.BASTION} strokeWidth={2} />
-                  <text x={0} y={6} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TEXT}>{ACT4_CASE.bastion.label}</text>
-                </g>
-                <g transform={A('targetNode')} opacity={O('targetNode')}>
-                  <rect x={-80} y={-28} width={160} height={56} rx={10} fill={COLORS.PANEL} stroke={COLORS.TRUST} strokeWidth={2} />
-                  <text x={0} y={6} textAnchor="middle" fontSize={11} fontWeight={700} fontFamily="sans-serif" fill={COLORS.TEXT}>{ACT4_CASE.bastion.targetLabel}</text>
-                </g>
-                <g transform={A('bastionPacket')} opacity={O('bastionPacket')}>
-                  <rect x={-46} y={-16} width={92} height={32} rx={16} fill={COLORS.BASTION} />
-                  <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>packet</text>
-                </g>
-              </>
-            )}
-
-            {/* ── ACT 5: key lifecycle & audit (deploy-key) — EKSEKUSI-02 ── */}
-            {(stage === 'ops-valid' || stage === 'ops-lifecycle' || stage === 'ops-next' || stage === 'ops-deny' || stage === 'ops-closing') && (
-              <g transform={A('keyCard')} opacity={O('keyCard')}>
-                <rect x={-90} y={-30} width={180} height={60} rx={10} fill={COLORS.PANEL}
-                  stroke={keyStatus === 'revoked' ? COLORS.RISK : COLORS.OPS} strokeWidth={2} />
-                <text x={0} y={-6} textAnchor="middle" fontSize={12} fontWeight={700} fontFamily="monospace" fill={COLORS.TEXT}>{ACT5_CASE.keyId}</text>
-                <text x={0} y={16} textAnchor="middle" fontSize={9.5} fontFamily="sans-serif"
-                  fill={keyStatus === 'revoked' ? COLORS.RISK : COLORS.OPS}>
-                  {keyStatus === 'revoked' ? ACT5_CASE.statusRevoked : ACT5_CASE.statusActive}
-                </text>
-              </g>
-            )}
-
-            {stage === 'ops-valid' && (
-              <g transform={A('connEvent')} opacity={O('connEvent')}>
-                <rect x={-50} y={-16} width={100} height={32} rx={16} fill={COLORS.OPS} />
-                <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>connect</text>
-              </g>
-            )}
-
-            {(stage === 'ops-next' || stage === 'ops-deny' || stage === 'ops-closing') && (
-              <g transform={A('connEvent2')} opacity={O('connEvent2')}>
-                <rect x={-50} y={-16} width={100} height={32} rx={16} fill={denyShown ? COLORS.RISK : COLORS.AUTH} />
-                <text x={0} y={5} textAnchor="middle" fontSize={9.5} fontWeight={700} fontFamily="monospace" fill={COLORS.BG}>connect</text>
-                {denyShown && (
-                  <path d="M -56 -22 L 56 22 M 56 -22 L -56 22" stroke={COLORS.RISK} strokeWidth={4} strokeLinecap="round" />
-                )}
-              </g>
-            )}
-
-            {(stage === 'ops-valid' || stage === 'ops-lifecycle' || stage === 'ops-next' || stage === 'ops-deny' || stage === 'ops-closing') && (
-              <g transform={A('auditTimeline')} opacity={O('auditTimeline')}>
-                <rect x={-170} y={-40} width={340} height={80} rx={10} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={1.5} />
-                <text x={-150} y={-18} fontSize={10} fontWeight={700} fontFamily="sans-serif" fill={COLORS.MUTED}>AUDIT TIMELINE</text>
-                {allowShown && (
-                  <text x={-150} y={4} fontSize={10} fontFamily="monospace" fill={COLORS.OPS}>{ACT5_CASE.events[0].label}</text>
-                )}
-                {denyShown && (
-                  <text x={-150} y={24} fontSize={10} fontFamily="monospace" fill={COLORS.RISK}>{ACT5_CASE.events[1].label}</text>
-                )}
-                {alertOn && (
-                  <circle cx={150} cy={14} r={7} fill={COLORS.RISK} />
-                )}
-              </g>
-            )}
+            {/* ── scene ACT aktif (1 act = 1 file, lihat acts/) ── */}
+            {(() => {
+              const Act = ACT_SCENES[phaseIdx]
+              return <Act state={{ pop, stage, trustBadgeOn, tunnelActive, channelDim, verifiedOn, keyStatus, allowShown, denyShown, alertOn }} />
+            })()}
           </ContentBodyV1>
         </>
       )}

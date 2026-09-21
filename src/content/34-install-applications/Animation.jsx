@@ -1,18 +1,17 @@
 // src/content/34-install-applications/Animation.jsx
-// Revisi 01 (2026-09-16) — mengikuti revisi/2026-09-16-revisi-01-rich-install-flow.md.
-// Delapan Act: distro menentukan ekosistem -> manager punya tugas sama ->
+// Revisi 05 (2026-09-21) — mengikuti revisi/2026-09-21-revisi-05-merge-act1-act2-cumulative-stacking.md.
+// Tujuh Act: distro & package manager bawaan (gabungan Act1+2 lama) ->
 // repository berada di jaringan -> source punya jenis berbeda -> rencana
 // dulu -> arsip masuk dari internet -> pasang sungguhan (verify/unpack/
 // configure/record) -> app siap & dapat dikelola. Package card adalah
 // actor persisten dari lahir sampai installed (tween posisi, tidak pernah
-// unmount lalu muncul tiba-tiba di tempat baru). Logo distro memakai chip
-// wordmark teks netral (fallback plan bagian 3 poin 3) — tidak ada asset
-// logo yang diambil/diunduh di sini.
+// unmount lalu muncul tiba-tiba di tempat baru). Logo distro + icon
+// konsep dari icons/icons.json (revisi 02), flow spine dari revisi 04.
 import React, { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import {
   VW, VH, COLORS, ZONE, PHASES, CAPTIONS, TERMINAL_LINES, CARD_BADGE,
-  SFX_MAP, PACKAGE, DEPENDENCIES, DISTROS, MANAGERS, REPO_SOURCES,
+  SFX_MAP, PACKAGE, DEPENDENCIES, DISTRO_MANAGERS, REPO_SOURCES,
   REPO_MATCH_ID, MIRROR_ID, TRANSACTION_PLAN, INSTALL_STAGES, UNPACK_FILES,
   LIFECYCLE_ACTIONS, PROJECT_PATH, MANAGER_TAKEAWAY,
   HUB_CENTER, CAROUSEL_Y, GATE_CENTER, TRANSIT_TOP, NETWORK_CENTER, CACHE_CENTER,
@@ -29,10 +28,9 @@ import { getIcon } from './icons/loader'
 
 // ── Revisi 02 (2026-09-18) — icon konsep generik + logo distro asli
 // (color, sourced dari Simple Icons/CC0, lihat icons/icons.json &
-// icons/_originals/LICENSE-LOGOS.md) menggantikan sebagian primitive SVG
-// dan text chip. Debian tidak punya carousel sendiri di DISTROS — logo
-// Debian muncul sebagai badge kecil "apt/Debian family" di station
-// Ubuntu (revisi bagian 4 "apt / Debian family" beat). ──
+// icons/_originals/LICENSE-LOGOS.md). Debian tidak punya kartu sendiri di
+// DISTRO_MANAGERS — logo Debian muncul sebagai badge kecil di kartu
+// Ubuntu (revisi 02 bagian 4 "apt / Debian family" beat). ──
 const INSTALL_STAGE_ICON = {
   verify: 'verify-seal',
   unpack: 'unpack-box',
@@ -49,10 +47,10 @@ const DISTRO_LOGO_ICON = {
 
 // ── Revisi 04 (2026-09-21) — flowchart spine: satu garis vertikal dari
 // hub (persisten) turun ke zona Act yang sedang aktif, jadi backbone
-// visual yang menyatukan Act 1-8 (bukan garis terpisah per-Act yang bisa
-// numpuk; hanya SATU segmen yang tampil, ikut mutasi phaseIdx). ──
+// visual yang menyatukan seluruh Act (bukan garis terpisah per-Act yang
+// bisa numpuk; hanya SATU segmen yang tampil, ikut mutasi phaseIdx).
+// Diperbarui revisi 05 untuk 7 Act (dulu 8) + koordinat zone baru. ──
 const PHASE_SPINE_Y = [
-  CAROUSEL_Y,
   CAROUSEL_Y,
   NETWORK_CENTER.y,
   TRANSIT_TOP + 26,
@@ -73,18 +71,6 @@ const FlowSpine = ({ phaseIdx, color }) => {
       <circle r="4" fill={color}>
         <animateMotion dur="1.6s" repeatCount="indefinite" path={'M ' + x + ' ' + y1 + ' L ' + x + ' ' + y2} />
       </circle>
-    </g>
-  )
-}
-// ── Badge preview "distro -> manager -> format paket" (revisi 04 tujuan
-// 1) — muncul di atas hub tiap distro beat Act 1, warna ikut brand color
-// distro yang sedang aktif. ──
-const DistroPreviewBadge = ({ visible, preview }) => {
-  if (!visible || !preview) return null
-  return (
-    <g transform={'translate(' + HUB_CENTER.x + ' ' + (HUB_CENTER.y - 66) + ')'}>
-      <rect x="-78" y="-16" width="156" height="32" rx="16" fill={COLORS.PANEL_ALT} stroke={preview.color} strokeWidth="2" />
-      <text x="0" y="5" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="11" fill={preview.color}>{preview.managerId + ' \u00b7 ' + preview.pkgFormat}</text>
     </g>
   )
 }
@@ -152,77 +138,42 @@ const PackageManagerHub = ({ x, y, state, managerLabel }) => {
   )
 }
 
-// ── Act 1 — distro carousel. Satu keluarga fokus per beat, card
-// sebelumnya tetap redup sebagai konteks (revisi bagian 3 poin 4). ──
-const DistroCarousel = ({ y, activeId, settledId, visible }) => {
+// ── Act 1 baru (revisi 05) — kartu distro+manager gabungan, muncul
+// kumulatif cepat (0.3-0.4s per kartu), tidak saling menghilangkan.
+// Kartu sample (Ubuntu/apt) di-highlight neon setelah semua tampil. ──
+const DistroManagerGrid = ({ y, revealedIds, highlightId, visible }) => {
   if (!visible) return null
-  const n = DISTROS.length
-  const gap = 128
+  const n = DISTRO_MANAGERS.length
+  const gap = 132
   const startX = 366 - ((n - 1) * gap) / 2
   return (
     <g transform={'translate(0 ' + y + ')'}>
-      {DISTROS.map((d, i) => {
-        const x = startX + i * gap
-        const isActive = d.id === activeId
-        const isSettled = d.id === settledId
-        const focus = isActive || isSettled
-        return (
-          <g key={d.id} transform={'translate(' + x + ' 0)'}>
-            <rect x="-56" y="-24" width="112" height="48" rx="12" fill={focus ? COLORS.PANEL_ALT : COLORS.PANEL} stroke={focus ? COLORS.INTRO_A : COLORS.BORDER} strokeWidth={focus ? 2.2 : 1.2} opacity={focus ? 1 : 0.45} />
-            <image href={getIcon(DISTRO_LOGO_ICON[d.id])} x="-52" y="-18" width="30" height="30" opacity={focus ? 1 : 0.5} />
-            {d.id === 'ubuntu' && (
-              <image href={getIcon('debian-logo')} x="30" y="-22" width="18" height="18" opacity={focus ? 0.95 : 0.45} />
-            )}
-            <text x="8" y="-2" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="12.5" fill={focus ? COLORS.TEXT : COLORS.MUTED}>{d.label}</text>
-            <text x="8" y="14" textAnchor="middle" fontFamily="monospace" fontSize="8.5" fill={focus ? COLORS.INTRO_A : COLORS.MUTED}>{d.family}</text>
-          </g>
-        )
-      })}
-    </g>
-  )
-}
-
-// ── Act 2 — manager carousel lima stasiun (revisi bagian 5). Satu
-// manager fokus per beat; format archive & badge persamaan tampil di
-// bawah hub, bukan tabel yang muncul bersamaan. ──
-const ManagerCarousel = ({ y, activeId, visible }) => {
-  if (!visible) return null
-  const n = MANAGERS.length
-  const gap = 128
-  const startX = 366 - ((n - 1) * gap) / 2
-  return (
-    <g transform={'translate(0 ' + y + ')'}>
-      {/* revisi 04: garis cabang 1-ke-5 dari hub -- tool beda, fungsi sama */}
+      {/* revisi 04: garis cabang dari hub -- distro beda, tugas manager serupa */}
       <g opacity="0.3">
-        {MANAGERS.map((m, i) => {
+        {DISTRO_MANAGERS.map((d, i) => {
+          if (!revealedIds.includes(d.id)) return null
           const x = startX + i * gap
-          return <line key={m.id} x1={HUB_CENTER.x} y1="-46" x2={x} y2="-16" stroke={COLORS.ACTIVITY} strokeWidth="1.2" strokeDasharray="2 5" />
+          return <line key={d.id} x1={HUB_CENTER.x} y1="-58" x2={x} y2="-42" stroke={COLORS.INTRO_A} strokeWidth="1.2" strokeDasharray="2 5" />
         })}
       </g>
-      {MANAGERS.map((m, i) => {
-        const active = m.id === activeId
+      {DISTRO_MANAGERS.map((d, i) => {
+        if (!revealedIds.includes(d.id)) return null
         const x = startX + i * gap
+        const highlight = d.id === highlightId
         return (
-          <g key={m.id} transform={'translate(' + x + ' 0)'}>
-            <rect x="-56" y="-16" width="112" height="32" rx="16" fill={active ? COLORS.PANEL_ALT : COLORS.PANEL} stroke={active ? COLORS.ACTIVITY : COLORS.BORDER} strokeWidth={active ? 2 : 1.2} opacity={active ? 1 : 0.6} />
-            <text x="0" y="5" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="12.5" fill={active ? COLORS.ACTIVITY : COLORS.MUTED}>{m.label}</text>
+          <g key={d.id} transform={'translate(' + x + ' 0)'}>
+            <rect x="-58" y="-45" width="116" height="90" rx="14" fill={highlight ? COLORS.PANEL_ALT : COLORS.PANEL} stroke={highlight ? d.color : COLORS.BORDER} strokeWidth={highlight ? 2.4 : 1.3} />
+            <image href={getIcon(DISTRO_LOGO_ICON[d.id])} x="-16" y="-40" width="32" height="28" />
+            {d.id === 'ubuntu' && (
+              <image href={getIcon('debian-logo')} x="26" y="-42" width="16" height="16" opacity="0.95" />
+            )}
+            <text x="0" y="-4" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="11" fill={COLORS.TEXT}>{d.label}</text>
+            <line x1="-42" y1="6" x2="42" y2="6" stroke={COLORS.BORDER} strokeWidth="1" opacity="0.6" />
+            <text x="0" y="22" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="11" fill={highlight ? d.color : COLORS.MUTED}>{d.manager}</text>
+            <text x="0" y="36" textAnchor="middle" fontFamily="monospace" fontSize="9" fill={COLORS.MUTED}>{d.format}</text>
           </g>
         )
       })}
-    </g>
-  )
-}
-
-// ── Badge format+persamaan di bawah manager carousel (revisi bagian 5
-// tabel "cara memvisualkan perbandingan"). ──
-const ManagerBadge = ({ visible, manager }) => {
-  if (!visible || !manager) return null
-  return (
-    <g transform={'translate(366 ' + (CAROUSEL_Y + 44) + ')'}>
-      <rect x="-140" y="-16" width="280" height="32" rx="16" fill={COLORS.PANEL_ALT} stroke={COLORS.BORDER} strokeWidth="1.2" />
-      <text x="-64" y="5" textAnchor="middle" fontFamily="monospace" fontWeight="700" fontSize="11" fill={COLORS.TEXT}>{manager.format}</text>
-      <line x1="0" y1="-10" x2="0" y2="10" stroke={COLORS.BORDER} strokeWidth="1" />
-      <text x="64" y="5" textAnchor="middle" fontFamily="monospace" fontSize="10" fill={COLORS.MUTED}>{manager.badge}</text>
     </g>
   )
 }

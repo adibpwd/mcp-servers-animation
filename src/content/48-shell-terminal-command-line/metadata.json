@@ -3,8 +3,17 @@
   "title": "Shell, Terminal, Command Line",
   "subtitle": "Tiga istilah, tiga peran berbeda",
   "category": "Linux Fundamentals",
-  "tags": ["Shell", "Terminal", "Command Line", "PTY", "Bash", "Scripting"],
+  "tags": [
+    "Shell",
+    "Terminal",
+    "Command Line",
+    "PTY",
+    "Bash",
+    "Scripting"
+  ],
   "color": "#38BDF8",
   "status": "draft",
-  "priority": 48
+  "priority": 48,
+  "pinned": true,
+  "pinnedAt": "2026-09-20T23:06:45.386Z"
 }

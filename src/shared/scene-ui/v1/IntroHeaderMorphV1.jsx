@@ -61,9 +61,36 @@
 // diberikan, default di bawah subtitle hero, dan center secara horizontal ke
 // tengah canvas). Kalau `heroIllustration` tidak diberikan, behavior lama
 // (tidak ada elemen tambahan) tetap berjalan tanpa perubahan apa pun.
+//
+// UPDATE 5 (default output BERUBAH — deviasi PLAN-12 §6 yang disetujui user
+// 2026-09-21, untuk konsistensi PLAN-15): (a) title sekarang GLOW default —
+// component mendefinisikan <filter> glow sendiri dengan id unik per-instance
+// (useId), jadi semua content dapat glow tanpa <defs> manual di topic;
+// opt-out `titleGlow={false}`, override tetap via `titleFilter`, dan (b)
+// tagline category otomatis diakhiri " · ADIB-DEV.COM" warna cyan #22D3EE
+// kalau belum mengandung domain tsb (prop `domain`/`domainColor`); opt-out
+// `domain={null}`.
+//
+// UPDATE 6 (non-breaking, sama pola PLAN-12 §11): ditambah prop opsional
+// `bg`/`bgScenes`/`bgDim`/`bgOrigin` untuk menampilkan scene act topic sebagai
+// BACKGROUND full-canvas di belakang tagline+title+subtitle pada momen hero
+// (kebutuhan: thumbnail intro memperlihatkan isi act — pola "1 act = 1 file",
+// lihat docs/standardizations/07-act-scene-pattern.md). Component ini TETAP
+// PURE: tidak mengimpor scene topic — topic mengirim scene lewat `bgScenes`
+// (array komponen PURE presentational, urutan act 1..N) dan `bg` (int 1-based,
+// act mana yang ditampilkan). Scene dirender dengan `origin` = `bgOrigin`
+// (default `layout.body`) — supaya scene ber-koordinat body-local (0,0 =
+// body.x,body.y, lihat ContentBodyV1) bisa diposisikan benar di canvas penuh.
+// Sama seperti heroBackground/heroIllustration: fade-out habis begitu
+// progress lewat `titleMorphSplit` dan tidak pernah muncul di compact header.
+// Kalau `bg`/`bgScenes` tidak diberikan, behavior lama (tidak ada layer
+// tambahan) tetap berjalan tanpa perubahan apa pun.
 
-import React from 'react'
+import React, { useId } from 'react'
 import { DEFAULT_LAYOUT_V1, lerp, clamp01, estimateTextWidth } from './PortraitSceneLayoutV1'
+
+const DEFAULT_DOMAIN = 'ADIB-DEV.COM'
+const DEFAULT_DOMAIN_COLOR = '#22D3EE'
 
 const smoothstep01 = (edge0, edge1, x) => {
   const t = clamp01((x - edge0) / (edge1 - edge0))
@@ -135,9 +162,20 @@ const HERO_BACKGROUND_DEFAULTS = {
  *                                 output lama").
  * @param {string} [subtitleColor] default konvensi MUTED.
  * @param {string} [titleFilter]   opsional SVG filter url, mis. "url(#glow)".
- *                                 Default TIDAK dipasang — kalau topic belum
- *                                 punya <filter id="glow"> di defs, title akan
- *                                 tetap tampil normal (aman, tidak invisible).
+ *                                 Default (karena `titleGlow=true`) dipakai
+ *                                 filter glow bawaan component. Kalau topic
+ *                                 kirim nilai ini, diprioritaskan (override
+ *                                 glow bawaan).
+ * @param {boolean} [titleGlow]    default true (UPDATE 5, PLAN-15). Glow
+ *                                 otomatis pakai filter milik component.
+ *                                 Opt-out: `titleGlow={false}`.
+ * @param {string|null} [domain]   default "ADIB-DEV.COM" (UPDATE 5, PLAN-15).
+ *                                 Otomatis ditambahkan ke akhir tagline
+ *                                 category (`[string]\u00b7 domain` warna
+ *                                 `domainColor`) kalau belum ada. Opt-out:
+ *                                 `domain={null}`.
+ * @param {string} [domainColor]   default "#22D3EE" (cyan PLAN-15). Warna
+ *                                 segment domain otomatis di tagline.
  * @param {{label:string,color:string,weight?:number}[][]} [titleLines] opsional.
  *                                 Kalau title 1-baris kepanjangan untuk hero
  *                                 (lebar estimasi > canvas width), pecah jadi
@@ -185,6 +223,24 @@ const HERO_BACKGROUND_DEFAULTS = {
  *                                 TIDAK wajib; kalau tidak diberikan, behavior
  *                                 lama (tidak ada elemen tambahan) tetap
  *                                 berjalan tanpa perubahan apa pun.
+ * @param {number} [bg]            opsional (UPDATE 6). Index act 1-based yang
+ *                                 ditampilkan sebagai background hero. Hanya
+ *                                 dipakai kalau `bgScenes` diberikan.
+ * @param {Array<Component>} [bgScenes] opsional (UPDATE 6). Array komponen
+ *                                 scene act PURE presentational (urutan act
+ *                                 1..N, ekspor `ACT_SCENES` dari acts/index.js
+ *                                 topic — lihat
+ *                                 docs/standardizations/07-act-scene-pattern.md).
+ *                                 Scene dirender TANPA props (mode "summary"
+ *                                 = momen akhir act, komponen act yang
+ *                                 menentukan default internalnya sendiri).
+ * @param {number} [bgDim]         default 0.3 (UPDATE 6). Opacity maksimum
+ *                                 layer background sebelum fade-out.
+ * @param {{x:number,y:number}} [bgOrigin] default layout.body. Origin tempat
+ *                                 scene bg digambar (translate transform).
+ *                                 Untuk scene ber-koordinat body-local, pakai
+ *                                 default; kalau scene sudah canvas-absolute,
+ *                                 kirim {x:0,y:0}.
  */
 export default function IntroHeaderMorphV1({
   progress,
@@ -207,6 +263,13 @@ export default function IntroHeaderMorphV1({
   categoryFontFamily = DEFAULT_CATEGORY_FONT_FAMILY,
   subtitleFontFamily = DEFAULT_SUBTITLE_FONT_FAMILY,
   titleFilter,
+  titleGlow = true,
+  domain = DEFAULT_DOMAIN,
+  domainColor = DEFAULT_DOMAIN_COLOR,
+  bg,
+  bgScenes,
+  bgDim,
+  bgOrigin,
 }) {
   if (import.meta.env?.DEV) {
     if (!Array.isArray(titleSegments) || titleSegments.length === 0) {
@@ -226,6 +289,38 @@ export default function IntroHeaderMorphV1({
   const mp = clamp01(Number.isFinite(progress) ? progress : 0)
   const h = { ...HERO_DEFAULTS, ...hero }
   const c = { ...COMPACT_DEFAULTS, ...compact }
+
+  // ── Glow title otomatis (UPDATE 5, PLAN-15) — filter glow didefinisikan
+  // oleh component ini sendiri dengan id unik per-instance (useId) supaya
+  // tidak bentrok antar content/window yang terbuka bersamaan. Default ON
+  // (`titleGlow=true`): semua content otomatis dapat glow tanpa harus
+  // mendefinisikan <filter> di defs topic masing-masing. Opt-out via
+  // `titleGlow={false}`; override filter khusus topic tetap via `titleFilter`.
+  // Catatan: id unik dari useId mengandung ":" (mis. ":r1:") yang tidak aman
+  // untuk selector SVG url(#...), jadi dibersihkan dulu. ──
+  const rawGlowId = useId()
+  const glowFilterId = `intro-glow${rawGlowId.replace(/[^a-zA-Z0-9]/g, '')}`
+  const usesBuiltinGlow = titleGlow && !titleFilter
+  const resolvedTitleFilter = usesBuiltinGlow ? `url(#${glowFilterId})` : titleFilter
+
+  // ── Domain auto (UPDATE 5, PLAN-15) — tagline category otomatis diakhiri
+  // segment " · ADIB-DEV.COM" warna cyan #22D3EE kalau belum mengandung
+  // domain tsb. Berasal dari `categorySegments` kalau ada, fallback ke
+  // `category` string. `domain={null}` untuk opt-out total. ──
+  const baseSegments = Array.isArray(categorySegments) && categorySegments.length > 0
+    ? categorySegments.map((s) => ({ label: s.label, color: s.color }))
+    : (category ? [{ label: category, color: categoryColor }] : [])
+  const taglineSegments = (() => {
+    const segments = [...baseSegments]
+    if (domain != null) {
+      const joined = segments.map((s) => String(s.label)).join('')
+      const domainRe = new RegExp(domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+      if (joined && !domainRe.test(joined)) {
+        segments.push({ label: ` · ${domain}`, color: domainColor })
+      }
+    }
+    return segments
+  })()
 
   const fullTitleText = (titleSegments || []).map((s) => s.label).join('')
   // startX hero: dipusatkan otomatis pakai estimateTextWidth, KECUALI topic
@@ -274,9 +369,7 @@ export default function IntroHeaderMorphV1({
     // Auto-bounding-box: bungkus teks terlebar (tagline/title/subtitle,
     // termasuk titleLines kalau dipakai) + padding. Bisa dioverride penuh
     // lewat heroBackground.x/y/width/height kalau auto tidak pas.
-    const categoryText = Array.isArray(categorySegments) && categorySegments.length > 0
-      ? categorySegments.map((s) => s.label).join('')
-      : (category || '')
+    const categoryText = taglineSegments.map((s) => s.label).join('')
     let contentWidth = Math.max(
       estimatedWidth,
       estimateTextWidth(categoryText, h.taglineFontSize),
@@ -314,8 +407,62 @@ export default function IntroHeaderMorphV1({
   const hiFadeSplit = hi?.fadeOutSplit ?? titleMorphSplit
   const hiOpacity = hi ? clamp01(hi.opacity ?? 1) * (1 - smoothstep01(0, hiFadeSplit, mp)) : 0
 
+  // ── Hero background dari scene act topic (opsional, lihat UPDATE 6) ──
+  // `bg` = index act 1-based di `bgScenes` (array dari acts/index.js topic,
+  // pola "1 act = 1 file"). Scene dirender TANPA props → komponen act berada
+  // dalam mode "summary" (momen akhir act, memakai default internalnya).
+  // Layer ditaruh di origin `bgOrigin` (default layout.body — scene bersifat
+  // body-local seperti ContentBodyV1) dan ikut fade-out di `titleMorphSplit`
+  // seperti heroBackground. Tanpa `bgScenes`/`bg` valid → tidak ada render,
+  // behavior lama (non-breaking).
+  const bgSceneCount = Array.isArray(bgScenes) ? bgScenes.length : 0
+  const bgSceneIndex = (Number.isInteger(bg) && bg >= 1 && bg <= bgSceneCount) ? bg - 1 : -1
+  const BgScene = bgSceneIndex >= 0 ? bgScenes[bgSceneIndex] : null
+  const bgOriginPt = bgOrigin || { x: layout.body.x, y: layout.body.y }
+  const rawVignetteId = useId()
+  const vignetteId = `intro-bg-vignette${rawVignetteId.replace(/[^a-zA-Z0-9]/g, '')}`
+  const bgLayerOpacity = BgScene
+    ? clamp01(bgDim ?? 0.3) * (1 - smoothstep01(0, titleMorphSplit, mp))
+    : 0
+
+  if (import.meta.env?.DEV && bg != null && bgSceneCount === 0) {
+    // eslint-disable-next-line no-console
+    console.warn('[scene-ui v1] IntroHeaderMorphV1: prop "bg" diberikan tapi "bgScenes" kosong — bg diabaikan. Lihat docs/standardizations/07-act-scene-pattern.md.')
+  }
+
   return (
     <g opacity={visible ? 1 : 0} data-testid={testId}>
+      {usesBuiltinGlow && (
+        <defs>
+          <filter id={glowFilterId} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="intro-glow-b1" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="intro-glow-b2" />
+            <feMerge>
+              <feMergeNode in="intro-glow-b2" />
+              <feMergeNode in="intro-glow-b1" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+      )}
+      {BgScene && bgLayerOpacity > 0 && (
+        <>
+          <defs>
+            <radialGradient id={vignetteId} cx="50%" cy="42%" r="78%">
+              <stop offset="0%" stopColor="#000" stopOpacity="0" />
+              <stop offset="72%" stopColor="#000" stopOpacity="0" />
+              <stop offset="100%" stopColor="#000" stopOpacity="0.55" />
+            </radialGradient>
+          </defs>
+          <g transform={`translate(${bgOriginPt.x}, ${bgOriginPt.y})`} opacity={bgLayerOpacity}>
+            <BgScene />
+          </g>
+          <rect
+            x={0} y={0} width={layout.canvas.width} height={layout.canvas.height}
+            fill={`url(#${vignetteId})`} opacity={bgLayerOpacity}
+          />
+        </>
+      )}
       {hb && hbOpacity > 0 && (
         <rect
           x={hbX} y={hbY} width={hbWidth} height={hbHeight} rx={hb.rx}
@@ -326,19 +473,16 @@ export default function IntroHeaderMorphV1({
 
       <text
         x={taglineX} y={taglineY} textAnchor="start"
-        fill={Array.isArray(categorySegments) && categorySegments.length > 0 ? undefined : categoryColor}
         fontSize={taglineFs}
         fontFamily={categoryFontFamily} letterSpacing={3}
       >
-        {Array.isArray(categorySegments) && categorySegments.length > 0
-          ? categorySegments.map((seg, i) => (
-              <tspan key={i} fill={seg.color}>{seg.label}</tspan>
-            ))
-          : category}
+        {taglineSegments.map((seg, i) => (
+          <tspan key={i} fill={seg.color}>{seg.label}</tspan>
+        ))}
       </text>
 
       {hasTitleLines && multilineOpacity > 0 && (
-        <g opacity={multilineOpacity} filter={titleFilter || undefined}>
+        <g opacity={multilineOpacity} filter={resolvedTitleFilter || undefined}>
           {titleLines.map((lineSegs, li) => {
             const lineText = (lineSegs || []).map((s) => s.label).join('')
             // Buffer 18% — estimateTextWidth() sedikit underestimate untuk
@@ -376,7 +520,7 @@ export default function IntroHeaderMorphV1({
       <text
         x={titleX} y={titleY} textAnchor="start" fontSize={titleFs}
         fontFamily={titleFontFamily} fontWeight={900}
-        filter={titleFilter || undefined}
+        filter={resolvedTitleFilter || undefined}
         opacity={singleLineOpacity}
       >
         {(titleSegments || []).map((seg, i) => (

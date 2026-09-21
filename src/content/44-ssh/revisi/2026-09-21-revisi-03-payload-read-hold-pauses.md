@@ -2,7 +2,7 @@
 
 **Tanggal:** 2026-09-21  
 **Target Content:** `44-ssh`  
-**Status:** 📝 PLAN ONLY (Belum dieksekusi)
+**Status:** ✅ EKSEKUSI SELESAI (2026-09-21) — lihat §6 di bawah untuk detail eksekusi.
 
 ---
 
@@ -82,4 +82,13 @@
 
 - [x] Dokumen plan dibuat di `src/content/44-ssh/revisi/2026-09-21-revisi-03-payload-read-hold-pauses.md`.
 - [x] Indeks `src/content/44-ssh/revisi/README.md` diperbarui.
-- [ ] **Pending Eksekusi Kode** (Menunggu eksekusi oleh agent AI berikutnya).
+- [x] Eksekusi kode selesai.
+
+## 6. Catatan Eksekusi (diisi agent AI pelaksana)
+
+- Helper `travel()` di `Animation.jsx` diubah: dulu fade-out terjadi DI DALAM durasi `travel` itu sendiri (payload sudah mulai transparan sebelum benar-benar tiba). Sekarang payload tiba dulu dalam kondisi penuh terlihat, ditahan selama `readHold` (parameter baru, default 1.5s), baru fade-out terpisah (0.35s). Ini juga memperbaiki bug kecil di Act 3 lama: `fileTray` sebelumnya sempat muncul SEBELUM `fileCapsule` benar-benar tiba di server (overlap 0.3s) — sekalian diperbaiki.
+- Semua `t +=` di Act 2–5 disesuaikan supaya `stage` (yang mengontrol unmount React) tidak berpindah sebelum travel+readHold+fade selesai — kalau stage berpindah lebih awal, box akan hilang mendadak (unmount), bukan fade halus, karena render Act 2–5 digerbang oleh kondisi `stage === '...'`.
+- Bastion packet (Act 4) diubah dari satu lompatan client→server jadi DUA leg (client→bastion, jeda baca 1.2s, lanjut bastion→target) sesuai permintaan plan "titik singgah/pause 1.2s".
+- `PHASES` duration di `data.js` dinaikkan (Act2 22→27, Act3 28→34, Act4 30→36, Act5 22→26) — masih estimasi badge, BUKAN hasil pengukuran timeline nyata.
+- `esbuild` exit 0 untuk `data.js` dan `Animation.jsx`.
+- **Belum dilakukan:** playback verification manual (poin §4.2 di atas) — perlu dicek di browser bahwa jeda baca terasa pas, tidak kepanjangan/kependekan, dan total durasi video tidak terasa lambat.

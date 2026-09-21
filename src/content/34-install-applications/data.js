@@ -33,13 +33,17 @@ export const COLORS = {
 }
 
 // Local coordinate ContentBodyV1 (732 x 965).
+// ── Revisi 05 (2026-09-21) — zone direnggangkan (Act 1+2 lama digabung
+// jadi satu Act "distro & manager", butuh HUB lebih tinggi untuk kartu
+// gabungan; TERMINAL/TRANSIT/GATE/CLOSING semua digeser biar margin lebih
+// lapang, tidak mepet). ──
 export const ZONE = {
   CAPTION: { yStart: 18, yEnd: 66 },
-  TERMINAL: { yStart: 82, yEnd: 200 },
-  HUB: { yStart: 216, yEnd: 358 },
-  TRANSIT: { yStart: 374, yEnd: 686 },
-  GATE: { yStart: 702, yEnd: 822 },
-  CLOSING: { yStart: 858, yEnd: 936 },
+  TERMINAL: { yStart: 80, yEnd: 185 },
+  HUB: { yStart: 205, yEnd: 380 },
+  TRANSIT: { yStart: 400, yEnd: 690 },
+  GATE: { yStart: 710, yEnd: 820 },
+  CLOSING: { yStart: 845, yEnd: 940 },
 }
 
 export const HUB_CENTER = { x: 366, y: ZONE.HUB.yStart + 60 }
@@ -49,16 +53,17 @@ export const TRANSIT_TOP = ZONE.TRANSIT.yStart + 10
 export const NETWORK_CENTER = { x: 366, y: TRANSIT_TOP + 74 }
 export const CACHE_CENTER = { x: 366, y: TRANSIT_TOP + 150 }
 
-// ── Delapan Act (revisi bagian 7) — target ritme 105-125 detik. ──
+// ── Tujuh Act (revisi 05, 2026-09-21) — Act 1+2 lama (distro, manager)
+// digabung jadi satu Act supaya tidak ada pengulangan konten. Target
+// ritme tetap ~100-110 detik. ──
 export const PHASES = [
-  { id: 'distro',   badge: 'ACT 1 — DISTRO MENENTUKAN EKOSISTEM', badgeColor: COLORS.INTRO_A,    duration: 12.0 },
-  { id: 'manager',  badge: 'ACT 2 — MANAGER PUNYA TUGAS SAMA',    badgeColor: COLORS.ACTIVITY,   duration: 18.0 },
-  { id: 'network',  badge: 'ACT 3 — REPOSITORY DI JARINGAN',      badgeColor: COLORS.NETWORK,    duration: 14.0 },
-  { id: 'sources',  badge: 'ACT 4 — SOURCE PUNYA JENIS BERBEDA',  badgeColor: COLORS.REPO,       duration: 18.0 },
-  { id: 'plan',     badge: 'ACT 5 — RENCANA DULU',                badgeColor: COLORS.DEPENDENCY, duration: 14.0 },
-  { id: 'download', badge: 'ACT 6 — ARSIP MASUK DARI INTERNET',   badgeColor: COLORS.NETWORK,    duration: 14.0 },
-  { id: 'install',  badge: 'ACT 7 — PASANG SUNGGUHAN',            badgeColor: COLORS.ADMIN,      duration: 20.0 },
-  { id: 'ready',    badge: 'ACT 8 — APP SIAP & DAPAT DIKELOLA',   badgeColor: COLORS.SUCCESS,    duration: 10.0 },
+  { id: 'distro-manager', badge: 'ACT 1 — DISTRO & PACKAGE MANAGER BAWAAN', badgeColor: COLORS.INTRO_A,    duration: 14.0 },
+  { id: 'network',        badge: 'ACT 2 — REPOSITORY DI JARINGAN',         badgeColor: COLORS.NETWORK,    duration: 14.0 },
+  { id: 'sources',        badge: 'ACT 3 — JENIS SOURCE REPOSITORY',        badgeColor: COLORS.REPO,       duration: 16.0 },
+  { id: 'plan',           badge: 'ACT 4 — RENCANA TRANSAKSI & IZIN',       badgeColor: COLORS.DEPENDENCY, duration: 14.0 },
+  { id: 'download',       badge: 'ACT 5 — UNDUH ARSIP DARI MIRROR',        badgeColor: COLORS.NETWORK,    duration: 14.0 },
+  { id: 'install',        badge: 'ACT 6 — PROSES EKSEKUSI PASANG',         badgeColor: COLORS.ADMIN,      duration: 18.0 },
+  { id: 'ready',          badge: 'ACT 7 — APLIKASI SIAP & LIFECYCLE',      badgeColor: COLORS.SUCCESS,    duration: 10.0 },
 ]
 
 export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
@@ -96,6 +101,18 @@ export const DISTROS = [
   { id: 'alpine',   label: 'Alpine',    family: 'minimal/container',  managerId: 'apk',    pkgFormat: '.apk',      color: '#0D597F' },
 ]
 export const DISTRO_TAKEAWAY = 'Distro menentukan manager dan source policy'
+
+// ── Revisi 05 (2026-09-21) — gabungan distro+manager untuk Act 1 baru
+// (dulu dua Act terpisah: distro lalu manager, isinya tumpang tindih).
+// Satu kartu langsung menunjukkan distro -> manager -> format paket,
+// muncul kumulatif cepat (tidak saling menghilangkan). ──
+export const DISTRO_MANAGERS = [
+  { id: 'ubuntu',   label: 'Ubuntu',    manager: 'apt',    format: '.deb',        family: 'Debian family', color: '#E95420' },
+  { id: 'fedora',   label: 'Fedora',    manager: 'dnf',    format: '.rpm',        family: 'RHEL family',   color: '#51A2DA' },
+  { id: 'arch',     label: 'Arch',      manager: 'pacman', format: '.pkg.tar',    family: 'Arch family',   color: '#1793D1' },
+  { id: 'opensuse', label: 'openSUSE',  manager: 'zypper', format: '.rpm',        family: 'SUSE family',   color: '#73BA25' },
+  { id: 'alpine',   label: 'Alpine',    manager: 'apk',    format: '.apk',        family: 'Minimal Linux', color: '#0D597F' },
+]
 
 // ── Manager berbeda menurut keluarga distro (revisi bagian 5) — carousel
 // lima stasiun, bukan tabel/daftar yang muncul bersamaan. ──
@@ -160,6 +177,7 @@ export const LIFECYCLE_ACTIONS = [
 // ── Copy layar (revisi bagian 9) — narasi "internet" dibatasi pada Act 3
 // dan 6, langsung diikuti batas akurat (repository/mirror terkonfigurasi). ──
 export const CAPTIONS = {
+  DISTRO_MANAGER: 'Distro menentukan package manager & format paket bawaan',
   DISTRO: 'Tiap distro punya package manager dan format paket bawaan sendiri',
   MANAGER: 'Tool berbeda, pekerjaan inti serupa',
   NETWORK: 'Repository terkonfigurasi ada di jaringan',

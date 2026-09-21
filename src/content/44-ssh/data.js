@@ -42,13 +42,15 @@ export const COLORS = {
 
 // Total durasi diukur ulang dari timeline nyata setelah eksekusi (bukan
 // tebakan) — angka di bawah hanya estimasi awal untuk badge, konsisten
-// dengan pola 17-rest-api REVISI-08.
+// dengan pola 17-rest-api REVISI-08. EKSEKUSI-03 (lihat
+// revisi/2026-09-21-revisi-03-payload-read-hold-pauses.md): durasi Act 2–5
+// dinaikkan untuk menampung jeda baca payload (readHold).
 export const PHASES = [
   { id: 'connect-trust', badge: 'ACT 1 — HUBUNGI & VERIFIKASI SERVER', badgeColor: COLORS.TRUST, duration: 24 },
-  { id: 'authn-authz', badge: 'ACT 2 — LOGIN vs HAK AKSES', badgeColor: COLORS.AUTH, duration: 22 },
-  { id: 'channel-modes', badge: 'ACT 3 — SATU KANAL, BANYAK MODE', badgeColor: COLORS.SERVER, duration: 28 },
-  { id: 'forward-bastion', badge: 'ACT 4 — ARAHKAN TRAFIK & JARINGAN PRIVAT', badgeColor: COLORS.FORWARD, duration: 30 },
-  { id: 'ops-scale', badge: 'ACT 5 — OPERASI AMAN DI SKALA', badgeColor: COLORS.OPS, duration: 22 },
+  { id: 'authn-authz', badge: 'ACT 2 — LOGIN vs HAK AKSES', badgeColor: COLORS.AUTH, duration: 27 },
+  { id: 'channel-modes', badge: 'ACT 3 — SATU KANAL, BANYAK MODE', badgeColor: COLORS.SERVER, duration: 34 },
+  { id: 'forward-bastion', badge: 'ACT 4 — ARAHKAN TRAFIK & JARINGAN PRIVAT', badgeColor: COLORS.FORWARD, duration: 36 },
+  { id: 'ops-scale', badge: 'ACT 5 — OPERASI AMAN DI SKALA', badgeColor: COLORS.OPS, duration: 26 },
 ]
 
 export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
@@ -76,6 +78,20 @@ export const CHANNEL_BOTTOM = SERVER_Y - 85
 export const CLIENT_LABEL = 'CLIENT'
 export const SERVER_LABEL = 'SSH SERVER (sshd)'
 export const HOST_LABEL = 'host: server-jauh.internal  port: 22'
+
+// ── Titik anchor absolut bersama Act 2–5 (body-local ContentBodyV1) ──
+// Dipakai timeline Animation.jsx DAN file per-act (acts/*.jsx) sebagai
+// posisi base kartu/kapsul sebelum di-morph oleh pop state (standarisasi
+// "1 act = 1 file", lihat docs/standardizations/07-act-scene-pattern.md).
+export const NEAR_CLIENT = { x: AXIS_X, y: 300 }
+export const MID = { x: AXIS_X, y: 500 }
+export const NEAR_SERVER = { x: AXIS_X, y: 740 }
+export const ALT_METHODS_PT = { x: AXIS_X, y: 230 }
+export const GATE_PT = { x: AXIS_X, y: 560 }
+export const SCOPE_PT = { x: AXIS_X, y: 610 }
+export const SHELL_OUTPUT_CARD_PT = { x: AXIS_X, y: 340 }
+export const LISTENER_PT = { x: AXIS_X, y: 360 }
+export const AUDIT_PT = { x: AXIS_X, y: 640 }
 
 // ═══════════════════════════════════════════════
 // ACT 1 — Hubungi & Verifikasi Server

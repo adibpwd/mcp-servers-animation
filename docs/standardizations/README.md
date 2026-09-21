@@ -1,9 +1,9 @@
 # Standardizations — Index
 
-Enam dokumen di bawah adalah standar aktif untuk membuat atau merevisi topic
+Tujuh dokumen di bawah adalah standar aktif untuk membuat atau merevisi topic
 animasi. Struktur ini menggantikan alur lama 01–09 yang tersebar. Isi detail
 lama tidak dihapus: redirect kompatibilitas terdahulu dipindahkan ke folder
-backup agar folder standar utama hanya memuat enam dokumen aktif.
+backup agar folder standar utama hanya memuat tujuh dokumen aktif.
 
 ## Alur Baca Wajib untuk Topic Baru
 
@@ -13,12 +13,13 @@ backup agar folder standar utama hanya memuat enam dokumen aktif.
           → 04 Motion & GSAP Reference
             → 05 SVG Layout & Asset Pipeline
               → 06 Audio & SFX
+                → 07 Act Scene Pattern (1 Act = 1 File + Intro Background)
 
-Baca dokumen 01–03 secara berurutan sebelum coding. Dokumen 04–06 adalah
+Baca dokumen 01–03 secara berurutan sebelum coding. Dokumen 04–07 adalah
 referensi produksi yang dibuka saat diperlukan, lalu tetap diaudit pada tahap
 validasi.
 
-## Enam Dokumen Aktif
+## Tujuh Dokumen Aktif
 
 | Dokumen | Peran |
 |---|---|
@@ -28,6 +29,7 @@ validasi.
 | [04-motion-gsap-reference.md](04-motion-gsap-reference.md) | Referensi teknis GSAP: timeline, state handoff, export safety, determinism, motion patterns, dan lifecycle action/reflow koleksi dinamis. |
 | [05-svg-layout-asset-pipeline.md](05-svg-layout-asset-pipeline.md) | SVG text, warna, safe-zone, scene coordinate, icon/asset audit, generation, crop, dan loader. |
 | [06-audio-sfx.md](06-audio-sfx.md) | Sourcing, SFX_MAP, audio coverage, loudness, integrasi, dan validasi audio. |
+| [07-act-scene-pattern.md](07-act-scene-pattern.md) | Pola "1 Act = 1 file" (pure presentational, body-local + origin, mode summary) dan scene act sebagai background intro/thumbnail. |
 
 ## Rute Cepat Berdasarkan Kebutuhan
 
@@ -38,6 +40,7 @@ validasi.
 | Tween, repeat, seek, flushSync, export safety, action lifecycle, atau grid reflow | 04 |
 | Text overflow, color, overlap, local coordinate, icon | 05 |
 | Asset SFX, Audio Beat Map, loudness, audio coverage | 06 |
+| Organisasi scene per Act, intro/thumbnail background, mode summary | 07 |
 | Menjelaskan alur React/GSAP/export dari awal | 01 |
 
 ## Arsip Redirect Dokumen Lama

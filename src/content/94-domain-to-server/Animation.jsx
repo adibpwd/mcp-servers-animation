@@ -747,14 +747,13 @@ export default function DomainToServerAnimation({
         {/* Intro/Header Section */}
         <IntroHeaderMorphV1
           visible={showIntro}
+          progress={morphP}
           category={INTRO_CATEGORY}
           titleSegments={[
-            { text: INTRO_TITLE_A, color: COLORS.BLUE },
-            { text: INTRO_TITLE_B, color: COLORS.GREEN }
+            { label: INTRO_TITLE_A, color: COLORS.BLUE },
+            { label: INTRO_TITLE_B, color: COLORS.GREEN }
           ]}
           subtitle={INTRO_SUBTITLE}
-          morphProgress={morphP}
-          topicColor={COLORS.BLUE}
         />
 
         {/* Act Badge Navigator */}
