@@ -14,6 +14,7 @@ import { WorkspaceProvider, useWorkspace } from '../workspace/WorkspaceContext'
 import WorkspaceSurface from '../workspace/WorkspaceSurface'
 import MacOSDock from '../workspace/MacOSDock'
 import { resolveTopicById } from '../../content/resolveTopic'
+import { useToast } from '../ToastNotification'
 import './ContentManagement.css'
 
 // PLAN-19 §9.3 — batas jumlah content pada deep link (align dengan
@@ -44,6 +45,7 @@ function ContentManagementInner() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { windows, order, focusedId, openContent, focusWindow, syncPinnedFromServer, hydrated } = useWorkspace()
+  const { showToast } = useToast()
   const deepLinkAppliedRef = useRef(false)
 
   const handleSetView = (newView) => {
@@ -149,6 +151,7 @@ function ContentManagementInner() {
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`
     try {
       await navigator.clipboard.writeText(url)
+      showToast('Link workspace disalin ke clipboard', '🔗')
     } catch (err) {
       console.warn('[ContentManagement] Gagal copy ke clipboard, link tetap di URL bar.', err)
     }
@@ -156,16 +159,22 @@ function ContentManagementInner() {
 
   // Handle priority update → update local state + save API
   const handlePriorityChange = async (itemId, newPriority) => {
+    const item = items.find((i) => i.id === itemId)
     // Optimistic update local state
     setItems(prev => sortByPriority(updateItemPriority(prev, itemId, newPriority)))
+    showToast(`Priority '${item?.title || itemId}' diubah ke ${newPriority}`, '🔢')
     // Save to API
     await saveItemChanges(itemId, { priority: newPriority })
   }
 
   // Handle status update → update local state + save API
   const handleStatusChange = async (itemId, newStatus) => {
+    const item = items.find((i) => i.id === itemId)
+    const statusIcons = { draft: '📝', ready: '⭐', posted: '✅' }
+    const statusLabels = { draft: 'Draft', ready: 'Ready to Post', posted: 'Posted' }
     // Optimistic update local state
     setItems(prev => updateItemStatus(prev, itemId, newStatus))
+    showToast(`Status '${item?.title || itemId}' diubah ke ${statusLabels[newStatus] || newStatus}`, statusIcons[newStatus] || '✅')
     // Save to API
     await saveItemChanges(itemId, { status: newStatus })
   }

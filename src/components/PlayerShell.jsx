@@ -6,6 +6,7 @@ import { TimelineProgressBar } from './TimelineProgressBar'
 import { ProgressIndicator } from './ProgressIndicator'
 import { FloatingControls } from './FloatingControls'
 import { saveItemChanges } from '../data/contentManagement'
+import { useToast } from './ToastNotification'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
@@ -24,17 +25,22 @@ export function PlayerShell({ content, onBack, isFocused = true, onPlayerStateCh
   const [currentStatus, setCurrentStatus] = useState(content.status || 'draft')
   const [isSavingStatus, setIsSavingStatus] = useState(false)
 
+  const { showToast } = useToast()
+
   useEffect(() => {
     if (content.status) setCurrentStatus(content.status)
   }, [content.status])
 
   const handleStatusChange = async (newStatus) => {
     if (newStatus === currentStatus || isSavingStatus) return
+    const statusIcons = { draft: '📝', ready: '⭐', posted: '✅' }
+    const statusLabels = { draft: 'Draft', ready: 'Ready to Post', posted: 'Posted' }
     setIsSavingStatus(true)
+    setCurrentStatus(newStatus)
+    showToast(`Status '${content.title || content.id}' diubah ke ${statusLabels[newStatus] || newStatus}`, statusIcons[newStatus] || '✅')
     const res = await saveItemChanges(content.id, { status: newStatus })
     setIsSavingStatus(false)
     if (res.success) {
-      setCurrentStatus(newStatus)
       if (onContentUpdate) onContentUpdate({ ...content, status: newStatus })
     }
   }

@@ -8,6 +8,7 @@
 
 import React from 'react'
 import { COLORS, PHASES, ARCH_LABELS, ACT3_CASE } from '../data'
+import { getIcon } from '../icons/loader'
 
 // ── Layout lokal (local coordinate ContentBodyV1, body 732×965) ──
 export const BODY_CX = 366
@@ -37,6 +38,67 @@ export const glow = (highlightId, id) => highlightId === id
 
 export const withOrigin = (children, origin) =>
   origin ? <g transform={origin}>{children}</g> : children
+
+// ── Icon inline SVG (revisi-04) — primitif kecil, tanpa aset eksternal
+// kecuali IconBashLogo yang memakai PNG resmi (icons/gnu-bash-mark.png,
+// sudah diunduh di EKSEKUSI-04/revisi-02, sumber Simple Icons CC0). ──
+export function IconLightning({ x = 0, y = 0, size = 15, color }) {
+  return (
+    <g transform={`translate(${x - size / 2}, ${y - size / 2})`}>
+      <path
+        d={`M${size * 0.58} 0 L${size * 0.12} ${size * 0.56} L${size * 0.46} ${size * 0.56} L${size * 0.34} ${size} L${size * 0.88} ${size * 0.4} L${size * 0.5} ${size * 0.4} Z`}
+        fill={color}
+      />
+    </g>
+  )
+}
+
+export function IconBinary({ x = 0, y = 0, size = 16, color }) {
+  return (
+    <g transform={`translate(${x - size / 2}, ${y - size / 2})`}>
+      <rect x={0} y={0} width={size} height={size} rx={3} fill="none" stroke={color} strokeWidth={1.4} />
+      <text x={size / 2} y={size / 2 + 3} textAnchor="middle" fontSize={size * 0.42} fontFamily="monospace" fontWeight={800} fill={color}>
+        01
+      </text>
+    </g>
+  )
+}
+
+export function IconPromptGlyph({ x = 0, y = 0, size = 13, color }) {
+  return (
+    <text x={x} y={y} fontFamily="monospace" fontWeight={800} fontSize={size} fill={color}>{'>_'}</text>
+  )
+}
+
+export function IconShieldLock({ x = 0, y = 0, size = 18, color }) {
+  return (
+    <g transform={`translate(${x - size / 2}, ${y - size / 2})`}>
+      <path
+        d={`M${size / 2} 0 L${size} ${size * 0.22} L${size} ${size * 0.55} Q${size} ${size * 0.9} ${size / 2} ${size} Q0 ${size * 0.9} 0 ${size * 0.55} L0 ${size * 0.22} Z`}
+        fill="none" stroke={color} strokeWidth={1.6} />
+      <circle cx={size / 2} cy={size * 0.46} r={size * 0.11} fill={color} />
+      <rect x={size * 0.44} y={size * 0.46} width={size * 0.12} height={size * 0.24} fill={color} />
+    </g>
+  )
+}
+
+export function IconPipeArrow({ x = 0, y = 0, size = 12, color, angleDeg = 0, dashed = false }) {
+  return (
+    <g transform={`translate(${x}, ${y}) rotate(${angleDeg})`}>
+      <path
+        d={`M${-size / 2} 0 L${size / 2} 0 M${size / 2 - size * 0.35} ${-size * 0.3} L${size / 2} 0 L${size / 2 - size * 0.35} ${size * 0.3}`}
+        fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"
+        strokeDasharray={dashed ? '3 3' : undefined} />
+    </g>
+  )
+}
+
+export function IconBashMark({ x = 0, y = 0, size = 14 }) {
+  return (
+    <image href={getIcon('gnu-bash-mark')} x={x - size / 2} y={y - size / 2} width={size} height={size}
+      style={{ filter: 'invert(1)' }} opacity={0.9} />
+  )
+}
 
 // ── Default state dipakai saat ActN.jsx dirender standalone (mode summary,
 // tanpa prop `state` dari Animation.jsx live) — dipakai IntroHeaderMorphV1
@@ -90,6 +152,7 @@ export function ArchChrome({ state }) {
           <circle cx={-TERMINAL_W / 2 + 64} cy={-TERMINAL_H / 2 + 20} r={6} fill={COLORS.SUCCESS} />
           <text x={0} y={-TERMINAL_H / 2 + 24} textAnchor="middle" fontSize={11} fontFamily="monospace"
             fill={COLORS.MUTED} letterSpacing={2}>{ARCH_LABELS.terminal.toUpperCase()}</text>
+          <IconPromptGlyph x={TERMINAL_W / 2 - 50} y={-TERMINAL_H / 2 + 25} size={13} color={COLORS.MUTED} />
 
           <text x={-TERMINAL_W / 2 + 24} y={TERMINAL_H / 2 - 46}
             fontFamily="monospace" fontSize={16} fontWeight={700}
@@ -141,9 +204,12 @@ export function ArchChrome({ state }) {
               </text>
             </>
           ) : (
-            <text x={0} y={4} textAnchor="middle" fontSize={12} fontWeight={800} fontFamily="sans-serif" fill={COLORS.SHELL}>
-              {ARCH_LABELS.shell.toUpperCase()}
-            </text>
+            <>
+              <IconBashMark x={0} y={-16} size={16} />
+              <text x={0} y={4} textAnchor="middle" fontSize={12} fontWeight={800} fontFamily="sans-serif" fill={COLORS.SHELL}>
+                {ARCH_LABELS.shell.toUpperCase()}
+              </text>
+            </>
           )}
           <text x={0} y={22} textAnchor="middle" fontSize={9} fontFamily="sans-serif" fill={COLORS.MUTED}>decoder</text>
         </g>
@@ -151,6 +217,7 @@ export function ArchChrome({ state }) {
         <g transform={tos(pop, 'forkBuiltin', BODY_CX - 130, FORK_Y)} opacity={oop(pop, 'forkBuiltin')}>
           <rect x={-90} y={-29} width={180} height={58} rx={10} fill={COLORS.PANEL}
             stroke={COLORS.BUILTIN} strokeWidth={1.5} opacity={forkChoice === 'builtin' ? 1 : 0.4} />
+          <IconLightning x={70} y={-15} size={15} color={COLORS.BUILTIN} />
           <text x={0} y={-2} textAnchor="middle" fontSize={11.5} fontWeight={700} fontFamily="sans-serif" fill={COLORS.BUILTIN}>
             {ARCH_LABELS.builtin}
           </text>
@@ -163,6 +230,7 @@ export function ArchChrome({ state }) {
             fill={forkChoice === 'exec' ? COLORS.EXEC : COLORS.PANEL}
             stroke={COLORS.EXEC} strokeWidth={forkChoice === 'exec' ? 0 : 1.5}
             opacity={forkChoice === 'exec' ? 1 : 0.55} />
+          <IconBinary x={70} y={-15} size={16} color={forkChoice === 'exec' ? COLORS.BG : COLORS.EXEC} />
           <text x={0} y={-2} textAnchor="middle" fontSize={11.5} fontWeight={700} fontFamily="sans-serif"
             fill={forkChoice === 'exec' ? COLORS.BG : COLORS.EXEC}>
             {ARCH_LABELS.exec}

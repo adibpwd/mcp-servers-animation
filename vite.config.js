@@ -18,7 +18,8 @@ export default defineConfig({
     // tiap edit file.
     watch: {
       usePolling: true,
-      interval: 300
+      interval: 300,
+      ignored: ['**/metadata.json', '**/revisi/**', '**/_docs/**', '**/*.md', '**/export-db.json']
     }
   }
 })

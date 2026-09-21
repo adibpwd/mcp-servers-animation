@@ -7,6 +7,7 @@
 // ─────────────────────────────────────────────────────────────
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react'
 import { saveItemChanges } from '../../data/contentManagement'
+import { useToast } from '../ToastNotification'
 
 const WorkspaceContext = createContext(null)
 
@@ -366,8 +367,9 @@ function loadPersistedPins() {
 }
 
 export function WorkspaceProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [state, dispatch] = useReducer(workspaceReducer, initialState, initWorkspaceState)
   const persistTimer = useRef(null)
+  const { showToast } = useToast()
 
   // Hydration sekali saat mount (PLAN-19 §9.2)
   useEffect(() => {
@@ -493,19 +495,22 @@ export function WorkspaceProvider({ children }) {
     const isPinned = pinnedIdsRef.current.includes(contentId)
     dispatch({ type: 'TOGGLE_PIN', payload: { contentId, pinnedAt: isPinned ? undefined : new Date().toISOString() } })
     persistPinToServer(contentId, !isPinned)
-  }, [persistPinToServer])
+    showToast(isPinned ? `'${contentId}' dilepas dari Dock` : `'${contentId}' dipin ke Dock`, isPinned ? '📍' : '📌')
+  }, [persistPinToServer, showToast])
 
   const pinItem = useCallback((contentId) => {
     if (pinnedIdsRef.current.includes(contentId)) return
     dispatch({ type: 'PIN_ITEM', payload: { contentId, pinnedAt: new Date().toISOString() } })
     persistPinToServer(contentId, true)
-  }, [persistPinToServer])
+    showToast(`'${contentId}' dipin ke Dock`, '📌')
+  }, [persistPinToServer, showToast])
 
   const unpinItem = useCallback((contentId) => {
     if (!pinnedIdsRef.current.includes(contentId)) return
     dispatch({ type: 'UNPIN_ITEM', payload: { contentId } })
     persistPinToServer(contentId, false)
-  }, [persistPinToServer])
+    showToast(`'${contentId}' dilepas dari Dock`, '📍')
+  }, [persistPinToServer, showToast])
 
   const syncPinnedFromServer = useCallback((items) => {
     const serverPinned = new Map()

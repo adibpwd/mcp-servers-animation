@@ -4,7 +4,7 @@
 // tiga jalur stdin/stdout/stderr.
 import React from 'react'
 import { COLORS, ACT4_CASE } from '../data'
-import { ArchChrome, withOrigin, oop, BODY_CX, STAGE_TOP, SOURCE_X, TARGET_X, PROCESS_Y, ROW2_Y } from './common'
+import { ArchChrome, withOrigin, oop, IconPipeArrow, BODY_CX, STAGE_TOP, SOURCE_X, TARGET_X, PROCESS_Y, ROW2_Y } from './common'
 
 const FULL = { scale: 1, opacity: 1, x: 0, y: 0 }
 
@@ -30,6 +30,15 @@ function GrepDiagram({ pop, act4 }) {
         stroke={COLORS.STDOUT} strokeWidth={1.5} opacity={act4.redirectOn ? 0.8 : 0.25} />
       <line x1={BODY_CX + 70} y1={PROCESS_Y} x2={TARGET_X} y2={STAGE_TOP}
         stroke={COLORS.STDERR} strokeWidth={1.5} opacity={act4.stderrOn ? 0.8 : 0} strokeDasharray="4 4" />
+
+      <IconPipeArrow x={198} y={725} size={13} color={COLORS.STDIN} angleDeg={14}
+        opacity={act4.stdinOn ? 0.9 : 0.25} />
+      <IconPipeArrow x={198} y={775} size={13} color={COLORS.RISK} angleDeg={-14} dashed
+        opacity={act4.stderrOn ? 0.9 : 0.2} />
+      <IconPipeArrow x={528} y={725} size={13} color={COLORS.STDOUT} angleDeg={-15}
+        opacity={act4.stdoutOn && !act4.redirectOn ? 0.9 : 0.2} />
+      <IconPipeArrow x={528} y={775} size={13} color={COLORS.STDOUT} angleDeg={15}
+        opacity={act4.redirectOn ? 0.9 : 0.2} />
 
       <g transform={`translate(${SOURCE_X}, ${STAGE_TOP})`}>
         <rect x={-70} y={-24} width={140} height={48} rx={10} fill={COLORS.PANEL} stroke={COLORS.BORDER} strokeWidth={1.5} />
