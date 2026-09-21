@@ -3,8 +3,19 @@
   "title": "Network Interface",
   "subtitle": "Titik koneksi OS ke jaringan",
   "category": "Linux Fundamentals",
-  "tags": ["Network Interface", "Link", "MAC", "IP", "DHCP", "Route", "DNS", "Networking"],
+  "tags": [
+    "Network Interface",
+    "Link",
+    "MAC",
+    "IP",
+    "DHCP",
+    "Route",
+    "DNS",
+    "Networking"
+  ],
   "color": "#38BDF8",
   "status": "draft",
-  "priority": 81
+  "priority": 81,
+  "pinned": true,
+  "pinnedAt": "2026-09-21T00:39:45.738Z"
 }

@@ -40,7 +40,7 @@ export const PHASES = [
 
 export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
-export const INTRO_CATEGORY_LABEL = 'LINUX FUNDAMENTALS · SERVER & WEB'
+export const INTRO_CATEGORY_LABEL = 'LINUX FUNDAMENTALS'
 export const INTRO_TITLE_A = 'WEB'
 export const INTRO_TITLE_B = ' SERVER'
 export const INTRO_SUBTITLE = 'Penerima request pertama'
@@ -107,7 +107,7 @@ export const ACT4_BEATS = {
   closing: { caption: COPY.RESPONSE_VIA_SERVER },
 }
 
-export const CLOSING_LINE = 'Reverse proxy dan domain menyusul di Content 93.'
+export const CLOSING_LINE = 'Static dibaca langsung, dinamis lewat app — keduanya kembali lewat web server.'
 
 // ── SFX_MAP — nama file diverifikasi ada di public/audio/ (audit
 // sebelum dipakai, sama seperti 81-network-interface/data.js). ──

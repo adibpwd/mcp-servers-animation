@@ -358,6 +358,7 @@ export default function ContentWindow({ record }) {
               onBack={handleClose}
               isFocused={isFocused && !isMinimized}
               onPlayerStateChange={(playerState) => setPlayerState(windowId, playerState)}
+              onContentUpdate={(updated) => setContent((prev) => ({ ...prev, ...updated }))}
               windowed
             />
           </WindowErrorBoundary>

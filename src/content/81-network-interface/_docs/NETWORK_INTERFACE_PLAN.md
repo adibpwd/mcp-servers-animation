@@ -2,7 +2,7 @@
 
 | Item | Nilai |
 |---|---|
-| Status | PLAN ONLY — jangan dieksekusi |
+| Status | ✅ EKSEKUSI-01 selesai (kode + data ditulis; lihat `Animation.jsx`, `data.js`, `acts/`) — REVISI-01 (migrasi pola "1 act = 1 file") juga sudah dieksekusi, lihat `revisi/2026-09-21-revisi-01-selaras-standar-act-scene.md`. Preview manual & export MP4 masih outstanding. |
 | Audiens | Pemula Linux yang memahami device dan jaringan dasar |
 | Hasil belajar | Memahami interface sebagai titik koneksi OS, serta relasi link, MAC, IP, route, DNS, dan state konektivitas. |
 

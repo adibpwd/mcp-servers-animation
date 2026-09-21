@@ -5,6 +5,7 @@ import { SettingsModal } from './SettingsModal'
 import { TimelineProgressBar } from './TimelineProgressBar'
 import { ProgressIndicator } from './ProgressIndicator'
 import { FloatingControls } from './FloatingControls'
+import { saveItemChanges } from '../data/contentManagement'
 
 // Export server URL - always use same hostname as frontend (dynamic runtime detection)
 const getExportServerUrl = () => {
@@ -12,7 +13,7 @@ const getExportServerUrl = () => {
   return `http://${window.location.hostname}:3373`
 }
 
-export function PlayerShell({ content, onBack, isFocused = true, onPlayerStateChange, windowed = false }) {
+export function PlayerShell({ content, onBack, isFocused = true, onPlayerStateChange, onContentUpdate, windowed = false }) {
   const [isPaused, setIsPaused] = useState(true)
   const [exportStatus, setExportStatus] = useState(null)
   const [isExporting, setIsExporting] = useState(false)
@@ -20,6 +21,23 @@ export function PlayerShell({ content, onBack, isFocused = true, onPlayerStateCh
   const [showSettings, setShowSettings] = useState(false)
   const [audioUnlocked, setAudioUnlocked] = useState(false)
   const [copiedCaption, setCopiedCaption] = useState(false)
+  const [currentStatus, setCurrentStatus] = useState(content.status || 'draft')
+  const [isSavingStatus, setIsSavingStatus] = useState(false)
+
+  useEffect(() => {
+    if (content.status) setCurrentStatus(content.status)
+  }, [content.status])
+
+  const handleStatusChange = async (newStatus) => {
+    if (newStatus === currentStatus || isSavingStatus) return
+    setIsSavingStatus(true)
+    const res = await saveItemChanges(content.id, { status: newStatus })
+    setIsSavingStatus(false)
+    if (res.success) {
+      setCurrentStatus(newStatus)
+      if (onContentUpdate) onContentUpdate({ ...content, status: newStatus })
+    }
+  }
 
   const { settings, updateSettings, isLoaded } = useExportSettings()
 
@@ -398,6 +416,9 @@ export function PlayerShell({ content, onBack, isFocused = true, onPlayerStateCh
           copiedCaption={copiedCaption}
           onCopyCaption={handleCopyCaption}
           onOpenSettings={() => setShowSettings(true)}
+          currentStatus={currentStatus}
+          onStatusChange={handleStatusChange}
+          isSavingStatus={isSavingStatus}
         />
       )}
 

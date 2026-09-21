@@ -1,12 +1,13 @@
-// Icon loader — 60-linux-processes (revisi-01)
-// STATUS: 5 icon (icon-browser, icon-editor, icon-music, icon-launch-cursor,
-// icon-warning-load) BELUM digenerate (icons.json §generation.prompt sudah
-// siap, tapi grid PNG-nya harus dibuat manual lewat ChatGPT lalu di-upload +
-// crop via /api/icons/generate). Sampai itu terjadi, getIcon() sengaja
-// fallback ke default-icon.png untuk SEMUA id — supaya Animation.jsx sudah
-// bisa render <image> tanpa menunggu asset asli, dan begitu 5 PNG asli sudah
-// ada, GANTI file ini saja (import per-id seperti pola
-// src/content/11-tailscale/icons/loader.js) — Animation.jsx tidak perlu diubah.
+// Icon loader — 60-linux-processes
+// STATUS: DEPRECATED sejak revisi-03 (2026-09-21). Kelima icon
+// (browser/editor/music/launch-cursor/warning-load) sekarang inline SVG
+// (lihat ../icons/inlineSvg.jsx, dipakai dari ../acts/common.jsx) —
+// TIDAK ada lagi <image> yang memanggil getIcon() di kode topic ini.
+// File ini (+ icons.json + default-icon.png) dibiarkan ada sebagai
+// riwayat/referensi pola PNG-based (lihat revisi-01), bukan karena masih
+// dipakai. Kalau suatu saat topic ini butuh icon PNG asli lagi (bukan
+// inline SVG), pola importnya tetap seperti ini — tapi untuk sekarang,
+// getIcon() di bawah tidak dipanggil dari mana pun.
 
 import defaultIcon from './default-icon.png'
 

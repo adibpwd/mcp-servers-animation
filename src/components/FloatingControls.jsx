@@ -22,6 +22,9 @@ export function FloatingControls({
   copiedCaption,
   onCopyCaption,
   onOpenSettings,
+  currentStatus,
+  onStatusChange,
+  isSavingStatus,
 }) {
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState({ x: null, y: null }) // null = pakai default CSS (kanan-bawah)
@@ -95,6 +98,35 @@ export function FloatingControls({
     <div ref={rootRef} className="floating-controls" style={style}>
       {open && (
         <div className="floating-menu" role="menu">
+          {onStatusChange && (
+            <div className="floating-menu-status-group">
+              <div className="floating-menu-label">Status Konten</div>
+              <div className="floating-status-pills">
+                {[
+                  { id: 'draft', label: 'Draft', color: '#64748B' },
+                  { id: 'ready', label: 'Ready', color: '#FBBF24' },
+                  { id: 'posted', label: 'Posted', color: '#34D399' },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    className={`status-pill ${currentStatus === s.id ? 'is-active' : ''}`}
+                    style={{
+                      '--pill-color': s.color,
+                    }}
+                    disabled={isSavingStatus}
+                    onClick={() => onStatusChange(s.id)}
+                    title={`Ubah status ke ${s.label}`}
+                  >
+                    <span className="pill-dot" style={{ backgroundColor: s.color }} />
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="floating-menu-divider" />
+
           <button
             className="floating-menu-item"
             onClick={onOpenSettings}

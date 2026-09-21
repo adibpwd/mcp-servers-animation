@@ -1,10 +1,12 @@
 {
   "id": "linux-logs",
-  "title": "Linux Logs",
-  "subtitle": "",
+  "title": "Log System",
+  "subtitle": "Jejak yang tercatat, kalau tahu cara bacanya",
   "category": "Linux Fundamentals",
-  "tags": [],
-  "color": "#34D399",
+  "tags": ["Linux", "journald", "syslog", "logging", "audit"],
+  "color": "#2DD4BF",
   "status": "draft",
-  "priority": 67
+  "priority": 67,
+  "pinned": true,
+  "pinnedAt": "2026-09-21T00:40:21.317Z"
 }

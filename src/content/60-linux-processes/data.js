@@ -44,6 +44,17 @@ export const INTRO_TITLE_A = 'LINUX '
 export const INTRO_TITLE_B = 'PROCESSES'
 export const INTRO_SUBTITLE = 'Program yang sedang hidup di sistem'
 
+// revisi-03: fix judul hero "LINUX PROCESSES" mepet/terpotong di tepi kanan
+// canvas 820px pada fontSize hero 72 (estimateTextWidth 0.55/char meleset
+// dari lebar render asli Arial Black bold all-caps). Solusi resmi shared
+// component untuk title kepanjangan: prop `titleLines` (pecah jadi 2 baris
+// stack, auto-clamp margin kiri/kanan) — lihat IntroHeaderMorphV1 UPDATE 2.
+// Compact/header TETAP 1 baris dari INTRO_TITLE_A/B di atas, tidak berubah.
+export const INTRO_TITLE_LINES = [
+  [{ label: 'LINUX', color: COLORS.PROGRAM }],
+  [{ label: 'PROCESSES', color: COLORS.SUCCESS }],
+]
+
 // Satu file di disk: browser-app.bin. Jadi anchor Act 1 → Act 4 (browser
 // process, lihat continuity map di PLAN §Continuity map).
 export const PROGRAM_LABEL = 'browser-app.bin'

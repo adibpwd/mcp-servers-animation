@@ -11,8 +11,8 @@
     "ps"
   ],
   "color": "#22D3EE",
-  "status": "draft",
+  "status": "posted",
   "priority": 60,
-  "pinned": true,
-  "pinnedAt": "2026-09-20T23:06:49.846Z"
+  "pinned": false,
+  "pinnedAt": null
 }

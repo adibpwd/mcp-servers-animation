@@ -3,8 +3,17 @@
   "title": "Domain to Server",
   "subtitle": "Perjalanan request dari domain sampai aplikasi",
   "category": "Linux Fundamentals",
-  "tags": ["Domain", "DNS", "HTTPS", "Reverse Proxy", "Web Server", "Network"],
+  "tags": [
+    "Domain",
+    "DNS",
+    "HTTPS",
+    "Reverse Proxy",
+    "Web Server",
+    "Network"
+  ],
   "color": "#38BDF8",
   "status": "draft",
-  "priority": 94
+  "priority": 94,
+  "pinned": true,
+  "pinnedAt": "2026-09-21T00:40:29.068Z"
 }

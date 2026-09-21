@@ -3,8 +3,16 @@
   "title": "Reverse Proxy",
   "subtitle": "Satu pintu untuk banyak aplikasi",
   "category": "Linux Fundamentals",
-  "tags": ["Reverse Proxy", "Nginx", "Apache", "Load Balancer", "Gateway", "Routing"],
+  "tags": [
+    "Reverse Proxy",
+    "Nginx",
+    "Apache",
+    "Routing",
+    "Backend"
+  ],
   "color": "#38BDF8",
-  "status": "draft",
-  "priority": 93
+  "status": "posted",
+  "priority": 93,
+  "pinned": false,
+  "pinnedAt": null
 }

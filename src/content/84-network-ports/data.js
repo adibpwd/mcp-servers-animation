@@ -80,3 +80,136 @@ export const ACT1_TEXT = {
   apply: 'Packet masuk lane TCP 443',
   after: 'Port memilih layanan, bukan mesin',
 }
+
+// ═══════════════════════════════════════════════
+// ACT 2 — Listener Menerima
+// Action id: `listener-menerima`
+// Before: lane :443 ada, process masih redup.
+// Intent: packet mengetuk listener.
+// Travel: packet bergerak dari lane ke listener/socket lalu process.
+// Apply: listener glow; packet masuk ke process.
+// After: service benar-benar menerima koneksi.
+// ═══════════════════════════════════════════════
+export const LISTENERS = [
+  { id: 'web', label: 'Web Server', addr: '0.0.0.0:443', laneId: '443', primary: true },
+  { id: 'ssh', label: 'sshd', addr: '0.0.0.0:22', laneId: '22' },
+]
+
+export const ACT2_TEXT = {
+  before: 'Lane 443 ada, proses belum aktif',
+  travel: 'Packet mengetuk listener',
+  apply: 'Listener menyala, proses menerima',
+  after: 'Tanpa listener, port hanya angka',
+}
+
+// ═══════════════════════════════════════════════
+// ACT 3 — TCP dan UDP
+// Action id: `tcp-vs-udp`
+// Before: dua lane protocol redup.
+// Intent: client memilih jenis komunikasi.
+// Travel: TCP SYN → SYN-ACK → ACK; UDP satu datagram langsung.
+// Apply: TCP connection state / UDP datagram tiba.
+// After: bentuk komunikasi berbeda, bukan sekadar label.
+// ═══════════════════════════════════════════════
+export const TCP_STEPS = [
+  { id: 'syn', label: 'SYN', from: 'client', to: 'server' },
+  { id: 'synack', label: 'SYN-ACK', from: 'server', to: 'client' },
+  { id: 'ack', label: 'ACK', from: 'client', to: 'server' },
+]
+
+export const UDP_DATAGRAM = { id: 'udp-1', label: 'DNS query', port: '53' }
+
+export const ACT3_TEXT = {
+  before: 'Dua jalur protokol belum dipakai',
+  tcpApply: 'Koneksi TCP resmi terbentuk',
+  udpApply: 'Datagram UDP langsung terkirim',
+  after: 'TCP menjaga; UDP hanya mengirim',
+}
+
+// ═══════════════════════════════════════════════
+// ACT 4 — Dua Ujung Koneksi
+// Action id: `dua-ujung-port`
+// Before: client dan server belum punya endpoint lengkap.
+// Intent: client membuka koneksi (lanjutan packet TCP Act 3).
+// Travel: source port ephemeral lahir dari client, packet menuju
+//         destination listener (lane 443 yang sudah established).
+// Apply: kedua endpoint terhubung oleh satu socket line.
+// After: source dan destination port punya peran berbeda.
+// ═══════════════════════════════════════════════
+export const CONNECTION_ENDPOINT = {
+  srcPort: '51789',
+  dstPort: '443',
+}
+
+export const ACT4_TEXT = {
+  before: 'Kedua sisi koneksi belum lengkap',
+  travel: 'Source port ephemeral lahir di client',
+  apply: 'Satu socket line ikat dua ujung',
+  after: 'Source sementara, destination tetap',
+}
+
+// ═══════════════════════════════════════════════
+// ACT 5 — Scope dan Firewall
+// Action id: `scope-dan-policy`
+// Before: listener tersedia tapi scope/policy belum jelas.
+// Intent: packet BARU datang dari jaringan luar (bukan lanjutan
+//         packet client asli — actor baru sesuai narasi eksplisit).
+// Travel: packet mencoba bind scope lalu policy gate.
+// Apply: jalur valid diteruskan atau berhenti di gate.
+// After: listen dan allowed adalah pemeriksaan berbeda.
+// ═══════════════════════════════════════════════
+export const BIND_SCOPES = [
+  { id: 'loopback', label: 'Loopback 127.0.0.1', reach: 'Mesin sendiri saja' },
+  { id: 'private', label: 'Private Interface', reach: 'Jaringan privat saja' },
+  { id: 'all', label: 'All Interfaces 0.0.0.0', reach: 'Semua jaringan', active: true },
+]
+
+export const FIREWALL_OUTCOME = { allowed: true, reason: 'Policy izinkan port 443' }
+
+export const ACT5_TEXT = {
+  before: 'Listener siap, jalur luar belum diuji',
+  scopeApply: 'Bind scope izinkan semua interface',
+  policyApply: 'Policy periksa jalur packet',
+  after: 'Listening dan diizinkan itu beda',
+}
+
+// ═══════════════════════════════════════════════
+// ACT 6 — Jalur Nyata
+// Action id: `edge-ke-backend`
+// Before: public endpoint dan backend terpisah.
+// Intent: client BARU menuju public endpoint (actor publik, terpisah
+//         dari packet Act 5 — sesuai narasi "client menuju public IP").
+// Travel: packet melalui NAT/proxy/load-balancer ke backend.
+// Apply: backend menerima request; health signal muncul setelah respons.
+// After: port terbuka bukan bukti aplikasi sehat.
+// ═══════════════════════════════════════════════
+export const REAL_PATH_HOPS = [
+  { id: 'edge', label: 'Public 198.51.100.7:443' },
+  { id: 'nat', label: 'NAT / Load Balancer' },
+  { id: 'backend', label: 'Backend 10.0.0.5:8443' },
+]
+
+export const HEALTH_RESULT = { open: true, responds: true, healthy: false }
+
+export const ACT6_TEXT = {
+  before: 'Public endpoint dan backend terpisah',
+  travel: 'Packet melalui NAT ke backend',
+  apply: 'Backend terima request, respons dikirim',
+  after: 'Port terbuka bukan bukti sehat',
+}
+
+// ═══════════════════════════════════════════════
+// SFX MAP — nama dipakai ulang dari daftar yang sudah diaudit di
+// 17-rest-api / 44-ssh (public/audio/*), tidak ada sourcing baru.
+// ═══════════════════════════════════════════════
+export const SFX_MAP = {
+  POP: { category: 'ui', name: 'pop' },
+  TICK: { category: 'ui', name: 'tick' },
+  CHIME: { category: 'ui', name: 'chime' },
+  WHOOSH: { category: 'transitions', name: 'whoosh' },
+  SWOOSH: { category: 'transitions', name: 'swoosh' },
+  LOCK: { category: 'impacts', name: 'lock' },
+  CONFIRM: { category: 'success', name: 'confirm' },
+  DING: { category: 'success', name: 'ding' },
+  ALERT_PULSE: { category: 'warnings', name: 'alert-pulse' },
+}

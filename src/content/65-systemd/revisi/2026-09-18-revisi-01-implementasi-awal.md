@@ -1,6 +1,8 @@
 # Revisi 01 — Implementasi Awal Content 65 (systemd)
 
-Status: ✅ SUDAH DIEKSEKUSI (2026-09-18) — compile lolos, preview manual & export MP4 belum dijalankan
+Status: ✅ SUDAH DIEKSEKUSI (2026-09-18) — compile lolos. Export MP4 test sukses
+(2026-09-21, retry ke-2, 52.70s utuh + visual QA lolos). Preview manual & review
+konten oleh Rudy masih pending.
 
 Sumber: `_docs/SYSTEMD_SERVICES_LOGS_PLAN.md` (gabungan Content 65 systemd + 67 logs,
 status awal PLAN ONLY, dieksekusi atas persetujuan eksplisit user).
@@ -39,8 +41,26 @@ status awal PLAN ONLY, dieksekusi atas persetujuan eksplisit user).
 - Restart ditampilkan eksplisit **terbatas** (1/3), tidak menyarankan restart
   tanpa batas sebagai solusi.
 
-## Belum dikerjakan (di luar cakupan sesi ini)
+## Update 2026-09-21 — Export MP4 test
 
-- [ ] Preview manual di browser — cek tempo & keterbacaan tiap Act
-- [ ] Export MP4 test — verifikasi visual lifecycle + journal + diagnosis di video
-- [ ] Review konten oleh user (state contract, warna, durasi per-Act)
+- [x] Compile-check ulang: `npx esbuild --bundle --loader:.jsx=jsx --jsx=automatic` — lolos, 0 error.
+- [x] Export MP4 percobaan 1: **GAGAL diam-diam** — 2 frame capture gagal di tengah
+      (frame 859-860, "Execution context was destroyed" saat reload Puppeteer),
+      menyebabkan gap di penomoran `frame_%05d.png`. ffmpeg image2 demuxer berhenti
+      baca di gap tsb → video ke-render cuma 28.6s dari 55.85s (exit code 0, tidak
+      terdeteksi sebagai error). Akibat: Act 4 (akhir), Act 5 (Journal), Act 6
+      (Diagnosis) — termasuk seluruh materi log Content 67 — hilang dari video.
+- [x] Export MP4 percobaan 2 (retry): **BERHASIL** — 1581/1581 frame tertangkap
+      tanpa gap, video 52.70s (match durasi animasi terdeteksi), 1.21 MB.
+- [x] Visual QA spot-check via ffmpeg frame extraction (t=2s, 15s, 25s, 33s, 40s,
+      45s, 49s): Act 1 (Process→Service), Act 5 (Jejak di Journal — journal timeline
+      7 entri tampil), Act 6 (Diagnosis: Ikuti Bukti — 3 langkah Status/Journal/
+      Konteks) semua sesuai storyboard plan.
+- [ ] Preview manual langsung oleh Rudy di browser (tempo & keterbacaan) — belum
+      dilakukan, di luar kapasitas sesi ini.
+- [ ] Review konten oleh Rudy (state contract, warna, durasi per-Act) — masih pending.
+
+**Catatan untuk lain kali**: script `export-video.js`/`export-lib.js` tidak
+mendeteksi gap frame sebagai kegagalan (exit code selalu 0 walau video
+terpotong). Kalau durasi output jomplang dari durasi animasi terdeteksi,
+curigai gap frame capture, bukan cuma percaya exit code.

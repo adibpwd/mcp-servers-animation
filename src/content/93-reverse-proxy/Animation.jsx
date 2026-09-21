@@ -1,4 +1,6 @@
 // 93-reverse-proxy/Animation.jsx
+// Timeline GSAP + state + komposisi. Scene per-Act (pure presentational) ada di acts/
+// (pola "1 act = 1 file", docs/standardizations/07-act-scene-pattern.md).
 
 import React, { useState, useEffect, useRef } from 'react'
 import { flushSync } from 'react-dom'
@@ -13,247 +15,208 @@ import {
   VH,
   PHASES,
   COLORS,
+  COPY,
+  ZONES,
+  SFX_MAP,
+  INITIAL_VIS,
+  INITIAL_ACTORS,
+  INITIAL_TXT,
   INTRO_CATEGORY,
   INTRO_TITLE_A,
   INTRO_TITLE_B,
   INTRO_SUBTITLE,
-  ZONES,
-  SFX_MAP,
+  INTRO_HOLD,
+  INTRO_MORPH,
+  INTRO_BG_ACT,
 } from './data'
 import sfxLoader from '../../shared/audio/sfxLoader'
+import { ACT_SCENES } from './acts'
 
-export default function ReverseProxyAnimation({
-  paused,
-  speed,
-  volume,
-  previewSfx,
-  audioUnlocked,
-}) {
-  // State management
-  const [showIntro, setShowIntro] = useState(true)
+// ───────────────────────── Util state actor ─────────────────────────
+
+const makeActors = () => cloneActors(INITIAL_ACTORS)
+function cloneActors(src) {
+  return Object.fromEntries(Object.entries(src).map(([k, v]) => [k, { ...v }]))
+}
+
+// ───────────────────────── Komponen utama ─────────────────────────
+
+export default function ReverseProxyAnimation({ paused, speed, volume, previewSfx, audioUnlocked }) {
   const [morphP, setMorphP] = useState(0)
   const [phaseIdx, setPhaseIdx] = useState(-1)
   const [contentStarted, setContentStarted] = useState(false)
+  const [vis, setVis] = useState(INITIAL_VIS)
+  const [actors, setActors] = useState(makeActors)
+  const [txt, setTxt] = useState(INITIAL_TXT)
+  const [clientStatus, setClientStatus] = useState('idle')
 
-  // Act-specific state
-  const [clientVisible, setClientVisible] = useState(false)
-  const [publicEndpointVisible, setPublicEndpointVisible] = useState(false)
-  const [proxyVisible, setProxyVisible] = useState(false)
-  const [backendAVisible, setBackendAVisible] = useState(false)
-  const [backendBVisible, setBackendBVisible] = useState(false)
-  const [packetVisible, setPacketVisible] = useState(false)
-  const [packetPos, setPacketPos] = useState({ x: 0, y: 0 })
-  const [routingChipVisible, setRoutingChipVisible] = useState(false)
-  const [responseVisible, setResponseVisible] = useState(false)
-  const [responsePos, setResponsePos] = useState({ x: 0, y: 0 })
-
-  // Refs
+  const V = useRef({ ...INITIAL_VIS }).current // nilai animasi mutable (0..1)
+  const A = useRef(makeActors()).current // posisi actor mutable
   const tlRef = useRef(null)
   const volumeRef = useRef(volume)
   const speedRef = useRef(speed)
 
-  // Update volume/speed refs
-  useEffect(() => {
-    volumeRef.current = volume
-  }, [volume])
-
-  useEffect(() => {
-    speedRef.current = speed
-  }, [speed])
-
-  // SFX setup
+  useEffect(() => { volumeRef.current = volume }, [volume])
+  useEffect(() => { speedRef.current = speed }, [speed])
   useEffect(() => {
     sfxLoader.setEnabled(Boolean(previewSfx && audioUnlocked))
   }, [previewSfx, audioUnlocked])
 
-  // SFX helper
-  const playSfx = (sfxKey) => {
-    const entry = SFX_MAP[sfxKey]
+  const playSfx = (key) => {
+    const entry = SFX_MAP[key]
     if (!entry) return
     sfxLoader.play(entry.category, entry.name, { volume: volumeRef.current, speed: speedRef.current })
   }
 
-  // Helper functions
-  const lerp = (a, b, t) => a + (b - a) * t
-
-  const popIn = (tl, time, setState, sfxKey = 'POP') => {
-    tl.add(() => {
-      setState(true)
-      if (sfxKey) playSfx(sfxKey)
-    }, time)
-  }
-
-  const popOut = (tl, time, setState) => {
-    tl.add(() => setState(false), time)
-  }
-
-  // Master timeline
   useEffect(() => {
     const master = gsap.timeline({ repeat: -1, repeatDelay: 1.5 })
     tlRef.current = master
     window.__animationTimeline = master
     window.__flushSync = flushSync
 
-    let time = 0
+    const syncV = () => setVis({ ...V })
+    const syncA = () => setActors(cloneActors(A))
 
-    // ===== INTRO: Hero to Header Morph =====
-    master.add(() => setShowIntro(true), time)
-    master.add(() => setPhaseIdx(-1), time)
-    time += 1.8
+    // Helper timeline (semua memakai waktu absolut pada master)
+    const fade = (at, key, to, dur = 0.35, ease = 'power2.out') =>
+      master.to(V, { [key]: to, duration: dur, ease, onUpdate: syncV }, at)
+    const sfx = (at, key) => master.add(() => playSfx(key), at)
+    const pop = (at, key, sfxKey, dur = 0.35) => {
+      fade(at, key, 1, dur)
+      if (sfxKey) sfx(at, sfxKey)
+    }
+    const pulse = (at, key, dur = 0.3) => {
+      fade(at, key, 1, dur / 2)
+      fade(at + dur / 2, key, 0, dur / 2)
+    }
+    const move = (at, name, props, dur, ease = 'power2.inOut') =>
+      master.to(A[name], { ...props, duration: dur, ease, onUpdate: syncA }, at)
+    const place = (at, name, vals) =>
+      master.add(() => { Object.assign(A[name], vals); syncA() }, at)
+    const swapNote = (at, key, txtKey, lines) => {
+      fade(at, key, 0, 0.25)
+      master.add(() => setTxt((prev) => ({ ...prev, [txtKey]: lines })), at + 0.25)
+      fade(at + 0.25, key, 1, 0.4)
+    }
 
+    // ── Reset loop (t=0): semua state naratif kembali ke awal ──
+    master.add(() => {
+      Object.assign(V, INITIAL_VIS)
+      Object.entries(INITIAL_ACTORS).forEach(([k, v]) => Object.assign(A[k], v))
+      setPhaseIdx(-1)
+      setMorphP(0)
+      setContentStarted(false)
+      setClientStatus('idle')
+      setTxt(INITIAL_TXT)
+      syncV()
+      syncA()
+    }, 0)
+
+    // ── Intro: hero → header compact ──
+    let time = INTRO_HOLD
     const mo = { p: 0 }
-    master.to(mo, {
-      p: 1,
-      duration: 0.8,
-      ease: 'power3.inOut',
-      onUpdate: () => setMorphP(mo.p),
-    }, time)
-    time += 0.8
+    master.to(mo, { p: 1, duration: INTRO_MORPH, ease: 'power3.inOut', onUpdate: () => setMorphP(mo.p) }, time)
+    time += INTRO_MORPH
+    master.add(() => setContentStarted(true), time)
 
-    master.add(() => {
-      setShowIntro(false)
-      setContentStarted(true)
-    }, time)
+    // ── Act 1: Satu pintu publik ──
+    const a1 = time
+    master.add(() => setPhaseIdx(0), a1)
+    pop(a1 + 0.3, 'client', 'POP')
+    fade(a1 + 1.1, 'nClient', 1, 0.4)
+    pop(a1 + 2.1, 'endpoint', 'POP')
+    fade(a1 + 2.8, 'nEndpoint', 1, 0.4)
+    pop(a1 + 3.8, 'gate', 'CONNECT')
+    fade(a1 + 4.4, 'nGate', 1, 0.4)
+    // Backend dan cabang muncul redup; sengaja silent karena gate sudah berbunyi (CONNECT, 1,7 detik sebelumnya)
+    pop(a1 + 5.5, 'beA', null)
+    pop(a1 + 5.5, 'beB', null)
+    fade(a1 + 5.5, 'lines', 1, 0.4)
+    master.add(() => setClientStatus('loading'), a1 + 6.6)
+    sfx(a1 + 6.6, 'CLICK')
+    place(a1 + 6.85, 'pk1', { x: ZONES.PACKET_START.x, y: ZONES.PACKET_START.y, s: 0 })
+    sfx(a1 + 6.9, 'PACKET_SEND')
+    move(a1 + 6.9, 'pk1', { s: 1 }, 0.25, 'power2.out')
+    move(a1 + 6.9, 'pk1', { y: ZONES.PACKET_ABOVE_ENDPOINT.y }, 0.5, 'power2.in')
+    pulse(a1 + 7.4, 'endpointPulse', 0.35)
+    move(a1 + 7.75, 'pk1', { y: ZONES.GATE_ENTRY.y }, 0.7) // melintas di belakang badge endpoint
+    // Apply: packet diserap gate, scan dot lahir (overlap)
+    sfx(a1 + 8.45, 'CONNECT')
+    move(a1 + 8.45, 'pk1', { s: 0 }, 0.25, 'power2.in')
+    pulse(a1 + 8.45, 'gatePulse', 0.4)
+    place(a1 + 8.4, 'dot', { x: ZONES.SCAN_SPAWN.x, y: ZONES.SCAN_SPAWN.y, s: 0 })
+    move(a1 + 8.45, 'dot', { s: 1 }, 0.3, 'power2.out')
+    time = a1 + PHASES[0].duration
 
-    // ===== ACT 1: Satu Pintu Publik =====
-    const act1Start = time
-    master.add(() => setPhaseIdx(0), time)
-    
-    // Reset state
-    master.add(() => {
-      setClientVisible(false)
-      setPublicEndpointVisible(false)
-      setProxyVisible(false)
-      setBackendAVisible(false)
-      setBackendBVisible(false)
-      setPacketVisible(false)
-      setRoutingChipVisible(false)
-      setResponseVisible(false)
-    }, time)
-    time += 0.3
+    // ── Act 2: Proxy memilih tujuan ──
+    const a2 = time
+    master.add(() => setPhaseIdx(1), a2)
+    swapNote(a2 + 0.3, 'nGate', 'gate', COPY.NOTE_GATE_2)
+    pop(a2 + 0.9, 'ruleA', 'POP')
+    pop(a2 + 1.2, 'ruleB', null) // silent: 0,3 detik setelah POP chip A
+    sfx(a2 + 2.4, 'BEAM')
+    move(a2 + 2.4, 'dot', { x: ZONES.RULE_B.x, y: ZONES.SCAN_Y }, 0.7)
+    sfx(a2 + 3.1, 'TICK')
+    fade(a2 + 3.1, 'ruleBMiss', 1, 0.2)
+    fade(a2 + 3.3, 'ruleBMiss', 0, 0.3)
+    sfx(a2 + 3.9, 'BEAM')
+    move(a2 + 3.9, 'dot', { x: ZONES.RULE_A.x, y: ZONES.SCAN_Y }, 0.7)
+    sfx(a2 + 4.6, 'MATCH')
+    fade(a2 + 4.6, 'ruleAMatch', 1, 0.3)
+    swapNote(a2 + 4.6, 'nGate', 'gate', COPY.NOTE_GATE_3)
+    sfx(a2 + 5.7, 'BEAM')
+    fade(a2 + 5.7, 'lineALit', 1, 0.9, 'power1.inOut')
+    sfx(a2 + 6.6, 'POP')
+    fade(a2 + 6.6, 'beAActive', 1, 0.4)
+    fade(a2 + 6.8, 'nBeA', 1, 0.4)
+    fade(a2 + 6.8, 'nBeB', 1, 0.4)
+    time = a2 + PHASES[1].duration
 
-    // Client muncul
-    popIn(master, time, setClientVisible, 'POP')
-    time += 0.5
+    // ── Act 3: Request diteruskan ──
+    const a3 = time
+    master.add(() => setPhaseIdx(2), a3)
+    swapNote(a3 + 0.3, 'nGate', 'gate', COPY.NOTE_GATE_4)
+    place(a3 + 1.45, 'pk2', { x: ZONES.EXIT_A.x, y: ZONES.EXIT_A.y, s: 0 })
+    sfx(a3 + 1.5, 'PACKET_SEND')
+    move(a3 + 1.5, 'pk2', { s: 1 }, 0.25, 'power2.out')
+    move(a3 + 1.5, 'dot', { s: 0 }, 0.25, 'power2.in') // overlap: dot menyusut saat packet keluar
+    move(a3 + 1.8, 'pk2', { x: ZONES.BACKEND_A.x, y: ZONES.BACKEND_ENTRY_Y }, 1.1)
+    sfx(a3 + 2.9, 'CONNECT')
+    move(a3 + 2.9, 'pk2', { s: 0 }, 0.25, 'power2.in')
+    fade(a3 + 2.9, 'beAProc', 1, 0.4)
+    swapNote(a3 + 3.6, 'nBeA', 'beA', COPY.NOTE_BE_A_2)
+    time = a3 + PHASES[2].duration
 
-    // Public endpoint muncul
-    popIn(master, time, setPublicEndpointVisible, 'POP')
-    time += 0.5
+    // ── Act 4: Response kembali ──
+    const a4 = time
+    master.add(() => setPhaseIdx(3), a4)
+    swapNote(a4 + 0.3, 'nBeA', 'beA', COPY.NOTE_BE_A_3)
+    place(a4 + 1.55, 'rs1', { x: ZONES.BACKEND_A.x, y: ZONES.BACKEND_ENTRY_Y, s: 0 })
+    sfx(a4 + 1.6, 'POP')
+    move(a4 + 1.6, 'rs1', { s: 1 }, 0.25, 'power2.out')
+    fade(a4 + 1.6, 'beAProc', 0, 0.4)
+    sfx(a4 + 2.0, 'PACKET_SEND')
+    move(a4 + 2.0, 'rs1', { x: ZONES.EXIT_A.x, y: ZONES.EXIT_A.y + 6 }, 1.1)
+    // Handoff di gate: capsule kedua lahir sebelum capsule pertama selesai diserap
+    place(a4 + 2.95, 'rs2', { x: ZONES.GATE_ENTRY.x, y: ZONES.GATE_ENTRY.y, s: 0 })
+    move(a4 + 3.0, 'rs2', { s: 1 }, 0.3, 'power2.out')
+    sfx(a4 + 3.1, 'CONNECT')
+    move(a4 + 3.1, 'rs1', { s: 0 }, 0.25, 'power2.in')
+    pulse(a4 + 3.1, 'gatePulse', 0.4)
+    swapNote(a4 + 3.2, 'nGate', 'gate', COPY.NOTE_GATE_5)
+    sfx(a4 + 3.5, 'PACKET_SEND')
+    move(a4 + 3.5, 'rs2', { y: ZONES.RESPONSE_END.y }, 1.2) // melintas di belakang badge endpoint
+    pulse(a4 + 3.9, 'endpointPulse', 0.35)
+    // Apply: client menerima response
+    sfx(a4 + 4.7, 'SUCCESS')
+    move(a4 + 4.7, 'rs2', { s: 0 }, 0.2, 'power2.in')
+    master.add(() => setClientStatus('done'), a4 + 4.7)
+    fade(a4 + 4.7, 'clientDone', 1, 0.3)
+    swapNote(a4 + 4.7, 'nClient', 'client', COPY.NOTE_CLIENT_DONE)
+    pop(a4 + 5.9, 'takeaway', 'TAKEAWAY', 0.4)
+    // Penanda akhir: memperpanjang timeline sampai hold Act 4 selesai (tanpa ini hold hilang saat loop)
+    master.add(() => {}, a4 + PHASES[3].duration)
 
-    // Proxy gate muncul
-    popIn(master, time, setProxyVisible, 'CONNECT')
-    time += 0.8
-
-    // Backend A dan B muncul (redup)
-    popIn(master, time, setBackendAVisible, null)
-    popIn(master, time, setBackendBVisible, null)
-    time += 1.0
-
-    // Request packet dari client ke proxy
-    const packetObj = { x: 366, y: ZONES.CLIENT.y }
-    master.add(() => {
-      setPacketVisible(true)
-      setPacketPos({ x: packetObj.x, y: packetObj.y })
-      playSfx('WHOOSH')
-    }, time)
-
-    master.to(packetObj, {
-      y: ZONES.PROXY_GATE.y,
-      duration: 0.8,
-      ease: 'power2.inOut',
-      onUpdate: () => setPacketPos({ x: packetObj.x, y: packetObj.y }),
-    }, time)
-    time += 0.8
-
-    // Packet masuk proxy
-    master.add(() => {
-      playSfx('CONNECT')
-    }, time)
-    time += PHASES[0].duration - (time - act1Start)
-
-    // ===== ACT 2: Proxy Memilih Tujuan =====
-    const act2Start = time
-    master.add(() => setPhaseIdx(1), time)
-    time += 0.3
-
-    // Routing chip muncul
-    popIn(master, time, setRoutingChipVisible, 'CLICK')
-    time += 1.2
-
-    // Hold untuk membaca routing decision
-    time += 1.0
-
-    time += PHASES[1].duration - (time - act2Start)
-
-    // ===== ACT 3: Request Diteruskan =====
-    const act3Start = time
-    master.add(() => setPhaseIdx(2), time)
-    time += 0.3
-
-    // Packet bergerak dari proxy ke backend A
-    master.to(packetObj, {
-      x: ZONES.BACKEND_A.x,
-      y: ZONES.BACKEND_A.y,
-      duration: 0.9,
-      ease: 'power2.inOut',
-      onUpdate: () => setPacketPos({ x: packetObj.x, y: packetObj.y }),
-    }, time)
-    master.add(() => playSfx('PACKET_SEND'), time)
-    time += 0.9
-
-    // Packet masuk backend
-    master.add(() => {
-      setPacketVisible(false)
-      playSfx('CONNECT')
-    }, time)
-    time += 1.0
-
-    time += PHASES[2].duration - (time - act3Start)
-
-    // ===== ACT 4: Response Kembali =====
-    const act4Start = time
-    master.add(() => setPhaseIdx(3), time)
-    time += 0.3
-
-    // Response muncul dari backend
-    const responseObj = { x: ZONES.BACKEND_A.x, y: ZONES.BACKEND_A.y }
-    master.add(() => {
-      setResponseVisible(true)
-      setResponsePos({ x: responseObj.x, y: responseObj.y })
-      playSfx('SUCCESS')
-    }, time)
-    time += 0.4
-
-    // Response ke proxy
-    master.to(responseObj, {
-      x: 366,
-      y: ZONES.PROXY_GATE.y,
-      duration: 0.8,
-      ease: 'power2.inOut',
-      onUpdate: () => setResponsePos({ x: responseObj.x, y: responseObj.y }),
-    }, time)
-    master.add(() => playSfx('WHOOSH'), time)
-    time += 0.8
-
-    // Response ke client
-    master.to(responseObj, {
-      y: ZONES.CLIENT.y,
-      duration: 0.8,
-      ease: 'power2.out',
-      onUpdate: () => setResponsePos({ x: responseObj.x, y: responseObj.y }),
-    }, time)
-    time += 0.8
-
-    // Response diterima
-    master.add(() => {
-      setResponseVisible(false)
-      playSfx('SUCCESS')
-    }, time)
-    time += 1.0
-
-    time += PHASES[3].duration - (time - act4Start)
-
-    // Cleanup
     return () => {
       master.kill()
       delete window.__animationTimeline
@@ -261,279 +224,43 @@ export default function ReverseProxyAnimation({
     }
   }, [])
 
-  // Speed control
   useEffect(() => {
-    if (tlRef.current) {
-      tlRef.current.timeScale(speed)
-    }
+    if (tlRef.current && speed) tlRef.current.timeScale(speed)
   }, [speed])
 
-  // Pause control
   useEffect(() => {
-    if (tlRef.current) {
-      if (paused) {
-        tlRef.current.pause()
-      } else {
-        tlRef.current.resume()
-      }
-    }
+    if (!tlRef.current) return
+    if (paused) tlRef.current.pause()
+    else tlRef.current.resume()
   }, [paused])
 
   return (
-    <svg
-      viewBox={`0 0 ${VW} ${VH}`}
-      style={{ width: '100%', height: '100%', background: COLORS.DEEP }}
-    >
-      {/* Intro Header */}
-      {showIntro && (
-        <IntroHeaderMorphV1
-          progress={morphP}
-          categorySegments={[{ label: INTRO_CATEGORY, color: COLORS.MUTED }]}
-          titleSegments={[
-            { label: INTRO_TITLE_A, color: COLORS.BLUE },
-            { label: INTRO_TITLE_B, color: COLORS.GREEN },
-          ]}
-          subtitle={INTRO_SUBTITLE}
+    <svg viewBox={`0 0 ${VW} ${VH}`} style={{ width: '100%', height: '100%', background: COLORS.DEEP }}>
+      <rect width={VW} height={VH} fill={COLORS.DEEP} />
+
+      {/* Header tetap dirender setelah morph (progress=1 → mode compact) */}
+      <IntroHeaderMorphV1
+        progress={morphP}
+        categorySegments={[{ label: INTRO_CATEGORY, color: COLORS.MUTED }]}
+        titleSegments={[
+          { label: INTRO_TITLE_A, color: COLORS.BLUE },
+          { label: INTRO_TITLE_B, color: COLORS.GREEN },
+        ]}
+        subtitle={INTRO_SUBTITLE}
+        bg={INTRO_BG_ACT}
+        bgScenes={ACT_SCENES}
+      />
+
+      {contentStarted && <ActBadgeNavigatorV1 phases={PHASES} activeIndex={phaseIdx} />}
+
+      {contentStarted && (
+        <ContentBodyV1
+          debugName="reverse-proxy-body"
+          render={() => {
+            const Act = ACT_SCENES[phaseIdx]
+            return Act ? <Act state={{ vis, actors, txt, clientStatus }} /> : null
+          }}
         />
-      )}
-
-      {/* Act Badge Navigator */}
-      {contentStarted && (
-        <ActBadgeNavigatorV1 phases={PHASES} activeIndex={phaseIdx} />
-      )}
-
-      {/* Content Body */}
-      {contentStarted && (
-        <ContentBodyV1>
-          {(w, h) => (
-            <g>
-            {/* Client */}
-            {clientVisible && (
-              <g transform={`translate(${w / 2}, ${ZONES.CLIENT.y})`}>
-                <rect
-                  x={-80}
-                  y={-30}
-                  width={160}
-                  height={60}
-                  rx={12}
-                  fill={COLORS.LIGHT}
-                  stroke={COLORS.BLUE}
-                  strokeWidth={2}
-                />
-                <text
-                  x={0}
-                  y={5}
-                  textAnchor="middle"
-                  fontSize={16}
-                  fontWeight={700}
-                  fill={COLORS.BLUE}
-                >
-                  CLIENT
-                </text>
-              </g>
-            )}
-
-            {/* Public Endpoint Badge */}
-            {publicEndpointVisible && (
-              <g transform={`translate(${w / 2}, ${ZONES.PUBLIC_ENDPOINT.y})`}>
-                <rect
-                  x={-120}
-                  y={-20}
-                  width={240}
-                  height={40}
-                  rx={20}
-                  fill={COLORS.MID}
-                  stroke={COLORS.CYAN}
-                  strokeWidth={2}
-                />
-                <text
-                  x={0}
-                  y={6}
-                  textAnchor="middle"
-                  fontSize={14}
-                  fill={COLORS.CYAN}
-                >
-                  example.com:443
-                </text>
-              </g>
-            )}
-
-            {/* Proxy Gate */}
-            {proxyVisible && (
-              <g transform={`translate(${w / 2}, ${ZONES.PROXY_GATE.y})`}>
-                <rect
-                  x={-140}
-                  y={-40}
-                  width={280}
-                  height={80}
-                  rx={16}
-                  fill={COLORS.LIGHT}
-                  stroke={COLORS.CYAN}
-                  strokeWidth={3}
-                />
-                <text
-                  x={0}
-                  y={-8}
-                  textAnchor="middle"
-                  fontSize={18}
-                  fontWeight={700}
-                  fill={COLORS.CYAN}
-                >
-                  REVERSE PROXY
-                </text>
-                <text
-                  x={0}
-                  y={14}
-                  textAnchor="middle"
-                  fontSize={12}
-                  fill={COLORS.MUTED}
-                >
-                  nginx / apache
-                </text>
-              </g>
-            )}
-
-            {/* Routing Chip */}
-            {routingChipVisible && (
-              <g transform={`translate(${w / 2}, ${ZONES.ROUTING.y})`}>
-                <rect
-                  x={-100}
-                  y={-18}
-                  width={200}
-                  height={36}
-                  rx={18}
-                  fill={COLORS.PURPLE}
-                  opacity={0.9}
-                />
-                <text
-                  x={0}
-                  y={6}
-                  textAnchor="middle"
-                  fontSize={13}
-                  fontWeight={600}
-                  fill={COLORS.TEXT_PRIMARY}
-                >
-                  /api → Backend A
-                </text>
-              </g>
-            )}
-
-            {/* Backend A */}
-            {backendAVisible && (
-              <g transform={`translate(${ZONES.BACKEND_A.x}, ${ZONES.BACKEND_A.y})`}>
-                <rect
-                  x={-90}
-                  y={-35}
-                  width={180}
-                  height={70}
-                  rx={12}
-                  fill={COLORS.LIGHT}
-                  stroke={COLORS.GREEN}
-                  strokeWidth={2}
-                  opacity={routingChipVisible ? 1 : 0.4}
-                />
-                <text
-                  x={0}
-                  y={-5}
-                  textAnchor="middle"
-                  fontSize={15}
-                  fontWeight={700}
-                  fill={COLORS.GREEN}
-                >
-                  BACKEND A
-                </text>
-                <text
-                  x={0}
-                  y={15}
-                  textAnchor="middle"
-                  fontSize={11}
-                  fill={COLORS.MUTED}
-                >
-                  :8080
-                </text>
-              </g>
-            )}
-
-            {/* Backend B */}
-            {backendBVisible && (
-              <g transform={`translate(${ZONES.BACKEND_B.x}, ${ZONES.BACKEND_B.y})`}>
-                <rect
-                  x={-90}
-                  y={-35}
-                  width={180}
-                  height={70}
-                  rx={12}
-                  fill={COLORS.LIGHT}
-                  stroke={COLORS.ORANGE}
-                  strokeWidth={2}
-                  opacity={0.4}
-                />
-                <text
-                  x={0}
-                  y={-5}
-                  textAnchor="middle"
-                  fontSize={15}
-                  fontWeight={700}
-                  fill={COLORS.ORANGE}
-                >
-                  BACKEND B
-                </text>
-                <text
-                  x={0}
-                  y={15}
-                  textAnchor="middle"
-                  fontSize={11}
-                  fill={COLORS.MUTED}
-                >
-                  :8081
-                </text>
-              </g>
-            )}
-
-            {/* Request Packet */}
-            {packetVisible && (
-              <g transform={`translate(${packetPos.x}, ${packetPos.y})`}>
-                <circle r={18} fill={COLORS.BLUE} opacity={0.8} />
-                <text
-                  x={0}
-                  y={6}
-                  textAnchor="middle"
-                  fontSize={12}
-                  fontWeight={700}
-                  fill={COLORS.TEXT_PRIMARY}
-                >
-                  GET
-                </text>
-              </g>
-            )}
-
-            {/* Response Capsule */}
-            {responseVisible && (
-              <g transform={`translate(${responsePos.x}, ${responsePos.y})`}>
-                <rect
-                  x={-24}
-                  y={-16}
-                  width={48}
-                  height={32}
-                  rx={16}
-                  fill={COLORS.GREEN}
-                  opacity={0.9}
-                />
-                <text
-                  x={0}
-                  y={6}
-                  textAnchor="middle"
-                  fontSize={11}
-                  fontWeight={700}
-                  fill={COLORS.TEXT_PRIMARY}
-                >
-                  200
-                </text>
-              </g>
-            )}
-            </g>
-          )}
-        </ContentBodyV1>
       )}
     </svg>
   )

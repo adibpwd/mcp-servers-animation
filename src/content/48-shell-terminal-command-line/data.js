@@ -57,8 +57,11 @@ export const ARCH_LABELS = {
   pty: 'PTY',
   shell: 'Shell',
   builtin: 'Builtin',
+  builtinDetail: 'Dijalankan shell sendiri, tanpa process baru',
   exec: 'External Executable',
+  execDetail: 'Dicari di PATH, jalan sebagai process terpisah',
   system: 'System & Resources',
+  systemDetail: 'Kernel: CPU, memori, file descriptor',
 }
 
 export const COMMAND_TEXT = 'pwd'

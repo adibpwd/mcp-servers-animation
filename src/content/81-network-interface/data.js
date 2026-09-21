@@ -51,6 +51,7 @@ export const PHASES = [
 export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
 export const INTRO_CATEGORY_LABEL = 'LINUX FUNDAMENTALS · NETWORKING'
+export const INTRO_DOMAIN = 'ADIB-DEV.COM'
 export const INTRO_TITLE_A = 'NETWORK'
 export const INTRO_TITLE_B = ' INTERFACE'
 export const INTRO_SUBTITLE = 'Titik koneksi OS ke jaringan'

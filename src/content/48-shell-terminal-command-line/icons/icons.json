@@ -1,0 +1,18 @@
+{
+  "name": "shell-terminal-command-line",
+  "description": "Logo resmi shell yang disebut eksplisit di narasi topic ini (Act 6, shellBadge saat targetShell='bash'). Semua elemen beranimasi (terminal, PTY, shell hub, packet, dsb) tetap inline SVG — lihat revisi/2026-09-19-revisi-02-icon-logo-subpenjelasan-tambah-motion.md §1.3.",
+  "icons": [
+    {
+      "id": "gnu-bash-mark",
+      "name": "GNU Bash mark",
+      "label": "Bash",
+      "description": "Accent badge kecil di shellBadge saat target shell = bash; tidak pernah menggantikan shell hub yang beranimasi.",
+      "source": "download",
+      "source_url": "https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/gnubash.svg",
+      "license": "CC0"
+    }
+  ],
+  "generation": {
+    "output_path": "src/content/48-shell-terminal-command-line/icons"
+  }
+}

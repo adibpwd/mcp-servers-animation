@@ -3,8 +3,17 @@
   "title": "Network Ports",
   "subtitle": "Pintu layanan, bukan pintu mesin",
   "category": "Linux Fundamentals",
-  "tags": ["Networking", "TCP", "UDP", "Firewall", "Socket", "NAT"],
+  "tags": [
+    "Networking",
+    "TCP",
+    "UDP",
+    "Firewall",
+    "Socket",
+    "NAT"
+  ],
   "color": "#A78BFA",
   "status": "draft",
-  "priority": 84
+  "priority": 84,
+  "pinned": true,
+  "pinnedAt": "2026-09-21T00:39:48.932Z"
 }

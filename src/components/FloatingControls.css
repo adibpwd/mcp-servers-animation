@@ -67,7 +67,73 @@
   border-radius: 12px;
   padding: 8px;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
-  min-width: 168px;
+  min-width: 180px;
+}
+
+.floating-menu-status-group {
+  padding: 4px 6px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.floating-menu-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #8a8f98;
+}
+
+.floating-status-pills {
+  display: flex;
+  gap: 4px;
+}
+
+.status-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #a0a6b0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.status-pill .pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.status-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.status-pill.is-active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--pill-color);
+  color: #fff;
+}
+
+.status-pill.is-active .pill-dot {
+  opacity: 1;
+  box-shadow: 0 0 6px var(--pill-color);
+}
+
+.floating-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 2px 0;
 }
 
 .floating-menu-item {

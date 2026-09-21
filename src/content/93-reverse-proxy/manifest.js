@@ -6,7 +6,7 @@ export default {
   title: 'Reverse Proxy',
   subtitle: 'Satu pintu untuk banyak aplikasi',
   category: 'Linux Fundamentals',
-  tags: ['Linux', 'Server', 'Nginx', 'Reverse Proxy', 'Web Server'],
+  tags: ['Reverse Proxy', 'Nginx', 'Apache', 'Routing', 'Backend'],
   color: '#38BDF8',
   audioStrategy: 'realtime',
 }

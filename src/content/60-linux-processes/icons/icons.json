@@ -1,6 +1,6 @@
 {
   "name": "linux-processes",
-  "description": "Icon aksen untuk topic 60 Linux Processes (revisi-01). Draft image grid BELUM digenerate — loader.js masih fallback ke default-icon.png untuk semua id sampai Adib generate grid via ChatGPT lalu upload+crop lewat /api/icons/generate.",
+  "description": "DEPRECATED sejak revisi-03 (2026-09-21) — 5 icon di bawah sudah diganti inline SVG (lihat ../icons/inlineSvg.jsx), TIDAK jadi digenerate sebagai PNG. File ini disimpan sebagai riwayat rencana revisi-01, bukan rencana aktif.",
   "icons": [
     { "id": "icon-browser", "name": "Browser App", "label": "Browser", "description": "Ikon browser minimalis outline, monokrom, mewakili aplikasi browser sebagai process" },
     { "id": "icon-editor", "name": "Editor App", "label": "Editor", "description": "Ikon text editor/code editor minimalis outline, monokrom" },

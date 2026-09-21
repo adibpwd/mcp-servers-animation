@@ -2,8 +2,8 @@
 
 | Item | Nilai |
 |---|---|
-| Status | 🚧 IN PROGRESS — 4 Act sudah dieksekusi, belum lolos validation gate (preview/export manual) |
-| Terakhir diupdate | 2026-09-19 |
+| Status | 🚧 IN PROGRESS — 4 Act sudah dieksekusi + migrasi ke pola acts/ (revisi-01), belum lolos validation gate (preview/export manual) |
+| Terakhir diupdate | 2026-09-22 |
 | Audiens | Pemula yang telah melihat DNS, interface, port, web server, dan reverse proxy secara terpisah. |
 | Audience promise | Menelusuri satu request website dari domain sampai aplikasi dan kembali lagi; setiap lapisan punya tugas berbeda. |
 | Scene shell | scene-ui V1 portrait 820×1340: IntroHeaderMorphV1, ActBadgeNavigatorV1, ContentBodyV1. |
@@ -112,3 +112,17 @@ yang dilakukan terhadap kode existing:
 Belum dikerjakan: preview manual di dev server, export test MP4, dan audit
 SFX coverage penuh (03 §"Metodologi: Audit SFX Coverage") — perlu akses
 `npm run dev` yang tidak tersedia dari sesi ini.
+
+### Revisi-01 (2026-09-22): migrasi ke pola acts/
+
+Lihat `revisi/2026-09-21-revisi-01-selaras-standar-act-scene.md` untuk detail
+lengkap. Ringkas: `Animation.jsx` dipecah jadi `acts/common.jsx` (komponen
+presentational bersama) + 4 file `acts/ActN....jsx` + `acts/index.js`
+(`ACT_SCENES`), render live diganti dari flat-boolean-render jadi
+`ACT_SCENES[phaseIdx]` (dengan tiap Act file mengikutsertakan actor
+persisten secara kumulatif — bukan exclusive-swap murni — supaya continuity
+lintas-Act yang sudah ada tidak berubah). Intro `IntroHeaderMorphV1`
+ditambah `bg={4}` + `bgScenes={ACT_SCENES}`. esbuild lolos 2x (sebelum &
+sesudah swap render). Preview visual manual (before/after harus identik
+per checklist revisi-01) BELUM diverifikasi — perlu dev server/browser
+yang tidak tersedia dari sesi ini.
