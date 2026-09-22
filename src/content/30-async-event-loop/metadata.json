@@ -1,0 +1,16 @@
+{
+  "id": "async-event-loop",
+  "title": "Async/Await & Event Loop",
+  "subtitle": "Kenapa kode JavaScript kelihatan \"loncat\"",
+  "category": "Programming Concepts",
+  "tags": [
+    "JavaScript",
+    "Async",
+    "Event Loop",
+    "Call Stack",
+    "Web Dev"
+  ],
+  "color": "#A78BFA",
+  "status": "draft",
+  "priority": 30
+}

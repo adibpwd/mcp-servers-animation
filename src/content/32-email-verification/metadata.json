@@ -1,0 +1,16 @@
+{
+  "id": "email-verification",
+  "title": "Email Verification",
+  "subtitle": "Konfirmasi alamat email sebelum akun aktif",
+  "category": "Developer Tools",
+  "tags": [
+    "Email",
+    "Verification",
+    "Token",
+    "Link",
+    "Security"
+  ],
+  "color": "#F59E0B",
+  "status": "ready",
+  "priority": 32
+}

@@ -1,0 +1,15 @@
+{
+  "id": "linux-kernel-architecture",
+  "title": "Linux Kernel Architecture",
+  "subtitle": "User Space → Syscall → Kernel → Hardware layers explained",
+  "category": "Linux Deep Dive",
+  "tags": [
+    "Kernel",
+    "Architecture",
+    "System",
+    "Intermediate"
+  ],
+  "color": "#06B6D4",
+  "status": "draft",
+  "priority": 28
+}

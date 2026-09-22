@@ -1,0 +1,17 @@
+{
+  "id": "linux-server",
+  "title": "Linux Server",
+  "subtitle": "Sistem yang menyediakan layanan",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Server",
+    "Service",
+    "Network",
+    "Identity",
+    "Observability",
+    "Operations"
+  ],
+  "color": "#F472B6",
+  "status": "posted",
+  "priority": 20
+}

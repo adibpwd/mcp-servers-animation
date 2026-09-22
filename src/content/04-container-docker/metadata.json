@@ -1,0 +1,16 @@
+{
+  "id": "container-docker",
+  "title": "Docker Container vs Virtual Machine",
+  "subtitle": "Why containers are not just \"tiny VMs\"",
+  "category": "Linux Deep Dive",
+  "tags": [
+    "Docker",
+    "Container",
+    "VM",
+    "Namespaces",
+    "Virtualization"
+  ],
+  "color": "#2496ED",
+  "status": "posted",
+  "priority": 4
+}

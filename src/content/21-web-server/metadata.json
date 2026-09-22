@@ -1,0 +1,19 @@
+{
+  "id": "web-server",
+  "title": "Web Server",
+  "subtitle": "Penerima request pertama",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Web Server",
+    "HTTP",
+    "Listener",
+    "Static",
+    "Upstream",
+    "Response"
+  ],
+  "color": "#38BDF8",
+  "status": "posted",
+  "priority": 21,
+  "pinned": false,
+  "pinnedAt": null
+}

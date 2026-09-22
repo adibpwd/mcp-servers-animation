@@ -1,0 +1,16 @@
+{
+  "id": "http-request-response",
+  "title": "HTTP Request-Response",
+  "subtitle": "Ngirim surat, nunggu balasan",
+  "category": "Networking",
+  "tags": [
+    "HTTP",
+    "Client-Server",
+    "DNS",
+    "Status Code",
+    "Web"
+  ],
+  "color": "#38BDF8",
+  "status": "posted",
+  "priority": 7
+}

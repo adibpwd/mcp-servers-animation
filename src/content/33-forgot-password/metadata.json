@@ -1,0 +1,16 @@
+{
+  "id": "forgot-password",
+  "title": "Forgot Password",
+  "subtitle": "Reset password via token one-time",
+  "category": "Developer Tools",
+  "tags": [
+    "Password",
+    "Reset",
+    "Token",
+    "Email",
+    "Recovery"
+  ],
+  "color": "#F97316",
+  "status": "draft",
+  "priority": 33
+}

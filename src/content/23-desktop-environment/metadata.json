@@ -1,0 +1,15 @@
+{
+  "id": "desktop-environment",
+  "title": "Desktop Environment",
+  "subtitle": "GNOME vs KDE vs XFCE vs i3 — which one for you?",
+  "category": "Linux Basics",
+  "tags": [
+    "Desktop",
+    "GUI",
+    "Comparison",
+    "Beginner"
+  ],
+  "color": "#60A5FA",
+  "status": "draft",
+  "priority": 23
+}

@@ -1,0 +1,16 @@
+{
+  "id": "cors",
+  "title": "CORS Explained",
+  "subtitle": "Browser penjaga izin lintas origin",
+  "category": "Developer Tools",
+  "tags": [
+    "CORS",
+    "Browser",
+    "Preflight",
+    "Security",
+    "HTTP"
+  ],
+  "color": "#FB923C",
+  "status": "posted",
+  "priority": 12
+}
