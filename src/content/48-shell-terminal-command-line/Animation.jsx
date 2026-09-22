@@ -104,7 +104,11 @@ export default function ShellTerminalCommandLineAnimation({
   }
 
   const popOut = (tl, time, id, opts = {}) => {
-    const { duration = 0.28, ease = 'power1.in' } = opts
+    const { duration = 0.28, ease = 'power1.in', sfx = true,
+      sfxName = SFX_MAP.PLINK.name, sfxCategory = SFX_MAP.PLINK.category, volumeMult = 0.7 } = opts
+    if (sfx) {
+      tl.add(() => { if (audioUnlockedRef.current) sfxLoader.play(sfxCategory, sfxName, { volume: volumeRef.current * volumeMult, speed: speedRef.current }) }, time)
+    }
     const o = { v: 1 }
     tl.to(o, {
       v: 0, duration, ease,
@@ -119,6 +123,7 @@ export default function ShellTerminalCommandLineAnimation({
   const highlight = (tl, time, id) => tl.add(() => setHighlightId(id), time)
   const typeText = (tl, time, text, setLen, duration, steps = 5) => {
     const o = { n: 0 }
+    tl.add(() => { if (audioUnlockedRef.current) sfxLoader.play(SFX_MAP.TYPING.category, SFX_MAP.TYPING.name, { volume: volumeRef.current * 0.8, speed: speedRef.current }) }, time)
     tl.to(o, { n: text.length, duration, ease: `steps(${steps})`, onUpdate: () => setLen(Math.round(o.n)) }, time)
     return time + duration
   }
@@ -131,9 +136,12 @@ export default function ShellTerminalCommandLineAnimation({
 
     let lastPacket = { x: BODY_CX, y: TERMINAL_Y }
     const travelPacket = (time, to, duration, opts = {}) => {
-      const { ease = 'power2.inOut', label, variant } = opts
+      const { ease = 'power2.inOut', label, variant, whoosh = true } = opts
       const from = { ...lastPacket }
       const o = { x: from.x, y: from.y }
+      if (whoosh) {
+        tl.add(() => { if (audioUnlockedRef.current) sfxLoader.play(SFX_MAP.SWOOSH_QUICK.category, SFX_MAP.SWOOSH_QUICK.name, { volume: volumeRef.current * 0.35, speed: speedRef.current }) }, time)
+      }
       tl.to(o, {
         x: to.x, y: to.y, duration, ease,
         onUpdate: () => setPacket((p) => ({
@@ -149,9 +157,12 @@ export default function ShellTerminalCommandLineAnimation({
 
     let lastFlow = { x: 0, y: 0 }
     const travelFlow = (time, to, duration, opts = {}) => {
-      const { ease = 'power1.inOut', color } = opts
+      const { ease = 'power1.inOut', color, tick = true } = opts
       const from = { ...lastFlow }
       const o = { x: from.x, y: from.y }
+      if (tick) {
+        tl.add(() => { if (audioUnlockedRef.current) sfxLoader.play(SFX_MAP.BEEP2.category, SFX_MAP.BEEP2.name, { volume: volumeRef.current * 0.3, speed: speedRef.current }) }, time)
+      }
       tl.to(o, {
         x: to.x, y: to.y, duration, ease,
         onUpdate: () => setFlow((f) => ({ ...f, x: o.x, y: o.y, color: color !== undefined ? color : f.color, visible: true })),
@@ -326,6 +337,7 @@ export default function ShellTerminalCommandLineAnimation({
     say(tl, t, ACT3_BEATS.expand)
     sfxOn(tl, t, SFX_MAP.SWOOSH_QUICK.category, SFX_MAP.SWOOSH_QUICK.name)
     tl.add(() => setAct3((p) => ({ ...p, homeExpanded: true })), t + 0.15)
+    sfxOn(tl, t + 0.15, SFX_MAP.SCAN.category, SFX_MAP.SCAN.name, 0.7)
     tl.add(() => setAct3((p) => ({ ...p, matched: { ...p.matched, todo: true } })), t + 0.4)
     sfxOn(tl, t + 0.4, SFX_MAP.POP2.category, SFX_MAP.POP2.name)
     tl.add(() => setAct3((p) => ({ ...p, matched: { ...p.matched, idea: true } })), t + 0.75)
@@ -352,6 +364,7 @@ export default function ShellTerminalCommandLineAnimation({
     tl.add(() => { setAct3((p) => ({ ...p, step: 'status' })); setStatusToken('0') }, t)
     say(tl, t, ACT3_BEATS.status)
     sfxOn(tl, t, SFX_MAP.DING.category, SFX_MAP.DING.name)
+    sfxOn(tl, t + 0.1, SFX_MAP.APPROVAL.category, SFX_MAP.APPROVAL.name, 0.6)
     t += 1.0
 
     say(tl, t, ACT3_BEATS.payoff)
@@ -544,7 +557,8 @@ export default function ShellTerminalCommandLineAnimation({
     lastFlow = { x: 400, y: STAGE_TOP }
     t = travelFlow(t, { x: 580, y: STAGE_TOP }, 0.5, { color: COLORS.RISK })
     tl.add(() => setFlow((f) => ({ ...f, visible: false })), t)
-    popIn(tl, t, 'gateBox', { fromX: 16 })
+    popIn(tl, t, 'gateBox', { fromX: 16, sfx: false })
+    sfxOn(tl, t, SFX_MAP.SOFT_DENY.category, SFX_MAP.SOFT_DENY.name, 0.9)
     t += 0.2
 
     // gate-cleanup-pulse: dash pulse gateBox→cleanupTray — cleanup terjadi
@@ -564,7 +578,8 @@ export default function ShellTerminalCommandLineAnimation({
     popIn(tl, t, 'shellBadge', { fromY: 16 })
     t += 0.6
     tl.add(() => setAct6((p) => ({ ...p, targetShell: 'sh' })), t + 0.4)
-    sfxOn(tl, t + 0.4, SFX_MAP.ALERT_PULSE.category, SFX_MAP.ALERT_PULSE.name)
+    sfxOn(tl, t + 0.4, SFX_MAP.SWAP.category, SFX_MAP.SWAP.name, 0.8)
+    sfxOn(tl, t + 0.45, SFX_MAP.ALERT_PULSE.category, SFX_MAP.ALERT_PULSE.name, 0.7)
     t += 0.8
 
     say(tl, t, ACT6_BEATS.payoff)

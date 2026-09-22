@@ -3,7 +3,7 @@
 // Packet client publik lewat NAT/LB ke backend; health signal muncul
 // bertahap SETELAH respons (open → responds → healthy tetap "?").
 
-import { Spine, Packets, LOWER_TOP, BW, glowOf } from './common'
+import { Spine, Packets, LOWER_TOP, BW, glowOf, IconGlobe, IconRouter, IconTower } from './common'
 import { COLORS, REAL_PATH_HOPS, HEALTH_RESULT, PRIMARY_LANE_ID } from '../data'
 
 export const SUMMARY_STATE = {
@@ -35,12 +35,16 @@ export default function Act6RealPath({ state }) {
 
       {REAL_PATH_HOPS.map((h, i) => {
         const active = G(glowIds[i]) > 0.4
+        const HopIcon = [IconGlobe, IconRouter, IconTower][i] || IconGlobe
         return (
           <g key={h.id} transform={`translate(${hopX(i)}, ${hopY})`}>
             <rect x={-95} y={-26} width={190} height={52} rx={10}
               fill={active ? COLORS.NAT : COLORS.PANEL} stroke={COLORS.NAT} strokeWidth={active ? 0 : 1.3}
               opacity={active ? 1 : 0.45} />
-            <text x={0} y={5} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="sans-serif"
+            <g transform="translate(-87, -9)">
+              <HopIcon size={16} color={active ? COLORS.BG : COLORS.MUTED} />
+            </g>
+            <text x={8} y={5} textAnchor="middle" fontSize={10} fontWeight={700} fontFamily="sans-serif"
               fill={active ? COLORS.BG : COLORS.TEXT}>{h.label}</text>
             {i < REAL_PATH_HOPS.length - 1 && (
               <text x={(hopX(i + 1) - hopX(i)) / 2} y={5} textAnchor="middle" fontSize={16} fill={COLORS.MUTED}>→</text>

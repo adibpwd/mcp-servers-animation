@@ -12,8 +12,8 @@
     "NAT"
   ],
   "color": "#A78BFA",
-  "status": "draft",
+  "status": "posted",
   "priority": 84,
-  "pinned": true,
-  "pinnedAt": "2026-09-21T00:39:48.932Z"
+  "pinned": false,
+  "pinnedAt": null
 }

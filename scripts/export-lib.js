@@ -261,34 +261,46 @@ const SFX_SCHEDULES = {
   ],
 
   'domain-to-server': [
-    // Intro (0 - 2.1s)
+    // Intro (0 - 1.1s) — morph dipangkas ke 0.8s (revisi-03)
     { at: 0.0, category: 'transitions', name: 'whoosh' },   // intro morph start
 
-    // ACT 1: Resolve Domain (2.1 - 9.9s)
-    { at: 2.1, category: 'transitions', name: 'whoosh' },   // act 1 start
-    { at: 2.1, category: 'ui', name: 'pop' },               // browser pop-in
-    { at: 3.6, category: 'ui', name: 'pop' },               // domain chip pop-in
-    { at: 4.4, category: 'ui', name: 'plink' },             // dns query berangkat
-    { at: 5.6, category: 'impacts', name: 'impact' },       // dns query tiba di resolver
-    { at: 6.6, category: 'success', name: 'confirm' },      // dns answer
-    { at: 7.1, category: 'ui', name: 'pop' },               // domain chip -> ip chip
+    // ACT 1: Resolve Domain (1.1 - 8.9s)
+    { at: 1.1, category: 'transitions', name: 'whoosh' },   // act 1 start
+    { at: 1.1, category: 'ui', name: 'pop' },               // browser pop-in
+    { at: 1.3, category: 'ui', name: 'bounce' },            // dns icon pop-in (revisi-04)
+    { at: 2.6, category: 'ui', name: 'pop' },               // domain chip pop-in
+    { at: 3.4, category: 'ui', name: 'plink' },             // dns query berangkat
+    { at: 4.6, category: 'impacts', name: 'impact' },       // dns query tiba di resolver
+    { at: 5.6, category: 'success', name: 'confirm' },      // dns answer
+    { at: 6.1, category: 'ui', name: 'pop' },               // domain chip -> ip chip
+    { at: 8.4, category: 'transitions', name: 'teleport' }, // cleanup act1, chip hilang (revisi-04)
 
-    // ACT 2: Connect ke Edge (9.9 - 17.7s)
-    { at: 9.9, category: 'transitions', name: 'whoosh' },   // act 2 start
-    { at: 10.1, category: 'ui', name: 'pop' },              // edge gate pop-in
-    { at: 11.4, category: 'transitions', name: 'swoosh' },  // https packet berangkat
-    { at: 14.7, category: 'impacts', name: 'impact' },      // packet tiba di edge
+    // ACT 2: Connect ke Edge (8.9 - 16.7s)
+    { at: 8.9, category: 'transitions', name: 'whoosh' },   // act 2 start
+    { at: 8.9, category: 'ui', name: 'tick' },              // browser mulai loading (revisi-04)
+    { at: 9.1, category: 'ui', name: 'pop' },               // edge gate pop-in
+    { at: 10.4, category: 'transitions', name: 'swoosh' },  // https packet berangkat
+    { at: 13.7, category: 'impacts', name: 'impact' },      // packet tiba di edge
+    { at: 16.2, category: 'ui', name: 'tick' },             // cleanup act2, edge deactivate (revisi-04)
 
-    // ACT 3: Proxy ke App (17.7 - 26.2s)
-    { at: 17.7, category: 'transitions', name: 'whoosh' },  // act 3 start
-    { at: 17.7, category: 'ui', name: 'pop' },              // proxy gate pop-in
-    { at: 21.0, category: 'impacts', name: 'impact' },      // proxy mulai baca host/path
-    { at: 22.2, category: 'transitions', name: 'slide-in' }, // routing beam menyala
+    // ACT 3: Proxy ke App (16.7 - 25.2s)
+    { at: 16.7, category: 'transitions', name: 'whoosh' },  // act 3 start
+    { at: 16.7, category: 'ui', name: 'pop' },              // proxy gate pop-in
+    { at: 16.9, category: 'ui', name: 'bounce' },           // backend A pop-in (revisi-04)
+    { at: 17.0, category: 'ui', name: 'bounce' },           // backend B pop-in (revisi-04)
+    { at: 18.5, category: 'transitions', name: 'swoosh' },  // packet muncul lagi di proxy (revisi-04)
+    { at: 20.0, category: 'impacts', name: 'impact' },      // proxy mulai baca host/path
+    { at: 21.2, category: 'transitions', name: 'slide-in' }, // routing beam menyala
+    { at: 24.7, category: 'transitions', name: 'teleport' }, // cleanup act3, beam hilang (revisi-04)
 
-    // ACT 4: Halaman Kembali (26.2 - 36.1s)
-    { at: 26.2, category: 'transitions', name: 'whoosh' },  // act 4 start
-    { at: 27.7, category: 'transitions', name: 'swoosh' },  // response dikirim dari backend
-    { at: 34.1, category: 'success', name: 'confirm' }      // halaman dirender
+    // ACT 4: Halaman Kembali (25.2 - 35.1s)
+    { at: 25.2, category: 'transitions', name: 'whoosh' },  // act 4 start
+    { at: 25.2, category: 'ui', name: 'tick' },             // browser mulai loading lagi (revisi-04)
+    { at: 26.7, category: 'transitions', name: 'swoosh' },  // response dikirim dari backend
+    { at: 29.3, category: 'transitions', name: 'light-swoosh-quick' }, // response lewat proxy (revisi-04)
+    { at: 31.1, category: 'transitions', name: 'light-swoosh-quick' }, // response lewat edge (revisi-04)
+    { at: 33.1, category: 'success', name: 'confirm' },     // halaman dirender
+    { at: 35.1, category: 'transitions', name: 'whoosh-low' } // reset akhir loop (revisi-04)
   ]
 }
 

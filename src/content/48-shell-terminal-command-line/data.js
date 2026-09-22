@@ -166,13 +166,32 @@ export const SFX_MAP = {
   TICK: { category: 'ui', name: 'tick' },
   CHIME: { category: 'ui', name: 'chime' },
   PAPER_OPEN: { category: 'ui', name: 'paper-open' },
+  PLINK: { category: 'ui', name: 'plink' },
+  BUBBLE_POP: { category: 'ui', name: 'bubble-pop' },
+  BEEP: { category: 'ui', name: 'beep' },
+  BEEP2: { category: 'ui', name: 'beep-2' },
+
   WHOOSH: { category: 'transitions', name: 'whoosh' },
   SWOOSH: { category: 'transitions', name: 'swoosh' },
   SWOOSH_QUICK: { category: 'transitions', name: 'light-swoosh-quick' },
+  SWOOSH2: { category: 'transitions', name: 'swoosh-2' },
+  SLIDE_IN: { category: 'transitions', name: 'slide-in' },
+
   CONNECTOR_SNAP: { category: 'impacts', name: 'connector-snap' },
   LOCK: { category: 'impacts', name: 'lock' },
+  UNLOCK: { category: 'impacts', name: 'unlock' },
+  SWAP: { category: 'impacts', name: 'swap' },
+
   CONFIRM: { category: 'success', name: 'confirm' },
   DING: { category: 'success', name: 'ding' },
   SHIMMER: { category: 'success', name: 'shimmer' },
+  COMPLETE: { category: 'success', name: 'complete' },
+  APPROVAL: { category: 'success', name: 'approval-stamp' },
+
   ALERT_PULSE: { category: 'warnings', name: 'alert-pulse' },
+  SOFT_DENY: { category: 'warnings', name: 'soft-deny' },
+
+  TYPING: { category: 'sfx', name: 'typing' },
+  SCAN: { category: 'sfx', name: 'scan' },
+  MATERIALIZE: { category: 'sfx', name: 'materialize' },
 }

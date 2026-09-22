@@ -41,7 +41,7 @@ export const COLORS = {
 }
 
 // Intro metadata
-export const INTRO_CATEGORY = 'LINUX FUNDAMENTALS · SERVER & WEB'
+export const INTRO_CATEGORY = 'LINUX FUNDAMENTALS'
 export const INTRO_TITLE_A = 'DOMAIN'
 export const INTRO_TITLE_B = ' TO SERVER'
 export const INTRO_SUBTITLE = 'Perjalanan request dari domain sampai aplikasi'
@@ -117,5 +117,11 @@ export const SFX_MAP = {
   PACKET_SEND: { category: 'transitions', name: 'swoosh' },
   DNS_QUERY: { category: 'ui', name: 'plink' },
   ROUTE: { category: 'transitions', name: 'slide-in' },
+  // revisi-04: perbanyak coverage SFX (appear/disappear/movement)
+  POP_OUT: { category: 'transitions', name: 'teleport' },
+  BOUNCE: { category: 'ui', name: 'bounce' },
+  TICK: { category: 'ui', name: 'tick' },
+  HOP: { category: 'transitions', name: 'light-swoosh-quick' },
+  WHOOSH_LOW: { category: 'transitions', name: 'whoosh-low' },
 }
 

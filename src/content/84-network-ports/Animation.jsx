@@ -69,7 +69,18 @@ export default function NetworkPortsAnimation({
   const [udpStep, setUdpStep] = useState(null)
   const [tcpStep, setTcpStep] = useState(null)
 
-  const G = (id) => glow[id] || 0
+  // BUGFIX: helper GSAP (movePacket/glowTo) dulu baca `packets`/`glow`
+  // langsung dari closure useEffect (yang cuma jalan sekali saat mount) —
+  // nilainya BEKU selalu {} sepanjang playback, bukan nilai live terakhir.
+  // Akibatnya movePacket selalu tween dari (x,y) TUJUAN ke (x,y) TUJUAN
+  // yang sama (jarak nol) → packet teleport instan, bukan jalan. glowTo
+  // "turn off" juga selalu tween dari 0→0 (no-op) → terlihat mendadak
+  // hilang alih-alih fade. Fix: refs sebagai mirror live, di-update
+  // bersamaan tiap kali state di-set lewat updatePackets/updateGlow.
+  const packetsRef = useRef({})
+  const glowRef = useRef({})
+  const updatePackets = (fn) => setPackets(prev => { const next = fn(prev); packetsRef.current = next; return next })
+  const updateGlow = (fn) => setGlow(prev => { const next = fn(prev); glowRef.current = next; return next })
 
   useEffect(() => {
     const shouldEnable = previewSfx && audioUnlocked
@@ -81,45 +92,92 @@ export default function NetworkPortsAnimation({
 
   // ── helper: packet lahir di (x,y) dengan pop kecil (Intent beat) ──
   const bornPacket = (tl, time, key, { x, y, color, label, sfxName = SFX_MAP.POP.name, sfxCategory = 'ui' }) => {
-    tl.add(() => setPackets(p => ({ ...p, [key]: { x, y, scale: 0, opacity: 0, color, label } })), time)
+    tl.add(() => updatePackets(p => ({ ...p, [key]: { x, y, scale: 0, opacity: 0, color, label } })), time)
     const o = { v: 0 }
     tl.to(o, {
       v: 1, duration: 0.35, ease: 'back.out(1.8)',
       onStart: () => sfxLoader.play(sfxCategory, sfxName, { volume: volumeRef.current, speed: speedRef.current }),
-      onUpdate: () => setPackets(p => ({ ...p, [key]: { ...p[key], scale: o.v, opacity: o.v } })),
+      onUpdate: () => updatePackets(p => ({ ...p, [key]: { ...p[key], scale: o.v, opacity: o.v } })),
     }, time)
   }
 
-  // ── helper: packet berjalan ke (x,y) — Travel beat, tidak teleport ──
-  const movePacket = (tl, time, key, { x, y }, duration = 0.7, ease = 'power2.inOut') => {
+  // ── helper: packet berjalan ke (x,y) — Travel beat, tidak teleport.
+  // FEEDBACK: banyak travel dulu senyap DAN (bug) selalu tween jarak nol
+  // karena baca posisi dari closure beku — sekarang baca packetsRef.current
+  // (live) sehingga benar-benar animasi jalan dari posisi terakhir. Tiap
+  // travel juga otomatis dapat swoosh pelan (matikan via opts.sfx=false). ──
+  const movePacket = (tl, time, key, { x, y }, duration = 0.7, ease = 'power2.out', opts = {}) => {
+    const { sfx = true, volumeMult = 0.55 } = opts
     tl.add(() => {
-      const cur = packets[key]
+      const cur = packetsRef.current[key]
       const o = { x: cur ? cur.x : x, y: cur ? cur.y : y }
+      if (sfx) sfxLoader.transition(SFX_MAP.SWOOSH.name, { volume: volumeRef.current * volumeMult, speed: speedRef.current })
       tl.to(o, {
         x, y, duration, ease,
-        onUpdate: () => setPackets(p => ({ ...p, [key]: { ...p[key], x: o.x, y: o.y } })),
+        onUpdate: () => updatePackets(p => ({ ...p, [key]: { ...p[key], x: o.x, y: o.y } })),
       })
     }, time)
   }
 
-  // ── helper: packet retire (After beat sudah dibaca, actor selesai) ──
+  // ── helper: packet retire (After beat sudah dibaca, actor selesai).
+  // FEEDBACK: dulu senyap saat hilang — sekarang ada teleport-sfx pelan
+  // menandakan actor packet ini benar-benar selesai/pergi dari canvas. ──
   const retirePacket = (tl, time, key, duration = 0.3) => {
     const o = { v: 1 }
     tl.to(o, {
       v: 0, duration, ease: 'power1.in',
-      onUpdate: () => setPackets(p => ({ ...p, [key]: p[key] ? { ...p[key], opacity: o.v, scale: o.v } : p[key] })),
-      onComplete: () => setPackets(p => { const n = { ...p }; delete n[key]; return n }),
+      onStart: () => sfxLoader.transition(SFX_MAP.TELEPORT.name, { volume: volumeRef.current * 0.4, speed: speedRef.current }),
+      onUpdate: () => updatePackets(p => ({ ...p, [key]: p[key] ? { ...p[key], opacity: o.v, scale: o.v } : p[key] })),
+      onComplete: () => updatePackets(p => { const n = { ...p }; delete n[key]; return n }),
     }, time)
   }
 
-  // ── helper: sorot node spine (Apply beat) ──
-  const glowTo = (tl, time, id, value = 1, duration = 0.3) => {
-    const o = { v: G(id) }
-    tl.to(o, { v: value, duration, onUpdate: () => setGlow(g => ({ ...g, [id]: o.v })) }, time)
+  // ── helper: sorot node spine (Apply beat).
+  // FEEDBACK: dulu ease linear + (bug) selalu mulai dari 0 karena baca
+  // closure beku — "turn off" jadi 0→0 alias no-op/instan-hilang. Sekarang
+  // baca glowRef.current (live) supaya fade beneran dari nilai sebenarnya,
+  // plus back.out untuk sedikit overshoot/pantulan, plus tick pelan
+  // otomatis tiap kali sebuah node dinyalakan/dipadamkan (lapisan tambahan
+  // di bawah sfx tematik yang sudah ada di titik apply). ──
+  const glowTo = (tl, time, id, value = 1, duration = 0.35, ease = 'back.out(2.4)') => {
+    tl.add(() => {
+      const startV = glowRef.current[id] || 0
+      const rising = value > startV
+      const o = { v: startV }
+      sfxLoader.ui(SFX_MAP.TICK.name, { volume: volumeRef.current * (rising ? 0.22 : 0.15), speed: speedRef.current })
+      tl.to(o, {
+        v: value, duration, ease,
+        onUpdate: () => updateGlow(g => ({ ...g, [id]: o.v })),
+      })
+    }, time)
   }
 
-  const setBadgeAt = (tl, time, id, text) => tl.add(() => setBadge(b => ({ ...b, [id]: text })), time)
-  const clearBadge = (tl, time, id) => tl.add(() => setBadge(b => ({ ...b, [id]: null })), time)
+  // ── helper: badge near-element FADE in/out (Apply/After beat pendukung).
+  // FEEDBACK: sebelumnya teks muncul/hilang instan tanpa suara sama
+  // sekali. Sekarang opacity di-tween DAN tiap muncul/hilang otomatis
+  // dapat sfx pelan (chime saat muncul, tick saat hilang) — supaya semua
+  // ~19 caption/narasi di sepanjang video ikut mengisi soundscape. ──
+  const setBadgeAt = (tl, time, id, text, duration = 0.25) => {
+    tl.add(() => {
+      updateBadgeState(id, { text, opacity: 0 })
+      sfxLoader.ui(SFX_MAP.CHIME.name, { volume: volumeRef.current * 0.32, speed: speedRef.current })
+    }, time)
+    const o = { v: 0 }
+    tl.to(o, {
+      v: 1, duration, ease: 'power2.out',
+      onUpdate: () => updateBadgeState(id, { text, opacity: o.v }),
+    }, time)
+  }
+  const clearBadge = (tl, time, id, duration = 0.25) => {
+    tl.add(() => sfxLoader.ui(SFX_MAP.TICK.name, { volume: volumeRef.current * 0.2, speed: speedRef.current }), time)
+    const o = { v: 1 }
+    tl.to(o, {
+      v: 0, duration, ease: 'power1.in',
+      onUpdate: () => setBadge(b => (b[id] ? { ...b, [id]: { ...b[id], opacity: o.v } } : b)),
+      onComplete: () => setBadge(b => { const n = { ...b }; delete n[id]; return n }),
+    }, time)
+  }
+  const updateBadgeState = (id, value) => setBadge(b => ({ ...b, [id]: value }))
   const sfxOn = (tl, time, fn) => tl.add(() => audioUnlockedRef.current && fn(), time)
 
   // ── koordinat spine — diimpor dari acts/common.jsx, sumber tunggal
@@ -138,7 +196,7 @@ export default function NetworkPortsAnimation({
 
     tl.add(() => {
       setMorphP(0); setShowIntro(true); setPhaseIdx(0)
-      setPackets({}); setGlow({}); setBadge({}); setUdpStep(null); setTcpStep(null)
+      updatePackets(() => ({})); updateGlow(() => ({})); setBadge({}); setUdpStep(null); setTcpStep(null)
     }, t)
 
     // ── INTRO ──
@@ -153,8 +211,7 @@ export default function NetworkPortsAnimation({
     // ═══════════ ACT 1 — Host Bukan Service (`ip-ke-port`) ═══════════
     tl.add(() => setPhaseIdx(0), t)
     // Before: client hanya punya destination IP (host redup tampak, lane semua redup)
-    setBadgeAt(tl, t, 'client', 'CLIENT')
-    setBadgeAt(tl, t + 0.05, 'hostBefore', ACT1_TEXT.before)
+    setBadgeAt(tl, t, 'hostBefore', ACT1_TEXT.before)
     t += 0.8
     // Intent: packet lahir dari client
     bornPacket(tl, t, 'main', { x: POS.client.x, y: POS.client.y, color: COLORS.PACKET_MAIN, label: 'GET' })
@@ -216,7 +273,7 @@ export default function NetworkPortsAnimation({
     TCP_STEPS.forEach((s, i) => {
       const dest = s.from === 'client' ? sideR : sideL
       tl.add(() => setTcpStep(s.id), t)
-      movePacket(tl, t, 'main', dest, 0.4)
+      movePacket(tl, t, 'main', dest, 0.4, 'power2.out', { sfx: false })
       sfxOn(tl, t, () => sfxLoader.ui(SFX_MAP.TICK.name, { volume: volumeRef.current, speed: speedRef.current }))
       t += 0.55
     })
@@ -250,7 +307,7 @@ export default function NetworkPortsAnimation({
     // ═══════════ ACT 4 — Dua Ujung Koneksi (`dua-ujung-port`) ═══════════
     tl.add(() => setPhaseIdx(3), t)
     // packetMain kembali diam persis di listener (posisi terakhir Act 3)
-    tl.add(() => setPackets(p => (p.main ? { ...p, main: { ...p.main, x: POS.listener.x, y: POS.listener.y } } : p)), t)
+    tl.add(() => updatePackets(p => (p.main ? { ...p, main: { ...p.main, x: POS.listener.x, y: POS.listener.y } } : p)), t)
     setBadgeAt(tl, t, 'act4Before', ACT4_TEXT.before)
     t += 0.8
     clearBadge(tl, t, 'act4Before')
@@ -398,8 +455,20 @@ export default function NetworkPortsAnimation({
           category: INTRO_CATEGORY_LABEL,
           titleSegments: [
             { label: INTRO_TITLE_A, color: COLORS.IP },
-            { label: INTRO_TITLE_B, color: COLORS.PORT },
+            { label: INTRO_TITLE_B, color: COLORS.LISTENER },
           ],
+          // REVISI-03: title hero "NETWORK PORTS" kepanjangan untuk 1 baris
+          // di canvas 820 pada font hero 72px (sama kasus persis seperti
+          // "OAUTH2 DELEGATED LOGIN" di 22-oauth2-delegated-login, lihat
+          // UPDATE 2 IntroHeaderMorphV1.jsx) — tanpa titleLines, render
+          // hero pakai jalur single-line yang TIDAK punya buffer/clamp
+          // kanan, sehingga "PORTS" terpotong di margin. titleLines dipakai
+          // hanya untuk momen hero (fade ke titleSegments begitu morph
+          // lewat titleMorphSplit), header/compact tetap 1 baris seperti biasa.
+          titleLines: [[
+            { label: INTRO_TITLE_A, color: COLORS.IP },
+            { label: INTRO_TITLE_B, color: COLORS.LISTENER },
+          ]],
           subtitle: INTRO_SUBTITLE,
           titleFilter: 'url(#glow)',
           testId: 'network-ports-intro-header',

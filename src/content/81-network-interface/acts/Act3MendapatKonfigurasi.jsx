@@ -2,13 +2,14 @@
 // ACT 3 — Mendapat konfigurasi: DHCP/static branch → address, gateway, DNS.
 // Pola "1 act = 1 file" — lihat docs/standardizations/07-act-scene-pattern.md.
 
-import { CaptionBar, ConceptCard, ConnLine, AnchorIcon, withOrigin } from './common'
+import { CaptionBar, ConceptCard, ConnLine, AnchorIcon, IconConfig, IconIp, IconRoute, IconDns, withOrigin } from './common'
 import { COLORS, ANCHOR_POS, CONFIG_PATHS, CONFIG_RESULTS } from '../data'
 
 const BRANCH_Y = 330
 const BRANCH_XS = { dhcp: 206, static: 526 }
 const RESULT_Y = 620
 const RESULT_XS = { address: 210, gateway: 366, dns: 522 }
+const RESULT_ICONS = { address: IconIp, gateway: IconRoute, dns: IconDns }
 
 // ── Mode summary — momen akhir Act 3: branch DHCP/static sudah selesai
 // (hilang), 3 hasil (address/gateway/DNS) tampil penuh di bawah anchor. ──
@@ -34,6 +35,7 @@ export default function Act3MendapatKonfigurasi({ state, origin }) {
         <g key={p.id}>
           <ConnLine x1={BRANCH_XS[p.id]} y1={BRANCH_Y + 32} x2={ANCHOR_POS.x} y2={ANCHOR_POS.y - 36} color={p.color} />
           <ConceptCard x={BRANCH_XS[p.id]} y={BRANCH_Y} w={180} h={64}
+            icon={IconConfig}
             label={p.label} desc={p.desc} color={p.color}
             active={s.branchChosen === p.id || s.branchChosen === null}
             dim={s.branchChosen !== null && s.branchChosen !== p.id} />
@@ -43,6 +45,7 @@ export default function Act3MendapatKonfigurasi({ state, origin }) {
       {CONFIG_RESULTS.map((r, i) => (
         s.resultsStep > i && (
           <ConceptCard key={r.id} x={RESULT_XS[r.id]} y={RESULT_Y} w={150} h={58}
+            icon={RESULT_ICONS[r.id]}
             label={r.label} desc={r.desc} color={r.color} active />
         )
       ))}

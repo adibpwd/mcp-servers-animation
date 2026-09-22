@@ -14,7 +14,6 @@ import {
   INTRO_CATEGORY, INTRO_TITLE_A, INTRO_TITLE_B, INTRO_SUBTITLE,
   ZONES, COPY, SFX_MAP,
 } from './data'
-import sfxLoader from '../../shared/audio/sfxLoader'
 import { IntroHeaderMorphV1, ActBadgeNavigatorV1, ContentBodyV1 } from '../../shared/scene-ui/v1'
 import { ACT_SCENES } from './acts'
 import { CaptionBar } from './acts/common'
@@ -30,14 +29,13 @@ import { CaptionBar } from './acts/common'
 // ═══════════════════════════════════════════════════════════════════════════
 
 export default function DomainToServerAnimation({
-  paused,
-  speed,
-  volume,
-  previewSfx,
-  audioUnlocked,
+  paused = false,
+  speed = 1.0,
+  volume = 75,
+  previewSfx = true,
+  audioUnlocked = false,
 }) {
   // State management
-  const [showIntro, setShowIntro] = useState(true)
   const [morphP, setMorphP] = useState(0)
   const [phaseIdx, setPhaseIdx] = useState(-1)
   const [contentStarted, setContentStarted] = useState(false)
@@ -50,18 +48,18 @@ export default function DomainToServerAnimation({
   const [dnsVisible, setDnsVisible] = useState(false)
   const [dnsActive, setDnsActive] = useState(false)
   const [domainChipVisible, setDomainChipVisible] = useState(false)
-  const [domainChipPos, setDomainChipPos] = useState({ x: 0, y: 0 })
+  const [domainChipPos, setDomainChipPos] = useState({ x: ZONES.BROWSER.x, y: ZONES.BROWSER.y + 60 })
   const [domainChipShowDomain, setDomainChipShowDomain] = useState(true)
   const [domainChipShowIP, setDomainChipShowIP] = useState(false)
   const [dnsQueryVisible, setDnsQueryVisible] = useState(false)
-  const [dnsQueryPos, setDnsQueryPos] = useState({ x: 0, y: 0 })
+  const [dnsQueryPos, setDnsQueryPos] = useState({ x: ZONES.BROWSER.x, y: ZONES.BROWSER.y + 60 })
 
   // Act 2 - Connect to Edge
   const [browserLoading, setBrowserLoading] = useState(false)
   const [edgeVisible, setEdgeVisible] = useState(false)
   const [edgeActive, setEdgeActive] = useState(false)
   const [requestPacketVisible, setRequestPacketVisible] = useState(false)
-  const [requestPacketPos, setRequestPacketPos] = useState({ x: 0, y: 0 })
+  const [requestPacketPos, setRequestPacketPos] = useState({ x: ZONES.BROWSER.x, y: ZONES.BROWSER.y + 60 })
 
   // Act 3 - Proxy to App
   const [proxyVisible, setProxyVisible] = useState(false)
@@ -73,7 +71,7 @@ export default function DomainToServerAnimation({
 
   // Act 4 - Return Page
   const [responseVisible, setResponseVisible] = useState(false)
-  const [responsePos, setResponsePos] = useState({ x: 0, y: 0 })
+  const [responsePos, setResponsePos] = useState({ x: ZONES.BACKEND_A.x, y: ZONES.BACKEND_A.y })
   const [browserHasPage, setBrowserHasPage] = useState(false)
   const [spineVisible, setSpineVisible] = useState(false)
 
@@ -81,14 +79,21 @@ export default function DomainToServerAnimation({
   const tlRef = useRef(null)
   const volumeRef = useRef(volume)
   const speedRef = useRef(speed)
+  const previewSfxRef = useRef(previewSfx)
+  const audioUnlockedRef = useRef(audioUnlocked)
 
-  // Update volume/speed refs
+  // Update volume/speed/sfx-gate refs — GSAP timeline dibangun sekali di
+  // useEffect(..., []), jadi playSfx() di dalamnya WAJIB baca lewat ref
+  // (bukan prop langsung), kalau tidak nilai akan beku di render pertama
+  // (audioUnlocked biasanya masih false saat mount, sebelum user klik).
   useEffect(() => { volumeRef.current = volume }, [volume])
   useEffect(() => { speedRef.current = speed }, [speed])
+  useEffect(() => { previewSfxRef.current = previewSfx }, [previewSfx])
+  useEffect(() => { audioUnlockedRef.current = audioUnlocked }, [audioUnlocked])
 
   // SFX helper
   const playSfx = (sfxKey) => {
-    if (!previewSfx || !audioUnlocked) return
+    if (!previewSfxRef.current || !audioUnlockedRef.current) return
     const sfxConfig = SFX_MAP[sfxKey]
     if (!sfxConfig) return
     
@@ -130,10 +135,9 @@ export default function DomainToServerAnimation({
     let time = 0
 
     // ===== INTRO: Hero to Header Morph =====
-    master.add(() => setShowIntro(true), time)
     master.add(() => setPhaseIdx(-1), time)
     
-    const morphDur = 1.8
+    const morphDur = 0.8 // dipangkas dari 1.8s (revisi-03), konsisten dengan 44-ssh
     master.to({}, {
       duration: morphDur,
       onUpdate: function() {
@@ -144,7 +148,6 @@ export default function DomainToServerAnimation({
     time += morphDur
 
     master.add(() => {
-      setShowIntro(false)
       setContentStarted(true)
     }, time)
     time += 0.3
@@ -158,7 +161,7 @@ export default function DomainToServerAnimation({
 
     // 1.1 Browser dan DNS muncul (redup)
     popIn(master, time, setBrowserVisible, 'POP')
-    popIn(master, time + 0.2, setDnsVisible, null)
+    popIn(master, time + 0.2, setDnsVisible, 'BOUNCE')
     setC(master, time + 0.3, COPY.ACT1_BEFORE, COLORS.PURPLE, { x: ZONES.BROWSER.x, y: ZONES.BROWSER.y - 70 })
     time += 1.5
 
@@ -234,6 +237,7 @@ export default function DomainToServerAnimation({
     master.add(() => {
       setDomainChipVisible(false)
       setCaption('')
+      playSfx('POP_OUT')
     }, time)
     time += 0.5
 
@@ -245,7 +249,7 @@ export default function DomainToServerAnimation({
     master.add(() => playSfx('WHOOSH'), time)
 
     // 2.1 Browser loading, edge gate muncul
-    popIn(master, time, () => setBrowserLoading(true), null)
+    popIn(master, time, () => setBrowserLoading(true), 'TICK')
     popIn(master, time + 0.2, setEdgeVisible, 'POP')
     setC(master, time + 0.3, COPY.ACT2_BEFORE, COLORS.CYAN, { x: ZONES.BROWSER.x, y: ZONES.BROWSER.y - 70 })
     time += 1.5
@@ -289,6 +293,7 @@ export default function DomainToServerAnimation({
     master.add(() => {
       setEdgeActive(false)
       setCaption('')
+      playSfx('TICK')
     }, time)
     time += 0.5
 
@@ -301,15 +306,16 @@ export default function DomainToServerAnimation({
 
     // 3.1 Proxy dan backends muncul
     popIn(master, time, setProxyVisible, 'POP')
-    popIn(master, time + 0.2, setBackendAVisible, null)
-    popIn(master, time + 0.3, setBackendBVisible, null)
+    popIn(master, time + 0.2, setBackendAVisible, 'BOUNCE')
+    popIn(master, time + 0.3, setBackendBVisible, 'BOUNCE')
     setC(master, time + 0.4, COPY.ACT3_BEFORE, COLORS.ORANGE, { x: ZONES.PROXY.x, y: ZONES.PROXY.y - 70 })
     time += 1.8
 
     // 3.2 Request packet moves to proxy
     master.add(() => {
       setRequestPacketVisible(true)
-      setRequestPacketPos({ x: ZONES.EDGE.x, y: ZONES.EDGE.y + 80 })
+      setRequestPacketPos({ x: ZONES.EDGE.x, y: ZONES.EDGE.y })
+      playSfx('PACKET_SEND')
     }, time)
     
     const packetToProxyDur = 1.5
@@ -351,6 +357,7 @@ export default function DomainToServerAnimation({
       setProxyActive(false)
       setRoutingBeamVisible(false)
       setCaption('')
+      playSfx('POP_OUT')
     }, time)
     time += 0.5
 
@@ -362,7 +369,7 @@ export default function DomainToServerAnimation({
     master.add(() => playSfx('WHOOSH'), time)
 
     // 4.1 Browser still loading
-    popIn(master, time, () => setBrowserLoading(true), null)
+    popIn(master, time, () => setBrowserLoading(true), 'TICK')
     setC(master, time + 0.2, COPY.ACT4_BEFORE, COLORS.MINT, { x: ZONES.BROWSER.x, y: ZONES.BROWSER.y - 70 })
     time += 1.5
 
@@ -390,6 +397,7 @@ export default function DomainToServerAnimation({
     time += responseToProxyDur + 0.3
 
     // 4.4 Response travels to edge
+    master.add(() => playSfx('HOP'), time)
     const responseToEdgeDur = 1.5
     master.to(responsePos, {
       duration: responseToEdgeDur,
@@ -403,6 +411,7 @@ export default function DomainToServerAnimation({
     time += responseToEdgeDur + 0.3
 
     // 4.5 Response travels to browser
+    master.add(() => playSfx('HOP'), time)
     const responseToBrowserDur = 2.0
     master.to(responsePos, {
       duration: responseToBrowserDur,
@@ -449,7 +458,7 @@ export default function DomainToServerAnimation({
       setSpineVisible(false)
       setCaption('')
       setContentStarted(false)
-      setShowIntro(true)
+      playSfx('WHOOSH_LOW')
     }, time)
 
     return () => {
@@ -504,12 +513,15 @@ export default function DomainToServerAnimation({
 
         {/* Intro/Header Section */}
         <IntroHeaderMorphV1
-          visible={showIntro}
           progress={morphP}
           category={INTRO_CATEGORY}
           titleSegments={[
             { label: INTRO_TITLE_A, color: COLORS.BLUE },
             { label: INTRO_TITLE_B, color: COLORS.GREEN }
+          ]}
+          titleLines={[
+            [{ label: INTRO_TITLE_A, color: COLORS.BLUE }],
+            [{ label: INTRO_TITLE_B.trim(), color: COLORS.GREEN }],
           ]}
           subtitle={INTRO_SUBTITLE}
           bg={4}
@@ -520,7 +532,7 @@ export default function DomainToServerAnimation({
         {contentStarted && (
           <ActBadgeNavigatorV1
             phases={PHASES}
-            activePhaseIdx={phaseIdx}
+            activeIndex={phaseIdx}
             totalDuration={TOTAL_DURATION}
           />
         )}

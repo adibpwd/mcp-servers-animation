@@ -3,10 +3,11 @@
 // yang sudah settle ("eth0"). Anchor persisten dari Act 1.
 // Pola "1 act = 1 file" — lihat docs/standardizations/07-act-scene-pattern.md.
 
-import { CaptionBar, ConceptCard, ConnLine, AnchorIcon, withOrigin } from './common'
+import { CaptionBar, ConceptCard, ConnLine, AnchorIcon, IconLink, IconMac, IconIp, withOrigin } from './common'
 import { COLORS, ANCHOR_POS, IDENTITY_LAYERS } from '../data'
 
 const LAYER_XS = { link: 580, mac: 650, ip: 720 }
+const LAYER_ICONS = { link: IconLink, mac: IconMac, ip: IconIp }
 
 // ── Mode summary — momen akhir Act 2: ketiga layer (link/MAC/IP) tampil
 // penuh di atas anchor. ──
@@ -32,6 +33,7 @@ export default function Act2LinkDanIdentity({ state, origin }) {
       {IDENTITY_LAYERS.map((layer, i) => (
         s.layerStep > i && (
           <ConceptCard key={layer.id} x={ANCHOR_POS.x} y={LAYER_XS[layer.id]} w={260} h={54}
+            icon={LAYER_ICONS[layer.id]}
             label={layer.label} desc={layer.desc} color={layer.color} active />
         )
       ))}

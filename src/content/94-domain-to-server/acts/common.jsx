@@ -16,6 +16,65 @@
 import React from 'react'
 import { ZONES, COLORS, DOMAIN, IP, PORT } from '../data'
 
+// ─────────────────────────────────────────────────────────────
+// Inline SVG icons per stasiun (revisi-02: memperjelas fungsi tiap actor,
+// menggantikan primitive kotak/lingkaran netral). Semua icon 24x24 viewBox,
+// stroke-based, warna via prop `color` mengikuti skema COLORS yang sudah
+// dipakai stasiun terkait — tidak ada asset eksternal (SVG-only constraint).
+// ─────────────────────────────────────────────────────────────
+
+export function IconBrowser({ size = 20, color = COLORS.BLUE }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <rect x="2" y="3" width="20" height="18" rx="4"/>
+      <line x1="2" y1="8" x2="22" y2="8"/>
+      <circle cx="5" cy="5.5" r="0.8" fill={color}/>
+      <circle cx="8" cy="5.5" r="0.8" fill={color}/>
+    </svg>
+  )
+}
+
+export function IconDns({ size = 20, color = COLORS.PURPLE }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+      <circle cx="12" cy="9" r="2"/>
+    </svg>
+  )
+}
+
+export function IconEdge({ size = 20, color = COLORS.CYAN }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <rect x="3" y="11" width="18" height="11" rx="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  )
+}
+
+export function IconProxy({ size = 20, color = COLORS.ORANGE }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <polyline points="16 3 21 3 21 8"/>
+      <line x1="14" y1="10" x2="21" y2="3"/>
+      <polyline points="8 21 3 21 3 16"/>
+      <line x1="10" y1="14" x2="3" y2="21"/>
+    </svg>
+  )
+}
+
+export function IconBackend({ size = 20, color = COLORS.GREEN }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+      <rect x="2" y="2" width="20" height="8" rx="2"/>
+      <rect x="2" y="14" width="20" height="8" rx="2"/>
+      <line x1="6" y1="6" x2="6.01" y2="6"/>
+      <line x1="6" y1="18" x2="6.01" y2="18"/>
+    </svg>
+  )
+}
+
 /** Caption yang nempel di dekat actor yang sedang dibahas (bukan caption
  * bar global — lihat 03-planning-storytelling-quality-gate.md §D). Posisi
  * di-anchor ke koordinat actor terkait tiap beat, di-clamp supaya tidak
@@ -52,6 +111,12 @@ export const BrowserIcon = ({ visible, loading, hasPage }) => {
       <circle cx="-22" cy="-20" r="2.5" fill={COLORS.YELLOW} opacity="0.7" />
       <circle cx="-14" cy="-20" r="2.5" fill={COLORS.GREEN} opacity="0.7" />
 
+      {!loading && !hasPage && (
+        <g transform="translate(-10 -2)" opacity="0.85">
+          <IconBrowser size={20} color={COLORS.BLUE} />
+        </g>
+      )}
+
       {loading && (
         <g>
           <circle cx="0" cy="10" r="8" fill="none" stroke={COLORS.BLUE} strokeWidth="2" opacity="0.5">
@@ -87,8 +152,9 @@ export const DNSIcon = ({ visible, active }) => {
       )}
       <rect x="-45" y="-35" width="90" height="70" rx="10"
         fill={COLORS.LIGHT} stroke={COLORS.PURPLE} strokeWidth={active ? 2.5 : 2} />
-      <circle cx="0" cy="-8" r="12" fill="none" stroke={COLORS.PURPLE} strokeWidth="2" />
-      <circle cx="0" cy="-8" r="4" fill={COLORS.PURPLE} />
+      <g transform="translate(-11 -19)">
+        <IconDns size={22} color={COLORS.PURPLE} />
+      </g>
       <text x="0" y="22" textAnchor="middle" fontFamily="monospace"
         fontWeight="700" fontSize="11" fill={COLORS.PURPLE}>DNS</text>
     </g>
@@ -165,6 +231,9 @@ export const EdgeGate = ({ visible, active }) => {
       )}
       <rect x="-70" y="-50" width="140" height="100" rx="12"
         fill={COLORS.LIGHT} stroke={COLORS.CYAN} strokeWidth={active ? 2.5 : 2} />
+      <g transform="translate(45 -42)">
+        <IconEdge size={18} color={COLORS.CYAN} />
+      </g>
       <rect x="-50" y="-30" width="100" height="20" rx="4"
         fill={COLORS.DEEP} stroke={COLORS.CYAN} strokeWidth="1.5" />
       <text x="0" y="-14" textAnchor="middle" fontFamily="monospace"
@@ -190,8 +259,9 @@ export const ProxyGate = ({ visible, active }) => {
       )}
       <rect x="-70" y="-50" width="140" height="100" rx="12"
         fill={COLORS.LIGHT} stroke={COLORS.ORANGE} strokeWidth={active ? 2.5 : 2} />
-      <circle cx="0" cy="-10" r="15" fill="none" stroke={COLORS.ORANGE} strokeWidth="2.5" />
-      <circle cx="0" cy="-10" r="5" fill={COLORS.ORANGE} />
+      <g transform="translate(-11 -22)">
+        <IconProxy size={22} color={COLORS.ORANGE} />
+      </g>
       <text x="0" y="20" textAnchor="middle" fontFamily="monospace"
         fontWeight="700" fontSize="12" fill={COLORS.ORANGE}>PROXY</text>
       <text x="0" y="35" textAnchor="middle" fontFamily="monospace"
@@ -213,8 +283,9 @@ export const BackendApp = ({ visible, active, label, x, y }) => {
       )}
       <rect x="-60" y="-40" width="120" height="80" rx="10"
         fill={COLORS.LIGHT} stroke={COLORS.GREEN} strokeWidth={active ? 2.5 : 2} />
-      <circle cx="0" cy="-8" r="12" fill="none" stroke={COLORS.GREEN} strokeWidth="2" />
-      <circle cx="0" cy="-8" r="4" fill={COLORS.GREEN} />
+      <g transform="translate(-11 -19)">
+        <IconBackend size={22} color={COLORS.GREEN} />
+      </g>
       <text x="0" y="18" textAnchor="middle" fontFamily="monospace"
         fontWeight="700" fontSize="11" fill={COLORS.GREEN}>{label}</text>
       <text x="0" y="32" textAnchor="middle" fontFamily="monospace"

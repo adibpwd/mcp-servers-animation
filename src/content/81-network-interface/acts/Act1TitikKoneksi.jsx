@@ -3,11 +3,12 @@
 // (wired/wifi/loopback), lalu fokus menetap ke satu ("eth0").
 // Pola "1 act = 1 file" — lihat docs/standardizations/07-act-scene-pattern.md.
 
-import { CaptionBar, ConceptCard, AnchorIcon, withOrigin } from './common'
+import { CaptionBar, ConceptCard, AnchorIcon, IconEthernet, IconWifi, IconLoopback, withOrigin } from './common'
 import { COLORS, INTERFACE_TYPES } from '../data'
 
 const TYPE_ROW_Y = 420
 const TYPE_XS = { wired: 156, wifi: 366, loopback: 576 }
+const TYPE_ICONS = { wired: IconEthernet, wifi: IconWifi, loopback: IconLoopback }
 
 // ── Mode summary (tanpa props) — momen akhir Act 1: anchor "eth0" sudah
 // settle, 3 kartu jenis interface sudah tidak tampil lagi. ──
@@ -29,6 +30,7 @@ export default function Act1TitikKoneksi({ state, origin }) {
 
       {s.typesVisible && INTERFACE_TYPES.map((it) => (
         <ConceptCard key={it.id} x={TYPE_XS[it.id]} y={TYPE_ROW_Y} w={190} h={72}
+          icon={TYPE_ICONS[it.id]}
           label={it.label} desc={it.desc} color={it.color}
           active={s.typeHighlight === it.id || s.typeHighlight === null}
           dim={s.typeHighlight !== null && s.typeHighlight !== it.id} />

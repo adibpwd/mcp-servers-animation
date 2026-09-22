@@ -82,9 +82,9 @@ export function IconShieldLock({ x = 0, y = 0, size = 18, color }) {
   )
 }
 
-export function IconPipeArrow({ x = 0, y = 0, size = 12, color, angleDeg = 0, dashed = false }) {
+export function IconPipeArrow({ x = 0, y = 0, size = 12, color, angleDeg = 0, dashed = false, opacity = 1 }) {
   return (
-    <g transform={`translate(${x}, ${y}) rotate(${angleDeg})`}>
+    <g transform={`translate(${x}, ${y}) rotate(${angleDeg})`} opacity={opacity}>
       <path
         d={`M${-size / 2} 0 L${size / 2} 0 M${size / 2 - size * 0.35} ${-size * 0.3} L${size / 2} 0 L${size / 2 - size * 0.35} ${size * 0.3}`}
         fill="none" stroke={color} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"

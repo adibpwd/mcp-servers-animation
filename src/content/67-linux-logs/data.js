@@ -44,7 +44,8 @@ export const TOTAL_DURATION = PHASES.reduce((acc, p) => acc + p.duration, 0)
 
 export const INTRO_CATEGORY_LABEL = 'LINUX FUNDAMENTALS'
 export const INTRO_DOMAIN = 'ADIB-DEV.COM'
-export const INTRO_TITLE = 'LOG SYSTEM'
+export const INTRO_TITLE_A = 'LOG '
+export const INTRO_TITLE_B = 'SYSTEM'
 export const INTRO_SUBTITLE = 'Jejak yang tercatat, kalau tahu cara bacanya'
 
 // ═══════════════════════════════════════════════

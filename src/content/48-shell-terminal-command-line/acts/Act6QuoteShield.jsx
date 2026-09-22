@@ -5,7 +5,7 @@
 import React from 'react'
 import { COLORS, ACT6_CASE } from '../data'
 import { getIcon } from '../icons/loader'
-import { ArchChrome, withOrigin, tos, oop } from './common'
+import { ArchChrome, withOrigin, tos, oop, IconShieldLock } from './common'
 
 const FULL = { scale: 1, opacity: 1, x: 0, y: 0 }
 
@@ -27,7 +27,8 @@ function Act6Content({ pop, act6, statusToken }) {
     <g>
       <g transform={tos(pop, 'dataChip', 140, 700)} opacity={oop(pop, 'dataChip')}>
         <rect x={-90} y={-24} width={180} height={48} rx={10} fill={COLORS.PANEL} stroke={COLORS.SCRIPT} strokeWidth={1.5} />
-        <text x={0} y={5} textAnchor="middle" fontSize={10.5} fontWeight={700} fontFamily="monospace" fill={COLORS.SCRIPT}>
+        <IconShieldLock x={-70} y={0} size={17} color={COLORS.SCRIPT} />
+        <text x={8} y={5} textAnchor="middle" fontSize={10.5} fontWeight={700} fontFamily="monospace" fill={COLORS.SCRIPT}>
           {ACT6_CASE.filename}
         </text>
       </g>

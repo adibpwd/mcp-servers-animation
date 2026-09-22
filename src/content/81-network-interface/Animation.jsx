@@ -88,10 +88,9 @@ export default function NetworkInterfaceAnimation({
   const [chainVisible, setChainVisible] = useState(false)
   const [chainHighlight, setChainHighlight] = useState(null)
 
-  // Act 6 — interface virtual (tanpa anchor) + takeaway penutup
+  // Act 6 — interface virtual (tanpa anchor)
   const [virtualVisible, setVirtualVisible] = useState(false)
   const [virtualHighlight, setVirtualHighlight] = useState(null)
-  const [takeawayVisible, setTakeawayVisible] = useState(false)
 
   const play = (entry) => {
     if (!audioUnlockedRef.current || !entry) return
@@ -126,7 +125,7 @@ export default function NetworkInterfaceAnimation({
       setBranchVisible(false); setBranchChosen(null); setResultsStep(0)
       setRouteVisible(false); setRouteActive(null); setProgressLocal(0); setProgressGateway(0)
       setChainVisible(false); setChainHighlight(null)
-      setVirtualVisible(false); setVirtualHighlight(null); setTakeawayVisible(false)
+      setVirtualVisible(false); setVirtualHighlight(null)
     }, 0)
 
     // ── Intro — hero centered → header (pola Tailscale/44-ssh) ──
@@ -136,6 +135,7 @@ export default function NetworkInterfaceAnimation({
     sfxOn(t, SFX_MAP.SHIMMER)
     t += 0.8
     tl.add(() => setContentStarted(true), t)
+    sfxOn(t, SFX_MAP.POP)
     const bf = { v: 0 }
     tl.to(bf, { v: 1, duration: 0.5, ease: 'power1.out', onUpdate: () => setBodyOpacity(bf.v) }, t)
     t += 0.5
@@ -147,6 +147,7 @@ export default function NetworkInterfaceAnimation({
     // ═══════════════ ACT 1 — Titik koneksi (8s) ═══════════════
     const a1 = actStart[0]
     tl.add(() => { setPhaseIdx(0); setTypesVisible(true) }, a1)
+    sfxOn(a1, SFX_MAP.POP)
     say(a1, ACT1_BEATS.hook.caption, COLORS.WIRED)
     let ft = a1 + 0.4
     INTERFACE_TYPES.forEach((it) => {
@@ -157,6 +158,7 @@ export default function NetworkInterfaceAnimation({
     say(ft, ACT1_BEATS.reveal.caption, COLORS.LINK)
     ft += 0.8
     tl.add(() => { setTypesVisible(false); setTypeHighlight(null) }, ft)
+    sfxOn(ft, SFX_MAP.DING)
     tl.add(() => { setAnchorVisible(true); setAnchorGlow(1) }, ft + 0.1)
     sfxOn(ft + 0.1, SFX_MAP.CONFIRM)
     say(ft + 0.15, ACT1_BEATS.settle.caption, COLORS.WIRED)
@@ -165,6 +167,7 @@ export default function NetworkInterfaceAnimation({
     // ═══════════════ ACT 2 — Link dan identity (9s) ═══════════════
     const a2 = actStart[1]
     tl.add(() => setPhaseIdx(1), a2)
+    sfxOn(a2, SFX_MAP.SWOOSH)
     say(a2, ACT2_BEATS.intro.caption, COLORS.LINK)
     let t2 = a2 + 0.5
     IDENTITY_LAYERS.forEach((layer, i) => {
@@ -183,6 +186,7 @@ export default function NetworkInterfaceAnimation({
     // ═══════════════ ACT 3 — Mendapat konfigurasi (9s) ═══════════════
     const a3 = actStart[2]
     tl.add(() => setPhaseIdx(2), a3)
+    sfxOn(a3, SFX_MAP.SWOOSH)
     say(a3, ACT3_BEATS.intro.caption, COLORS.CONFIG)
     tl.add(() => setBranchVisible(true), a3 + 0.3)
     sfxOn(a3 + 0.3, SFX_MAP.POP2)
@@ -195,6 +199,7 @@ export default function NetworkInterfaceAnimation({
     sfxOn(t3, SFX_MAP.TICK)
     t3 += 1.2
     tl.add(() => { setBranchVisible(false); setBranchChosen(null) }, t3)
+    sfxOn(t3, SFX_MAP.DING)
     say(t3 + 0.1, ACT3_BEATS.closing.caption, COLORS.ROUTE)
     let rt = t3 + 0.3
     CONFIG_RESULTS.forEach((_, i) => {
@@ -208,6 +213,7 @@ export default function NetworkInterfaceAnimation({
     // ═══════════════ ACT 4 — Memilih jalan (9s) ═══════════════
     const a4 = actStart[3]
     tl.add(() => setPhaseIdx(3), a4)
+    sfxOn(a4, SFX_MAP.SWOOSH)
     say(a4, ACT4_BEATS.intro.caption, COLORS.ROUTE)
     tl.add(() => setRouteVisible(true), a4 + 0.3)
     sfxOn(a4 + 0.3, SFX_MAP.POP)
@@ -232,6 +238,7 @@ export default function NetworkInterfaceAnimation({
     // ═══════════════ ACT 5 — Nama ke tujuan (9s) ═══════════════
     const a5 = actStart[4]
     tl.add(() => setPhaseIdx(4), a5)
+    sfxOn(a5, SFX_MAP.SWOOSH)
     say(a5, ACT5_BEATS.intro.caption, COLORS.TEXT)
     tl.add(() => setChainVisible(true), a5 + 0.3)
     sfxOn(a5 + 0.3, SFX_MAP.POP)
@@ -250,6 +257,7 @@ export default function NetworkInterfaceAnimation({
     // sengaja tanpa anchor) tetap terjadi, tapi tanpa jeda kosong duluan.
     // Lihat catatan Act 2 di atas / revisi-02.
     tl.add(() => { setAnchorVisible(false); setAnchorGlow(0) }, actStart[5] - 0.1)
+    sfxOn(actStart[5] - 0.1, SFX_MAP.TELEPORT)
 
     // ═══════════════ ACT 6 — Interface virtual (9s) ═══════════════
     const a6 = actStart[5]
@@ -266,9 +274,9 @@ export default function NetworkInterfaceAnimation({
     say(t6, ACT6_BEATS.reveal.caption, COLORS.VIRTUAL)
     t6 += 1.0
     tl.add(() => setVirtualHighlight(null), t6)
+    sfxOn(t6, SFX_MAP.CHIME)
     say(t6 + 0.1, ACT6_BEATS.closing.caption, COLORS.VIRTUAL)
     sfxOn(t6 + 0.1, SFX_MAP.SHIMMER)
-    tl.add(() => setTakeawayVisible(true), t6 + 0.3)
     t6 += 2.0
     sfxOn(t6, SFX_MAP.COMPLETE)
     t6 += 1.8
@@ -306,6 +314,10 @@ export default function NetworkInterfaceAnimation({
           { label: INTRO_TITLE_A, color: COLORS.WIRED },
           { label: INTRO_TITLE_B, color: COLORS.IP },
         ]}
+        titleLines={[
+          [{ label: 'NETWORK', color: COLORS.WIRED }],
+          [{ label: 'INTERFACE', color: COLORS.IP }],
+        ]}
         subtitle={INTRO_SUBTITLE}
         bg={2}
         bgScenes={ACT_SCENES}
@@ -329,7 +341,7 @@ export default function NetworkInterfaceAnimation({
                   branchVisible, branchChosen, resultsStep,
                   routeVisible, routeActive, progressLocal, progressGateway,
                   chainVisible, chainHighlight,
-                  virtualVisible, virtualHighlight, takeawayVisible,
+                  virtualVisible, virtualHighlight,
                 }} />
               )
             })()}

@@ -164,8 +164,6 @@ export const ACT6_BEATS = {
   closing: { caption: COPY.VIRTUAL_IS_ALSO_INTERFACE },
 }
 
-export const CLOSING_LINE = 'Lapisan port dan service menyusul di Content 84.'
-
 // ── SFX_MAP — nama file diverifikasi ada di public/audio/ (audit
 // sebelum dipakai, sama seperti 91-linux-server/data.js). Kategori:
 // ui, transitions, impacts, success, warnings. ──

@@ -414,3 +414,32 @@ Tidak ada file implementasi yang diubah oleh revisi ini; hanya dokumen plan ini 
 - `IntroHeaderMorphV1` disambungkan: `bg={phaseIdx + 1}` (1-based sesuai kontrak), `bgScenes={ACT_SCENES}`, `bgDim={0.3}` — memakai default `bgOrigin` (layout.body). Dikonfirmasi lewat pembacaan source bahwa `<BgScene />` dipanggil TANPA props, jadi tiap `ActN.jsx` WAJIB bisa render mandiri dari `SUMMARY_STATE` internal — sudah dipenuhi lewat pola `const s = state || SUMMARY_STATE`.
 - Verifikasi: `esbuild --bundle` pada `Animation.jsx` (yang meng-import `acts/index.js` yang meng-import keenam `ActN.jsx` + `common.jsx`) lolos 104.3kb, 0 error — artinya seluruh 8 file baru (`common.jsx` + 6 Act + `index.js`) tervalidasi transitif dalam satu bundle check. Cross-check manual field `liveState` (Animation.jsx) vs field yang didestrukturisasi tiap `ActN.jsx`/`ArchChrome` — semua cocok, tidak ada field hilang/typo.
 - **Belum dikerjakan**: preview visual manual per-Act (butuh dev server/browser, di luar kapasitas sesi ini) — terutama untuk memastikan `bg`/`bgScenes` thumbnail benar-benar terlihat proporsional saat intro morph, dan `SUMMARY_STATE` tiap Act menghasilkan frame yang representatif secara visual (baru diverifikasi secara struktural/data, belum dilihat langsung).
+
+
+### EKSEKUSI-06 (2026-09-22, revisi-04: inline SVG icons & fix intro overflow)
+- **Fix judul intro terpotong**: dipakai mekanisme resmi `titleLines` milik `IntroHeaderMorphV1` (bukan hack font-size/letterSpacing) — hero merender "SHELL" dan "EXPLAINED" sebagai 2 baris stack, lalu crossfade ke `titleSegments` 1-baris versi compact begitu progress lewat `titleMorphSplit`. Tidak perlu ubah shared component, prop ini sudah ada (UPDATE terdahulu).
+- **6 komponen icon inline SVG baru** di `acts/common.jsx` (semua primitif SVG murni kecuali `IconBashMark`, yang memakai PNG resmi `icons/gnu-bash-mark.png` — sumber sama dengan EKSEKUSI-04, TIDAK download ulang dari Wikimedia karena aset CC0 yang sudah ada sudah merupakan logo resmi GNU Bash):
+  - `IconLightning` — builtin fast-path (fork builtin, pojok kanan-atas box)
+  - `IconBinary` — executable/PATH (fork exec, pojok kanan-atas box)
+  - `IconPromptGlyph` (`>_`) — terminal station (pojok kanan header window)
+  - `IconShieldLock` — quote shield (Act 6, dataChip)
+  - `IconPipeArrow` — arah aliran stdin/stdout/stderr (Act 4, 4 titik tengah garis)
+  - `IconBashMark` — logo Bash kecil (16px) di shell hub, hanya tampil saat BUKAN mode token-split Act 3 (supaya tidak bentrok dengan teks "echo"/"$HOME")
+- Terintegrasi di: `ArchChrome` (terminal, shellHub, forkBuiltin, forkExec — otomatis ikut ke SEMUA Act karena lewat chrome bersama), `Act4GrepError.jsx` (4 pipe-arrow dengan opacity mengikuti state `act4.stdinOn/stdoutOn/redirectOn/stderrOn` yang sudah ada), `Act6QuoteShield.jsx` (shield di dataChip).
+- **Perbaikan kecil saat implementasi**: `IconPipeArrow` awalnya tidak punya prop `opacity` — ditambahkan supaya bisa mengikuti state aktif/tidak-aktif jalur data seperti elemen lain.
+- Verifikasi: `esbuild --bundle` lolos (108.6kb, 0 error, `--loader:.png=dataurl` untuk simulasi resolusi PNG) setelah SEMUA perubahan (titleLines + 6 icon + 3 titik integrasi).
+- **Belum dikerjakan**: verifikasi visual manual bahwa "EXPLAINED" benar-benar tidak lagi terpotong dan icon-icon baru terlihat presisi/proporsional — butuh browser/dev-server, di luar kapasitas sesi ini (sama seperti EKSEKUSI-01 s/d 05).
+
+
+### EKSEKUSI-07 (2026-09-22, permintaan user: audio kurang ramai — perluas cakupan SFX)
+- **Bukan revisi dari file `.md`** — permintaan langsung dari user di chat: setiap action/gerakan/muncul/hilang harus punya SFX supaya tidak "sepi".
+- `SFX_MAP` diperluas dari 15 → 27 entri, memakai file audio yang sebelumnya belum dipakai sama sekali di topic ini (semua diverifikasi ada di `public/audio/`): `ui/plink`, `ui/bubble-pop`, `ui/beep`, `ui/beep-2`, `transitions/swoosh-2`, `transitions/slide-in`, `impacts/unlock`, `impacts/swap`, `success/complete`, `success/approval-stamp`, `warnings/soft-deny`, `sfx/typing`, `sfx/scan`, `sfx/materialize` (kategori folder `sfx` — dicek dulu `sfxLoader.js`, path-nya `/audio/{category}/{name}.wav`, generik untuk kategori manapun termasuk `sfx`).
+- **4 helper timeline diubah supaya otomatis berbunyi** (sebelumnya harus manual `sfxOn()` di tiap titik, sering terlewat):
+  - `popOut()` — dulu SENYAP total saat elemen hilang. Sekarang default main `ui/plink` (volume ×0.7), bisa di-override per pemanggilan.
+  - `typeText()` — dulu cuma bunyi kalau ada `sfxOn(TICK)` manual di dekatnya (tidak konsisten). Sekarang selalu main `sfx/typing` di awal.
+  - `travelPacket()` — dulu pergerakan capsule command/output TIDAK berbunyi sendiri (hanya titik awal/akhir yang kadang punya sfx manual). Sekarang tiap kali dipanggil otomatis main `transitions/light-swoosh-quick` pelan (×0.35) di awal gerakan.
+  - `travelFlow()` — sama untuk flow-dot kecil (stream Act 4, pulse Act 6): otomatis main `ui/beep-2` sangat pelan (×0.3).
+- **Titik spesifik yang ditambah manual** (state-toggle yang murni visual tanpa transisi pop/travel di dekatnya): `sfx/scan` saat `$HOME` expand ke `/home/adib` (Act 3), `success/approval-stamp` menyusul `ding` saat exit 0 sukses (Act 3), `warnings/soft-deny` saat gateBox "STOP" muncul (Act 6, ganti default POP jadi lebih tegas), `impacts/swap` + `alert-pulse` saat badge shell berganti bash→sh (Act 6).
+- **Hasil akhir** (dihitung dari source): 22 `popIn`, 13 `popOut`, 43 `sfxOn` eksplisit, 23 `travelPacket`, 10 `travelFlow`, 7 `typeText` — semua titik ini sekarang membawa audio (baik otomatis dari helper maupun manual), dari sebelumnya banyak `popOut`/`travelPacket`/`travelFlow`/`typeText` yang senyap.
+- Verifikasi: `node --check data.js` OK; `esbuild --bundle` Animation.jsx (yang meng-import seluruh `acts/`) lolos 110.7kb, 0 error.
+- **Belum dikerjakan**: mendengarkan hasil akhir secara langsung (butuh browser/audio playback, di luar kapasitas sesi ini) — volume relatif antar-lapisan (mis. travelPacket 0.35× + travelFlow 0.3× dipilih supaya jadi tekstur latar yang tidak menabrak sfxOn eksplisit yang lebih penting, tapi ini asumsi belum diverifikasi dengar langsung).
