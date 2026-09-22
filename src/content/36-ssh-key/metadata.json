@@ -1,0 +1,16 @@
+{
+  "id": "ssh-key",
+  "title": "SSH Key vs Password",
+  "subtitle": "Kunci digital pengganti password",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Linux",
+    "SSH",
+    "Security",
+    "Cryptography",
+    "Networking"
+  ],
+  "color": "#22D3EE",
+  "priority": 36,
+  "status": "draft"
+}

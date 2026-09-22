@@ -1,0 +1,17 @@
+{
+  "id": "oom-killer",
+  "title": "OOM Killer",
+  "subtitle": "Algojo saat RAM server habis",
+  "category": "Linux Deep Dive",
+  "tags": [
+    "Linux",
+    "Kernel",
+    "Memory",
+    "RAM",
+    "Troubleshooting",
+    "OOM"
+  ],
+  "color": "#EC4899",
+  "priority": 39,
+  "status": "draft"
+}

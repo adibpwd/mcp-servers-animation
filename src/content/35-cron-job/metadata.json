@@ -1,0 +1,17 @@
+{
+  "id": "cron-job",
+  "title": "Cron Job",
+  "subtitle": "Robot penjadwal otomatis di Linux",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Linux",
+    "Cron",
+    "Automation",
+    "Crontab",
+    "DevOps",
+    "CLI"
+  ],
+  "color": "#38BDF8",
+  "priority": 35,
+  "status": "draft"
+}

@@ -1,0 +1,17 @@
+{
+  "id": "systemd-timer",
+  "title": "Systemd Timer",
+  "subtitle": "Pengganti modern cron job",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Linux",
+    "systemd",
+    "Timer",
+    "Automation",
+    "Journald",
+    "DevOps"
+  ],
+  "color": "#38BDF8",
+  "priority": 44,
+  "status": "draft"
+}

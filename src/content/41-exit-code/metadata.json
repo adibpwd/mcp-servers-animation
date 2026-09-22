@@ -1,0 +1,17 @@
+{
+  "id": "exit-code",
+  "title": "Exit Code",
+  "subtitle": "Bahasa rahasia status command (0 vs non-zero)",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Linux",
+    "Shell",
+    "Bash",
+    "Exit Code",
+    "Scripting",
+    "CLI"
+  ],
+  "color": "#38BDF8",
+  "priority": 41,
+  "status": "draft"
+}

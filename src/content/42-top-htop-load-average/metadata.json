@@ -1,0 +1,18 @@
+{
+  "id": "top-htop-load-average",
+  "title": "Top, Htop & Load Average",
+  "subtitle": "Membaca detak jantung & beban server",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Linux",
+    "Monitoring",
+    "top",
+    "htop",
+    "Load Average",
+    "CPU",
+    "CLI"
+  ],
+  "color": "#22D3EE",
+  "priority": 42,
+  "status": "draft"
+}

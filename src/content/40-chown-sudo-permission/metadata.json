@@ -1,0 +1,17 @@
+{
+  "id": "chown-sudo-permission",
+  "title": "File Permission Lanjutan",
+  "subtitle": "chown, su, sudo & sudoers tanpa chmod 777",
+  "category": "Linux Fundamentals",
+  "tags": [
+    "Linux",
+    "Permission",
+    "chown",
+    "sudo",
+    "Security",
+    "CLI"
+  ],
+  "color": "#FBBF24",
+  "priority": 40,
+  "status": "draft"
+}
