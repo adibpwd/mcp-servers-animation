@@ -3,8 +3,17 @@
   "title": "User Group Access",
   "subtitle": "Identitas, group, dan izin admin sementara",
   "category": "Linux Fundamentals",
-  "tags": ["Linux", "User", "Group", "Ownership", "sudo", "Beginner"],
+  "tags": [
+    "Linux",
+    "User",
+    "Group",
+    "Ownership",
+    "sudo",
+    "Beginner"
+  ],
   "color": "#38BDF8",
   "status": "draft",
-  "priority": 37
+  "priority": 37,
+  "pinned": false,
+  "pinnedAt": null
 }

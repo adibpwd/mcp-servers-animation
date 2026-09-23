@@ -3,10 +3,16 @@
   "title": "Log System",
   "subtitle": "Jejak yang tercatat, kalau tahu cara bacanya",
   "category": "Linux Fundamentals",
-  "tags": ["Linux", "journald", "syslog", "logging", "audit"],
+  "tags": [
+    "Linux",
+    "journald",
+    "syslog",
+    "logging",
+    "audit"
+  ],
   "color": "#2DD4BF",
-  "status": "draft",
+  "status": "posted",
   "priority": 67,
-  "pinned": true,
-  "pinnedAt": "2026-09-21T00:40:21.317Z"
+  "pinned": false,
+  "pinnedAt": null
 }

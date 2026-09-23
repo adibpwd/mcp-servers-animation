@@ -4,7 +4,7 @@
 |---|---|
 | Topik | **35 Cron Job** (`src/content/35-cron-job/`) |
 | Tanggal | 2026-09-23 |
-| Status | 📝 **PLAN-ONLY (Belum Dieksekusi ke Kode)** |
+| Status | ✅ **EKSEKUSI-01 selesai** — `data.js` (CRON_CASES, durasi Act1/2 naik), `acts/common.jsx` (CaptionBar dihapus, NearElementCaption + FlowLine ditambah), `acts/Act1..Act4*.jsx`, dan `Animation.jsx` sudah ditulis ulang. `esbuild` bundle pass, SSR smoke test 4 Act mode summary pass. Preview manual & export MP4 masih outstanding. |
 | Dasar Masalah | Masukan dari evaluasi visual: (1) Di Act 1 elemen muncul serentak tanpa urutan flowchart atau garis relasi yang jelas sehingga alur kerja tidak terbaca, (2) Di Act 2 hanya ada 1 case contoh pola cron, perlu multiple case nyata agar mudah dipahami, (3) Posisi `CaptionBar` statis di atas terlalu jauh dari elemen yang sedang aktif, audiens harus memindahkan fokus mata bolak-balik antara teks atas dan icon bawah. |
 
 ---
@@ -94,4 +94,12 @@
 ---
 
 ## 📌 Status
-Dokumen ini adalah **perencanaan revisi 01 (plan-only)**. Perubahan kode komponen React/SVG akan dieksekusi setelah mendapatkan arahan/konfirmasi selanjutnya.
+EKSEKUSI-01 selesai (2026-09-23). Ringkasan implementasi nyata (boleh beda detail kecil dari rencana di atas, mengikuti kondisi kode saat eksekusi):
+
+- **Act 1**: `FlowLine` (progress 0→1) dari jam ke `crond` (`spineProgress`), lalu `branchStep` 0→3 kontinu menggerakkan 3 garis cabang + `ConceptCard` job secara berurutan (fade-in mengikuti progress segmennya sendiri, bukan tween terpisah per job). Caption hook near-element di dekat jam (tampil selagi `spineProgress<=0`), caption di dekat `crond` (reveal → settle), caption desc di dekat tiap job. Job & garis meredup (`jobsDim`, opacity 0.28) di akhir, fokus ke `crond`.
+- **Act 2**: Header 5 field tetap ada (highlight berurutan), lalu 3 `CRON_CASES` (daily/interval/weekly) bergantian via `caseIndex` — tiap kasus menyorot kolom kunci (`highlightFields`) dengan border+warna lebih tebal dan menampilkan badge makna (`badge`) di bawah pola. Caption penutup near-element muncul setelah kasus terakhir.
+- **Act 3 & 4**: `CaptionBar` statis dihapus total, caption dipindah jadi `NearElementCaption` yang menempel di dekat jam target (Act 3) dan di dekat script/void/log (Act 4), diturunkan dari state yang sudah ada (`clockMatched`, `stepHighlight`, `streamsVisible`, `redirectActive`) — tidak perlu state caption global baru.
+- **`acts/common.jsx`**: `CaptionBar` dihapus, ditambah `NearElementCaption` (chip kontekstual, lebar menyesuaikan panjang teks) dan `FlowLine` (garis panah SVG `<marker>` per-instance via `useId`, mendukung `progress` untuk motion sekuensial).
+- **Durasi**: Act 1 dinaikkan 8s→9s, Act 2 dinaikkan 10s→11s (di `PHASES`, `data.js`) untuk menampung motion & 3 kasus tambahan — tetap estimasi awal, wajib diukur ulang setelah preview manual.
+
+Quality gate yang sudah lolos: `esbuild` bundle `Animation.jsx` pass; SSR smoke test (`renderToStaticMarkup`, mode summary tanpa props) ke-4 Act render non-kosong. Preview manual browser (`/player/cron-job`) dan export MP4 BELUM dilakukan — lihat `revisi/README.md`.

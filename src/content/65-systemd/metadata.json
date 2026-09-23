@@ -3,8 +3,16 @@
   "title": "Systemd",
   "subtitle": "Service yang dikelola, dijaga, dan diamati",
   "category": "Linux Fundamentals",
-  "tags": ["Linux", "systemd", "Service", "Lifecycle", "Journal", "Logs", "Diagnosis"],
+  "tags": [
+    "Linux",
+    "systemd",
+    "Service",
+    "Lifecycle",
+    "Journal",
+    "Logs",
+    "Diagnosis"
+  ],
   "color": "#38BDF8",
-  "status": "draft",
+  "status": "posted",
   "priority": 65
 }

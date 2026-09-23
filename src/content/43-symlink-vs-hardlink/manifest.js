@@ -1,0 +1,10 @@
+export default {
+  schemaVersion: 1,
+  id: 'symlink-vs-hardlink',
+  title: 'Symlink vs Hard Link',
+  subtitle: 'Dua jenis jalan pintas di Linux',
+  category: 'Linux Fundamentals',
+  tags: ['Linux', 'Filesystem', 'Symlink', 'Hardlink', 'Inode', 'CLI'],
+  color: '#38BDF8',
+  audioStrategy: 'realtime',
+}

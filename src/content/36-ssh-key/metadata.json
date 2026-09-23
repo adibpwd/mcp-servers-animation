@@ -12,5 +12,7 @@
   ],
   "color": "#22D3EE",
   "priority": 36,
-  "status": "draft"
+  "status": "ready",
+  "pinned": false,
+  "pinnedAt": null
 }

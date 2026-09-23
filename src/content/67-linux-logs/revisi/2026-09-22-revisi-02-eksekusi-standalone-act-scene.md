@@ -45,3 +45,29 @@ kontrak yang dikunci di `2026-09-21-revisi-01-status-merge-65-act-scene.md`
 - [ ] Preview manual langsung oleh Rudy di browser
 - [ ] Review konten (state contract, warna, durasi per-Act, akurasi istilah
       teknis journald/syslog/rsyslog)
+
+## Update — title 2 warna + audio lebih rame (2026-09-22, sore)
+
+Instruksi Rudy: judul dipecah 2 warna ijo-biru seperti topic lain, dan SFX
+ditambah di titik yang masih sepi.
+
+- [x] `data.js`: `INTRO_TITLE` → `INTRO_TITLE_A`/`INTRO_TITLE_B` ("LOG " / "SYSTEM")
+- [x] `Animation.jsx`: `titleSegments` 2 entri — "LOG" `COLORS.EVENT` (biru),
+      "SYSTEM" `COLORS.ACTIVE` (hijau) — pola sama dengan mayoritas topic lain
+      (label A = warna aksen topic, label B = hijau sukses)
+- [x] SFX ditambah di 8 titik yang sebelumnya sepi: `lightStation('rawEvent')`,
+      `dimStation('rawEvent')` (fitur sfx baru ditambah ke helper `dimStation`),
+      `lightStation('rotation')`, 2 `drawLine` Act 6 (`timeline-to-diagnosis`,
+      `rotation-to-diagnosis`), 3 `blinkLine` langkah diagnosis Act 6, + flourish
+      `CONFIRM` tambahan di closing stamp
+- [x] Compile check ulang — 0 error
+- [x] Export ulang — **flaky 2x** (frame gap bug yang sama: percobaan 1 gagal
+      di frame 662 → truncate 22.0s; percobaan 2 gagal di frame 532
+      "captureScreenshot timed out" → truncate 17.7s; percobaan 3 **berhasil**,
+      1689/1689 frame, 56.30s penuh, 1.25 MB)
+- [x] Visual QA title — dua warna tampil benar (biru "LOG" + hijau "SYSTEM"
+      dengan glow)
+
+**Catatan:** bug gap-frame di export pipeline ini makin sering muncul (3
+kejadian sejauh ini di topic ini) — selalu cek durasi output vs durasi
+terdeteksi setelah tiap export, jangan percaya `exit code 0` saja.

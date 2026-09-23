@@ -2,7 +2,7 @@
 
 | Item | Nilai |
 |---|---|
-| Status | 📝 PLAN ONLY |
+| Status | ✅ EKSEKUSI-01 selesai (kode + data ditulis; lihat `Animation.jsx`, `data.js`, `manifest.js`, `acts/`) — pola "1 act = 1 file" (docs/standardizations/07-act-scene-pattern.md) langsung dipakai sejak awal. `esbuild` bundle pass, SSR smoke test 4 Act mode summary pass. Preview manual & export MP4 masih outstanding — lihat `revisi/README.md`. |
 | Audiens | Pengembang / sysadmin pemula yang ingin mengotomasi tugas berulang tanpa campur tangan manual. |
 | Audience promise | Memahami anatomi 5 bintang crontab, daemond `crond` di background, dan eksekusi tugas tepat waktu. |
 | Scene shell | scene-ui V1 portrait 820×1340: IntroHeaderMorphV1, ActBadgeNavigatorV1, ContentBodyV1. |
