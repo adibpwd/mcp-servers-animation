@@ -97,6 +97,61 @@ const smoothstep01 = (edge0, edge1, x) => {
   return t * t * (3 - 2 * t)
 }
 
+/**
+ * Auto-wrap titleSegments ke dalam multiple lines jika total lebar melebihi maxSingleLineWidth.
+ * Mempertahankan warna & font weight tiap segment.
+ */
+function autoWrapTitleSegments(titleSegments, maxSingleLineWidth, fontSize) {
+  if (!Array.isArray(titleSegments) || titleSegments.length === 0) return null
+
+  const words = []
+  titleSegments.forEach((seg) => {
+    const text = String(seg.label || '')
+    const parts = text.split(/(\s+)/)
+    parts.forEach((part) => {
+      if (!part) return
+      words.push({ text: part, color: seg.color, weight: seg.weight })
+    })
+  })
+
+  const lines = []
+  let currentLine = []
+  let currentLineWidth = 0
+
+  words.forEach((w) => {
+    const isWhitespace = /^\s+$/.test(w.text)
+    const wWidth = estimateTextWidth(w.text, fontSize) * 1.18
+
+    if (!isWhitespace && currentLine.length > 0 && (currentLineWidth + wWidth) > maxSingleLineWidth) {
+      lines.push(currentLine)
+      currentLine = [w]
+      currentLineWidth = wWidth
+    } else {
+      if (currentLine.length === 0 && isWhitespace) return
+      currentLine.push(w)
+      currentLineWidth += wWidth
+    }
+  })
+
+  if (currentLine.length > 0) {
+    lines.push(currentLine)
+  }
+
+  if (lines.length <= 1) return null
+
+  return lines.map((lineWords) => {
+    const segs = []
+    lineWords.forEach((w) => {
+      if (segs.length > 0 && segs[segs.length - 1].color === w.color && segs[segs.length - 1].weight === w.weight) {
+        segs[segs.length - 1].label += w.text
+      } else {
+        segs.push({ label: w.text, color: w.color, weight: w.weight })
+      }
+    })
+    return segs
+  })
+}
+
 // Default hero position/size — persis pola referensi Tailscale (hero center,
 // lihat 09-standar-pembuatan-konten.md). Topic boleh override lewat prop
 // `hero` (override aman, tidak breaking — lihat PLAN-12 §6 tabel props).
@@ -323,10 +378,25 @@ export default function IntroHeaderMorphV1({
   })()
 
   const fullTitleText = (titleSegments || []).map((s) => s.label).join('')
+  const maxAvailableLineWidth = layout.canvas.width - 48
+
+  // Auto-wrap titleSegments jika titleLines tidak diset manual
+  const resolvedTitleLines = (Array.isArray(titleLines) && titleLines.length > 0)
+    ? titleLines
+    : autoWrapTitleSegments(titleSegments, maxAvailableLineWidth, h.titleFontSize)
+
+  // Auto font-size scaling untuk single line title hero jika judul muat 1 baris tapi agak mepet margin
+  const rawEstimatedSingleWidth = estimateTextWidth(fullTitleText, h.titleFontSize) * 1.18
+  const autoHeroTitleFontSize = (!resolvedTitleLines && rawEstimatedSingleWidth > maxAvailableLineWidth)
+    ? Math.max(48, Math.floor(h.titleFontSize * (maxAvailableLineWidth / rawEstimatedSingleWidth)))
+    : h.titleFontSize
+
+  const effectiveHero = { ...h, titleFontSize: autoHeroTitleFontSize }
+
   // startX hero: dipusatkan otomatis pakai estimateTextWidth, KECUALI topic
   // eksplisit override lewat hero.thumbWidth (lihat komentar estimateTextWidth
   // di PortraitSceneLayoutV1.js).
-  const estimatedWidth = h.thumbWidth ?? estimateTextWidth(fullTitleText, h.titleFontSize)
+  const estimatedWidth = effectiveHero.thumbWidth ?? estimateTextWidth(fullTitleText, effectiveHero.titleFontSize)
   // Safety-clamp ke margin kiri (sama marginX dengan clamp titleLines di
   // bawah): kalau title terlalu lebar untuk 1 baris sehingga heroStartX jadi
   // negatif, tagline & subtitle ikut kepotong di sisi kiri (mis. "OAUTH2
@@ -337,24 +407,22 @@ export default function IntroHeaderMorphV1({
   const endX = layout.header.x
 
   const taglineX = lerp(heroStartX, endX, mp)
-  const taglineY = lerp(h.taglineY, layout.header.taglineY, mp)
-  const taglineFs = lerp(h.taglineFontSize, c.taglineFontSize, mp)
+  const taglineY = lerp(effectiveHero.taglineY, layout.header.taglineY, mp)
+  const taglineFs = lerp(effectiveHero.taglineFontSize, c.taglineFontSize, mp)
 
   const titleX = lerp(heroStartX, endX, mp)
-  const titleY = lerp(h.titleY, layout.header.titleY, mp)
-  const titleFs = lerp(h.titleFontSize, c.titleFontSize, mp)
+  const titleY = lerp(effectiveHero.titleY, layout.header.titleY, mp)
+  const titleFs = lerp(effectiveHero.titleFontSize, c.titleFontSize, mp)
 
   const subX = lerp(heroStartX, endX, mp)
-  const subY = lerp(h.subtitleY, layout.header.subtitleY, mp)
-  const subFs = lerp(h.subtitleFontSize, c.subtitleFontSize, mp)
+  const subY = lerp(effectiveHero.subtitleY, layout.header.subtitleY, mp)
+  const subFs = lerp(effectiveHero.subtitleFontSize, c.subtitleFontSize, mp)
 
-  // ── titleLines (opsional, lihat UPDATE 2 di atas) — kalau tidak
-  // diberikan, multilineOpacity/singleLineOpacity tidak pernah dipakai
-  // untuk mengubah apapun (singleLineOpacity efektif selalu 1). ──
-  const hasTitleLines = Array.isArray(titleLines) && titleLines.length > 0
+  // ── titleLines (opsional, diset manual atau di-auto wrap di atas) ──
+  const hasTitleLines = Array.isArray(resolvedTitleLines) && resolvedTitleLines.length > 0
   const singleLineOpacity = hasTitleLines ? smoothstep01(0, titleMorphSplit, mp) : 1
   const multilineOpacity = hasTitleLines ? (1 - smoothstep01(0, titleMorphSplit, mp)) : 0
-  const heroLineHeight = h.titleFontSize * 0.98
+  const heroLineHeight = effectiveHero.titleFontSize * 0.98
 
   // ── heroBackground (opsional, lihat UPDATE 3) — backdrop STATIS di posisi
   // hero, fade-out pakai smoothstep sama pola titleLines di atas. Kalau
@@ -372,19 +440,19 @@ export default function IntroHeaderMorphV1({
     const categoryText = taglineSegments.map((s) => s.label).join('')
     let contentWidth = Math.max(
       estimatedWidth,
-      estimateTextWidth(categoryText, h.taglineFontSize),
-      estimateTextWidth(subtitle || '', h.subtitleFontSize),
+      estimateTextWidth(categoryText, effectiveHero.taglineFontSize),
+      estimateTextWidth(subtitle || '', effectiveHero.subtitleFontSize),
     )
-    let topEdge = h.taglineY - h.taglineFontSize * 0.85
-    let bottomEdge = h.subtitleY + h.subtitleFontSize * 0.3
+    let topEdge = effectiveHero.taglineY - effectiveHero.taglineFontSize * 0.85
+    let bottomEdge = effectiveHero.subtitleY + effectiveHero.subtitleFontSize * 0.3
     if (hasTitleLines) {
-      const widestLine = Math.max(...titleLines.map((lineSegs) => (
-        estimateTextWidth((lineSegs || []).map((s) => s.label).join(''), h.titleFontSize) * 1.18
+      const widestLine = Math.max(...resolvedTitleLines.map((lineSegs) => (
+        estimateTextWidth((lineSegs || []).map((s) => s.label).join(''), effectiveHero.titleFontSize) * 1.18
       )))
       contentWidth = Math.max(contentWidth, widestLine)
-      const stackHalf = ((titleLines.length - 1) / 2) * heroLineHeight
-      topEdge = Math.min(topEdge, h.titleY - stackHalf - h.titleFontSize * 0.85)
-      bottomEdge = Math.max(bottomEdge, h.titleY + stackHalf + h.titleFontSize * 0.3)
+      const stackHalf = ((resolvedTitleLines.length - 1) / 2) * heroLineHeight
+      topEdge = Math.min(topEdge, effectiveHero.titleY - stackHalf - effectiveHero.titleFontSize * 0.85)
+      bottomEdge = Math.max(bottomEdge, effectiveHero.titleY + stackHalf + effectiveHero.titleFontSize * 0.3)
     }
     // X box selalu di-center ke tengah canvas (bukan heroStartX) — konsisten
     // dengan cara title (single-line MAUPUN titleLines) sama-sama di-center
@@ -402,7 +470,7 @@ export default function IntroHeaderMorphV1({
   // sama seperti heroBackground. Kalau `heroIllustration` tidak diberikan,
   // `hi` null dan tidak ada apa pun yang dirender (non-breaking). ──
   const hi = heroIllustration
-    ? { y: h.subtitleY + 90, scale: 1, opacity: 1, ...heroIllustration }
+    ? { y: effectiveHero.subtitleY + 90, scale: 1, opacity: 1, ...heroIllustration }
     : null
   const hiFadeSplit = hi?.fadeOutSplit ?? titleMorphSplit
   const hiOpacity = hi ? clamp01(hi.opacity ?? 1) * (1 - smoothstep01(0, hiFadeSplit, mp)) : 0
@@ -483,7 +551,7 @@ export default function IntroHeaderMorphV1({
 
       {hasTitleLines && multilineOpacity > 0 && (
         <g opacity={multilineOpacity} filter={resolvedTitleFilter || undefined}>
-          {titleLines.map((lineSegs, li) => {
+          {resolvedTitleLines.map((lineSegs, li) => {
             const lineText = (lineSegs || []).map((s) => s.label).join('')
             // Buffer 18% — estimateTextWidth() sedikit underestimate untuk
             // ALL CAPS bold (mis. "Arial Black"), lebar render asli bisa
@@ -492,18 +560,18 @@ export default function IntroHeaderMorphV1({
             // kanan (revisi 2026-09-12). Lalu di-clamp ke margin canvas
             // biar tidak pernah lewat batas kiri/kanan meski estimasi masih
             // sedikit meleset.
-            const lineWidth = estimateTextWidth(lineText, h.titleFontSize) * 1.18
+            const lineWidth = estimateTextWidth(lineText, effectiveHero.titleFontSize) * 1.18
             const marginX = 16
             let lineX = (layout.canvas.width / 2) - (lineWidth / 2)
             if (lineX < marginX) lineX = marginX
             if (lineX + lineWidth > layout.canvas.width - marginX) {
               lineX = layout.canvas.width - marginX - lineWidth
             }
-            const lineY = h.titleY + (li - (titleLines.length - 1) / 2) * heroLineHeight
+            const lineY = effectiveHero.titleY + (li - (resolvedTitleLines.length - 1) / 2) * heroLineHeight
             return (
               <text
                 key={li}
-                x={lineX} y={lineY} textAnchor="start" fontSize={h.titleFontSize}
+                x={lineX} y={lineY} textAnchor="start" fontSize={effectiveHero.titleFontSize}
                 fontFamily={titleFontFamily} fontWeight={900}
               >
                 {(lineSegs || []).map((seg, i) => (
