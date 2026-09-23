@@ -400,10 +400,13 @@ export default function IntroHeaderMorphV1({
   const heroLineHeight = effectiveHero.titleFontSize * 0.98
   const titleHalfStackHeight = ((linesCount - 1) / 2) * heroLineHeight
 
-  // Dynamic Y untuk tagline dan subtitle di hero agar auto margin/padding di atas & bawah title multiline
+  // Dynamic Y untuk tagline dan subtitle di hero agar auto margin/padding di atas & bawah title multiline.
+  // Clearance atas menghitung tinggi cap glyph title (0.85em) + gap visual ~28px dari baris pertama title,
+  // sehingga tagline tidak pernah menempel/menabrak judul — tetap konsisten di semua jumlah baris.
+  const topClearance = Math.max(72, effectiveHero.titleFontSize * 0.85 + 28)
   const autoHeroTaglineY = hero.taglineY != null
     ? hero.taglineY
-    : (effectiveHero.titleY - titleHalfStackHeight - Math.max(48, effectiveHero.titleFontSize * 0.65))
+    : (effectiveHero.titleY - titleHalfStackHeight - topClearance)
 
   const autoHeroSubtitleY = hero.subtitleY != null
     ? hero.subtitleY
