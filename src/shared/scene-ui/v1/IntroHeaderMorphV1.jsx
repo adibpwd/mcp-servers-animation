@@ -392,85 +392,86 @@ export default function IntroHeaderMorphV1({
     : h.titleFontSize
 
   const effectiveHero = { ...h, titleFontSize: autoHeroTitleFontSize }
-
-  // startX hero: dipusatkan otomatis pakai estimateTextWidth, KECUALI topic
-  // eksplisit override lewat hero.thumbWidth (lihat komentar estimateTextWidth
-  // di PortraitSceneLayoutV1.js).
-  const estimatedWidth = effectiveHero.thumbWidth ?? estimateTextWidth(fullTitleText, effectiveHero.titleFontSize)
-  // Safety-clamp ke margin kiri (sama marginX dengan clamp titleLines di
-  // bawah): kalau title terlalu lebar untuk 1 baris sehingga heroStartX jadi
-  // negatif, tagline & subtitle ikut kepotong di sisi kiri (mis. "OAUTH2
-  // DELEGATED LOGIN" → heroStartX ≈ -6px pada 72px, canvas 820). Clamp ini
-  // hanya aktif untuk title sebesar itu, tidak mengubah output topic lain.
   const heroMarginX = 16
+
+  // ── titleLines & dynamic vertical stack calculation ──
+  const hasTitleLines = Array.isArray(resolvedTitleLines) && resolvedTitleLines.length > 0
+  const linesCount = hasTitleLines ? resolvedTitleLines.length : 1
+  const heroLineHeight = effectiveHero.titleFontSize * 0.98
+  const titleHalfStackHeight = ((linesCount - 1) / 2) * heroLineHeight
+
+  // Dynamic Y untuk tagline dan subtitle di hero agar auto margin/padding di atas & bawah title multiline
+  const autoHeroTaglineY = hero.taglineY != null
+    ? hero.taglineY
+    : (effectiveHero.titleY - titleHalfStackHeight - Math.max(48, effectiveHero.titleFontSize * 0.65))
+
+  const autoHeroSubtitleY = hero.subtitleY != null
+    ? hero.subtitleY
+    : (effectiveHero.titleY + titleHalfStackHeight + Math.max(52, effectiveHero.titleFontSize * 0.72))
+
+  // ── Independently center tagline, title, and subtitle di hero mode ──
+  const taglineFullText = taglineSegments.map((s) => s.label).join('')
+  const estimatedTaglineWidth = estimateTextWidth(taglineFullText, effectiveHero.taglineFontSize, { monospace: true }) * 1.2
+  const taglineHeroStartX = Math.max(heroMarginX, (layout.canvas.width / 2) - (estimatedTaglineWidth / 2))
+  const safeTaglineHeroStartX = (taglineHeroStartX + estimatedTaglineWidth > layout.canvas.width - heroMarginX)
+    ? Math.max(heroMarginX, layout.canvas.width - heroMarginX - estimatedTaglineWidth)
+    : taglineHeroStartX
+
+  const estimatedWidth = effectiveHero.thumbWidth ?? estimateTextWidth(fullTitleText, effectiveHero.titleFontSize)
   const heroStartX = Math.max(heroMarginX, (layout.canvas.width / 2) - (estimatedWidth / 2))
+
+  const estimatedSubWidth = estimateTextWidth(subtitle || '', effectiveHero.subtitleFontSize) * 1.1
+  const subHeroStartX = Math.max(heroMarginX, (layout.canvas.width / 2) - (estimatedSubWidth / 2))
+
   const endX = layout.header.x
 
-  const taglineX = lerp(heroStartX, endX, mp)
-  const taglineY = lerp(effectiveHero.taglineY, layout.header.taglineY, mp)
+  const taglineX = lerp(safeTaglineHeroStartX, endX, mp)
+  const taglineY = lerp(autoHeroTaglineY, layout.header.taglineY, mp)
   const taglineFs = lerp(effectiveHero.taglineFontSize, c.taglineFontSize, mp)
 
   const titleX = lerp(heroStartX, endX, mp)
   const titleY = lerp(effectiveHero.titleY, layout.header.titleY, mp)
   const titleFs = lerp(effectiveHero.titleFontSize, c.titleFontSize, mp)
 
-  const subX = lerp(heroStartX, endX, mp)
-  const subY = lerp(effectiveHero.subtitleY, layout.header.subtitleY, mp)
+  const subX = lerp(subHeroStartX, endX, mp)
+  const subY = lerp(autoHeroSubtitleY, layout.header.subtitleY, mp)
   const subFs = lerp(effectiveHero.subtitleFontSize, c.subtitleFontSize, mp)
 
-  // ── titleLines (opsional, diset manual atau di-auto wrap di atas) ──
-  const hasTitleLines = Array.isArray(resolvedTitleLines) && resolvedTitleLines.length > 0
   const singleLineOpacity = hasTitleLines ? smoothstep01(0, titleMorphSplit, mp) : 1
   const multilineOpacity = hasTitleLines ? (1 - smoothstep01(0, titleMorphSplit, mp)) : 0
-  const heroLineHeight = effectiveHero.titleFontSize * 0.98
 
-  // ── heroBackground (opsional, lihat UPDATE 3) — backdrop STATIS di posisi
-  // hero, fade-out pakai smoothstep sama pola titleLines di atas. Kalau
-  // `heroBackground` tidak diberikan, `hb` null dan tidak ada apa pun yang
-  // dirender di sini (behavior lama, non-breaking). ──
+  // ── heroBackground (opsional, lihat UPDATE 3) ──
   const hb = heroBackground ? { ...HERO_BACKGROUND_DEFAULTS, ...heroBackground } : null
   const hbFadeSplit = hb?.fadeOutSplit ?? titleMorphSplit
   const hbOpacity = hb ? clamp01(hb.opacity ?? 1) * (1 - smoothstep01(0, hbFadeSplit, mp)) : 0
 
   let hbX, hbY, hbWidth, hbHeight
   if (hb) {
-    // Auto-bounding-box: bungkus teks terlebar (tagline/title/subtitle,
-    // termasuk titleLines kalau dipakai) + padding. Bisa dioverride penuh
-    // lewat heroBackground.x/y/width/height kalau auto tidak pas.
-    const categoryText = taglineSegments.map((s) => s.label).join('')
     let contentWidth = Math.max(
       estimatedWidth,
-      estimateTextWidth(categoryText, effectiveHero.taglineFontSize),
-      estimateTextWidth(subtitle || '', effectiveHero.subtitleFontSize),
+      estimatedTaglineWidth,
+      estimatedSubWidth,
     )
-    let topEdge = effectiveHero.taglineY - effectiveHero.taglineFontSize * 0.85
-    let bottomEdge = effectiveHero.subtitleY + effectiveHero.subtitleFontSize * 0.3
+    let topEdge = autoHeroTaglineY - effectiveHero.taglineFontSize * 0.85
+    let bottomEdge = autoHeroSubtitleY + effectiveHero.subtitleFontSize * 0.3
     if (hasTitleLines) {
       const widestLine = Math.max(...resolvedTitleLines.map((lineSegs) => (
         estimateTextWidth((lineSegs || []).map((s) => s.label).join(''), effectiveHero.titleFontSize) * 1.18
       )))
       contentWidth = Math.max(contentWidth, widestLine)
-      const stackHalf = ((resolvedTitleLines.length - 1) / 2) * heroLineHeight
-      topEdge = Math.min(topEdge, effectiveHero.titleY - stackHalf - effectiveHero.titleFontSize * 0.85)
-      bottomEdge = Math.max(bottomEdge, effectiveHero.titleY + stackHalf + effectiveHero.titleFontSize * 0.3)
+      topEdge = Math.min(topEdge, effectiveHero.titleY - titleHalfStackHeight - effectiveHero.titleFontSize * 0.85)
+      bottomEdge = Math.max(bottomEdge, effectiveHero.titleY + titleHalfStackHeight + effectiveHero.titleFontSize * 0.3)
     }
-    // X box selalu di-center ke tengah canvas (bukan heroStartX) — konsisten
-    // dengan cara title (single-line MAUPUN titleLines) sama-sama di-center
-    // ke layout.canvas.width/2. Kalau pakai heroStartX (basis lebar title
-    // single-line), box bisa geser saat titleLines aktif karena tiap baris
-    // dihitung ulang center-nya sendiri (lihat render titleLines di bawah).
+
     hbWidth = hb.width ?? (contentWidth + hb.paddingX * 2)
     hbX = hb.x ?? ((layout.canvas.width / 2) - (hbWidth / 2))
     hbY = hb.y ?? (topEdge - hb.paddingY)
     hbHeight = hb.height ?? (bottomEdge - topEdge + hb.paddingY * 2)
   }
 
-  // ── heroIllustration (opsional, lihat UPDATE 4) — konten SVG statis
-  // (mis. ikon ringkasan workflow) di area hero, fade-out pakai kurva yang
-  // sama seperti heroBackground. Kalau `heroIllustration` tidak diberikan,
-  // `hi` null dan tidak ada apa pun yang dirender (non-breaking). ──
+  // ── heroIllustration (opsional, lihat UPDATE 4) ──
   const hi = heroIllustration
-    ? { y: effectiveHero.subtitleY + 90, scale: 1, opacity: 1, ...heroIllustration }
+    ? { y: autoHeroSubtitleY + 90, scale: 1, opacity: 1, ...heroIllustration }
     : null
   const hiFadeSplit = hi?.fadeOutSplit ?? titleMorphSplit
   const hiOpacity = hi ? clamp01(hi.opacity ?? 1) * (1 - smoothstep01(0, hiFadeSplit, mp)) : 0
